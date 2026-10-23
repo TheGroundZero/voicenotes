@@ -22,9 +22,9 @@ Three questions:
 2. **Model downloads.** On request, the app downloads Whisper speech models (MIT) from huggingface.co. HTTPS only,
    pinned revision and SHA-256, no other network use, no tracking. Which anti-feature, if any, applies (NonFreeNet?)?
 3. **Build server.** The build needs NDK 27.2.12479018 and CMake 3.22.1. Are both available, or should the recipe
-   install them? Clean builds are byte-identical across directories on our toolchain
-   (`scripts/verify-reproducible.sh`; not yet tried on another machine), so we would like to enable
-   reproducible-build verification if your build server can match it.
+   install them? Our release APK is byte-identical between a GitHub Actions build and a local clean build
+   (`scripts/verify-reproducible.sh`; the Google dependency-info block is switched off), so we would like to
+   enable reproducible-build verification if your build server can match it.
 
 Thanks,
 Sequr

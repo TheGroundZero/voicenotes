@@ -43,11 +43,11 @@ gave byte-identical files; an earlier copy built with a freshly installed toolch
 incremental build of the same source. **An incremental build can differ from a clean one** (the app code compiled by Kotlin
 and R8 comes out slightly different), so always make a release with `./gradlew clean assembleRelease` (or
 `--rerun-tasks`), never on top of earlier builds.
-Three things made that so (keep them): `-ffile-prefix-map` and `--build-id=none` for the native code, git switched off for
+On 2026-10-23 the signed v0.1.0 APK built by the GitHub Actions runner (Ubuntu 24.04, its own toolchain install) and a clean local build on a different machine were **byte-identical, signature included** (RSA signatures are deterministic). A fourth thing is needed for that: `dependenciesInfo { includeInApk = false }`, because the Android Gradle Plugin otherwise embeds a dependency list encrypted with a Google key and with fresh randomness, which differs on every build (and is rejected by F-Droid).
+Three more things made it so (keep them): `-ffile-prefix-map` and `--build-id=none` for the native code, git switched off for
 ggml's build stamp (it would write the commit and a "-dirty" flag into the library), and `vcsInfo.include = false`
 for the APK. `scripts/verify-reproducible.sh` repeats the test; run it before a release. What has **not** been tested:
-a different machine or operating system, a different NDK or JDK build than the pinned ones, and F-Droid's own build
-server. A signed APK is the unsigned one plus a signature, so compare *unsigned* files (or use `apksigcopier`).
+another operating system, a different NDK or JDK build than the pinned ones, and F-Droid's own build server. A signed APK is the unsigned one plus a signature, so compare *unsigned* files (or use `apksigcopier`).
 
 ## Building a release
 

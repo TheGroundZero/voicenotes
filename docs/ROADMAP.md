@@ -18,7 +18,7 @@ against. Build and release instructions are in [BUILDING.md](BUILDING.md) and [R
   build).
 - **Never lose a note.** Audio is saved before transcription; a failed transcription keeps the audio.
 - **Extensible.** Triggers and transcription engines are separate extension points.
-- **Reproducible and verifiable.** Pinned toolchain and dependencies; clean builds are byte-identical across machines.
+- **Reproducible and verifiable.** Pinned toolchain and dependencies; a clean local build and the CI build of v0.1.0 are byte-identical.
 
 ## Done
 

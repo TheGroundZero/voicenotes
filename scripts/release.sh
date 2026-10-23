@@ -23,7 +23,7 @@ echo "git:          commit \"chore(release): $version\" and annotated tag v$vers
 if [ "$mode" != "--apply" ]; then echo "(preview only; add --apply to do it)"; exit 0; fi
 
 git rev-parse --verify HEAD >/dev/null 2>&1 || { echo "There are no commits yet." >&2; exit 1; }
-[ -z "$(git status --porcelain)" ] || { echo "Working tree is not clean." >&2; exit 1; }
+[ -z "$(git status --porcelain --ignore-submodules=dirty)" ] || { echo "Working tree is not clean." >&2; exit 1; }
 git rev-parse "v$version" >/dev/null 2>&1 && { echo "Tag v$version exists." >&2; exit 1; }
 scripts/check.sh
 

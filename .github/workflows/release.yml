@@ -55,4 +55,4 @@ jobs:
           mkdir -p dist
           cp app/build/outputs/apk/release/app-release.apk "dist/voicenotes-${version}.apk"
           (cd dist && sha256sum "voicenotes-${version}.apk" > "voicenotes-${version}.apk.sha256")
-          gh release create "$GITHUB_REF_NAME" dist/* --title "Voice Notes ${version}" --notes-file <(sed -n "/^## \\[${version}\\]/,/^## \\[/p" CHANGELOG.md | sed '$d')
+          gh release create "$GITHUB_REF_NAME" dist/* --title "Voice Notes ${version}" --notes-file <(awk -v h="## [${version}]" 'index($0, h) == 1 { found = 1; next } found && /^## \[/ { exit } found' CHANGELOG.md)

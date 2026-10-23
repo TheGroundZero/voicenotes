@@ -1,0 +1,47 @@
+# DRAFT of an F-Droid build recipe (the file that would be proposed to https://gitlab.com/fdroid/fdroiddata as
+# metadata/be.sequr.voicenotes.yml). Untested: F-Droid's tooling has not been run on it, the repository URL does not exist
+# yet, and three questions are open (below). Field reference: https://f-droid.org/docs/Build_Metadata_Reference/
+Categories:
+  - Writing
+  - Multimedia
+License: GPL-3.0-or-later
+# TODO when the repository exists:
+# AuthorName:
+# WebSite:
+# SourceCode:
+# IssueTracker:
+# Changelog:
+
+# Open question 1: the app can download speech models from huggingface.co (a service that is not free software) when the
+# user asks. Whether F-Droid wants an anti-feature for that (for example NonFreeNet) is for the F-Droid team to say;
+# ask before submitting. The models themselves are MIT licensed.
+# AntiFeatures:
+#   NonFreeNet:
+#     en-US: Downloads speech models from huggingface.co, only when the user asks for it.
+
+AutoName: Voice Notes
+
+RepoType: git
+# Repo: TODO
+
+Builds:
+  - versionName: 0.1.0
+    versionCode: 1
+    commit: v0.1.0
+    subdir: app
+    submodules: true
+    gradle:
+      - yes
+    # Open question 2: the build needs CMake 3.22.1 and NDK 27.2.12479018 (both pinned in scripts/setup-toolchain.sh);
+    # whether the F-Droid build server provides them or the recipe must install them has to be checked.
+    ndk: 27.2.12479018
+    # whisper.cpp is the submodule; our patch must be applied before the native build (CMake fails without it).
+    prebuild: ../scripts/setup-third-party.sh
+    # Open question 3: the app bundles one small binary data file, app/src/main/assets/ggml-silero-v5.1.2.bin (the MIT
+    # licensed Silero voice-activity model, 885 KB; scripts/fetch-vad-model.sh proves it is the upstream file). The inclusion
+    # policy does not mention model files; ask whether it is acceptable or must be fetched at build time.
+
+AutoUpdateMode: Version
+UpdateCheckMode: Tags
+CurrentVersion: 0.1.0
+CurrentVersionCode: 1

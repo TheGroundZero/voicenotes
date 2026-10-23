@@ -1,0 +1,1 @@
+First version. Record voice notes from the app, a tile, a widget, a headset button or Android Auto; transcribe them offline with Whisper; manage transcript versions; share or export them.

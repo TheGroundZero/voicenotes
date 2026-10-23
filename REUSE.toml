@@ -1,0 +1,51 @@
+# Licence and copyright for files that cannot carry a comment header (resources, data, documents, third-party files).
+# Source code carries "SPDX-License-Identifier" headers itself. Format: https://reuse.software/spec-3.3/
+version = 1
+SPDX-PackageName = "Voice Notes"
+SPDX-PackageSupplier = "The Voice Notes authors (sequr.be)"
+
+[[annotations]]
+path = [
+  "app/src/main/res/**",
+  "app/src/main/AndroidManifest.xml",
+  "app/schemas/**",
+  "**/*.md",
+  "app/lint-baseline.xml",
+  "gradle/verification-metadata.xml",
+  "LICENSE",
+  "REUSE.toml",
+  ".gitignore",
+  ".gitmodules",
+  "gradle.properties",
+  "docs/**",
+  "fastlane/**",
+  ".tangled/**",
+  ".github/**",
+]
+SPDX-FileCopyrightText = "2026 The Voice Notes authors (sequr.be)"
+SPDX-License-Identifier = "GPL-3.0-or-later"
+
+# Material Design icons (Google).
+[[annotations]]
+path = ["app/src/main/res/drawable/ic_source_*.xml"]
+precedence = "override"
+SPDX-FileCopyrightText = "Google LLC"
+SPDX-License-Identifier = "Apache-2.0"
+
+# Silero VAD model, converted for whisper.cpp (see third_party/README.md).
+[[annotations]]
+path = ["app/src/main/assets/ggml-silero-v5.1.2.bin"]
+SPDX-FileCopyrightText = "2020-present Silero Team"
+SPDX-License-Identifier = "MIT"
+
+# Our patch to whisper.cpp is a change to MIT-licensed code and stays under that licence.
+[[annotations]]
+path = ["third_party/patches/**"]
+SPDX-FileCopyrightText = "2023-2026 The ggml authors"
+SPDX-License-Identifier = "MIT"
+
+# Gradle wrapper (from the Gradle project).
+[[annotations]]
+path = ["gradlew", "gradlew.bat", "gradle/wrapper/**"]
+SPDX-FileCopyrightText = "Gradle Inc."
+SPDX-License-Identifier = "Apache-2.0"

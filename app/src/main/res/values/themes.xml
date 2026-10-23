@@ -1,0 +1,7 @@
+<resources>
+    <!-- Compose draws the UI; this only sets the window background and removes the action bar. -->
+    <style name="Theme.VoiceNotes" parent="@android:style/Theme.DeviceDefault.DayNight">
+        <item name="android:windowActionBar">false</item>
+        <item name="android:windowNoTitle">true</item>
+    </style>
+</resources>

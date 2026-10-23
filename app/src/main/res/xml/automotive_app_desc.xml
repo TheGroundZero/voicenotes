@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Declares Voice Notes to Android Auto as a media app. Side-loaded media apps need Android Auto's
+     "Unknown sources" developer option. There is no note-taking category in Android Auto. -->
+<automotiveApp>
+    <uses name="media" />
+</automotiveApp>

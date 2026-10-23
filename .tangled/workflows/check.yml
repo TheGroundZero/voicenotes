@@ -1,0 +1,24 @@
+# DRAFT, untested: it can only be tried once the repository exists on Tangled and a spindle is enabled for it.
+# Only the light checks run here: the hosted spindle has no Android SDK and a default timeout of five minutes.
+# Lint, unit tests and the build run with scripts/check.sh on a machine with the tools (docs/BUILDING.md), or on the
+# GitHub mirror (.github/workflows/release.yml).
+when:
+  - event: ["push", "pull_request"]
+    branch: ["main"]
+
+engine: nixery
+
+clone:
+  depth: 1
+  submodules: true
+
+dependencies:
+  nixpkgs:
+    - bash
+    - coreutils
+    - git
+    - python3
+
+steps:
+  - name: "Licences, Gradle wrapper, scripts, model checksums"
+    command: "scripts/check.sh --light"

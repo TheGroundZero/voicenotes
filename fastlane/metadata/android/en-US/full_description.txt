@@ -1,0 +1,19 @@
+Voice Notes records a note with one tap and turns it into text on your phone. Nothing is uploaded: no account, no cloud, no analytics, no ads.
+
+It is built for use while driving: start a note from a Quick Settings tile, a home-screen widget, a Bluetooth headset or steering-wheel play/pause button, or from Android Auto, speak, and stop. Other audio pauses while you record and resumes afterwards.
+
+<b>Features</b>
+• Offline speech recognition with Whisper (whisper.cpp); the language is detected automatically among the languages you prefer, such as English, Dutch and French
+• Several versions of every transcript: re-transcribe with another model or language, edit by hand, go back
+• Recordings with no speech (silence, road noise) are skipped instead of producing invented text
+• Waits while the battery is low or battery saver is on, then continues
+• Share text or audio, add notes to a Markdown file you choose (an Obsidian vault, a Nextcloud folder), or export everything
+• Optional recording through a Bluetooth headset or a car's hands-free system
+• You choose and download the speech model (0.5 to 0.9 GB); you can also import one from a file
+
+<b>Good to know</b>
+• Needs Android 14 or newer and a 64-bit ARM phone. The best model needs about 1 GB of free memory; older phones work but transcribe slower.
+• Android Auto lists apps from outside Google Play only if you switch on its developer option "Unknown sources". There is no note-taking category in Android Auto, so the app appears as a media app with a Record button.
+• The only network use is downloading a speech model from huggingface.co when you ask for it. You can switch the network permission off completely and import models from a file instead.
+
+Free software under the GNU General Public License, version 3 or later.

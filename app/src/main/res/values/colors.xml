@@ -1,0 +1,4 @@
+<resources>
+    <!-- Solid background so the icon is visible on dark launchers such as Android Auto's. -->
+    <color name="launcher_background">#2B5CB0</color>
+</resources>

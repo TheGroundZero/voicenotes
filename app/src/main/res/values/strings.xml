@@ -1,0 +1,19 @@
+<resources>
+    <string name="app_name">Voice Notes</string>
+    <string name="tile_note">Note</string>
+    <string name="notif_channel">Recording</string>
+    <string name="notif_recording">Recording note…</string>
+    <string name="notif_transcribing">Transcribing note…</string>
+    <string name="notif_channel_downloads">Model downloads</string>
+    <string name="notif_downloading">Downloading %1$s…</string>
+    <string name="notif_cancel">Cancel</string>
+    <string name="widget_description">Start and stop a voice note</string>
+    <string name="widget_glyph_idle" translatable="false">●</string>
+    <string name="widget_record">Record a note</string>
+    <string name="widget_stop">Stop recording</string>
+    <string name="notif_channel_triggers">Headset button</string>
+    <string name="notif_headset_on">Headset button is on</string>
+    <string name="notif_headset_hint">Press play/pause to start or stop a note</string>
+    <string name="notif_turn_off">Turn off</string>
+    <string name="notif_stop">Stop</string>
+</resources>

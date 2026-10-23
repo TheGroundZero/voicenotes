@@ -1,0 +1,31 @@
+diff --git a/include/whisper.h b/include/whisper.h
+index 545084e..89680bc 100644
+--- a/include/whisper.h
++++ b/include/whisper.h
+@@ -369,6 +369,11 @@ extern "C" {
+     // Return the short string of the specified language name (e.g. 2 -> "german"), returns nullptr if not found
+     WHISPER_API const char * whisper_lang_str_full(int id);
+ 
++    // Voice Notes patch: limit the encoder context to n_audio_ctx frames (50 per second of audio, 0 = the full 30 s).
++    // Applies to whisper_lang_auto_detect() on this context. whisper_full() sets it itself from params.audio_ctx,
++    // but only AFTER its own language detection, which therefore always costs a full 30 s encode.
++    WHISPER_API void whisper_set_audio_ctx(struct whisper_context * ctx, int n_audio_ctx);
++
+     // Use mel data at offset_ms to try and auto-detect the spoken language
+     // Make sure to call whisper_pcm_to_mel() or whisper_set_mel() first
+     // Returns the top language id or negative on failure
+diff --git a/src/whisper.cpp b/src/whisper.cpp
+index 1675f33..7cabd3a 100644
+--- a/src/whisper.cpp
++++ b/src/whisper.cpp
+@@ -4251,6 +4251,10 @@ int whisper_lang_auto_detect(
+     return whisper_lang_auto_detect_with_state(ctx, ctx->state, offset_ms, n_threads, lang_probs);
+ }
+ 
++void whisper_set_audio_ctx(struct whisper_context * ctx, int n_audio_ctx) {
++    ctx->state->exp_n_audio_ctx = n_audio_ctx;
++}
++
+ int whisper_model_n_vocab(struct whisper_context * ctx) {
+     return ctx->model.hparams.n_vocab;
+ }

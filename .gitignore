@@ -1,0 +1,26 @@
+# Build output and caches
+.gradle/
+.kotlin/
+build/
+.cxx/
+build-whisper-cli/
+build-whisper-cli-i8mm/
+*.log
+
+# Machine-specific
+local.properties
+.idea/
+*.iml
+.DS_Store
+
+# Large downloaded files: speech models (see docs/BUILDING.md) and benchmark caches
+models/
+benchmark/cache/
+
+# Signing keys and credentials must never be committed
+*.jks
+*.keystore
+keystore.properties
+*.pem
+*.p12
+.env

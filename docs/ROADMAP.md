@@ -1,0 +1,57 @@
+<!--
+SPDX-FileCopyrightText: 2026 The Voice Notes authors (sequr.be)
+SPDX-License-Identifier: GPL-3.0-or-later
+-->
+
+# Roadmap
+
+Voice Notes records voice notes hands-free (while driving, for example), transcribes them offline on the device and
+exports them as Markdown. This page says what exists, what is next, and the design rules that decisions are measured
+against. Build and release instructions are in [BUILDING.md](BUILDING.md) and [RELEASING.md](RELEASING.md).
+
+## Design rules
+
+- **Private by default.** No analytics, no accounts, no cloud. The only network use is downloading a speech model when
+  the user asks for it (HTTPS, pinned revision, SHA-256 checked). Only `ModelDownloader.kt` may use network APIs, and the
+  build fails otherwise. Models can also be imported from a file, so the app works with network access revoked.
+- **No Google services.** Built for GrapheneOS and plain AOSP; no Play Services, no tracker libraries (checked by the
+  build).
+- **Never lose a note.** Audio is saved before transcription; a failed transcription keeps the audio.
+- **Extensible.** Triggers and transcription engines are separate extension points.
+- **Reproducible and verifiable.** Pinned toolchain and dependencies; clean builds are byte-identical across machines.
+
+## Done
+
+- Recording from a Quick Settings tile, an in-app button, a home-screen widget, a headset or steering-wheel button, and
+  an Android Auto media entry (record only; other audio pauses while recording). Bluetooth microphone when connected.
+- Offline transcription with whisper.cpp (beam search, short-note speed-up), language auto-detection among the user's
+  preferred languages, a speech check (Silero VAD) that skips silent recordings, re-transcription with kept versions.
+- Model management: download with checksum, import, delete; one recommended model and a smaller fallback.
+- Battery-aware transcription (pauses below 15 %, resumes at 25 % or on charger, none in battery saver, manual always
+  allowed); optional automatic removal of old recordings.
+- Share and export: share sheet, Markdown export, append to a user-chosen file.
+- Release readiness: GPL-3.0-or-later with REUSE metadata, pinned toolchain script, dependency verification, a check
+  script (licences, lint, tests, privacy guards), run-time CPU variant selection, shrunk release build, store texts.
+
+## Next, in order
+
+1. **Publishing.** Repository on Tangled, first release, CI on Tangled's spindle with an optional GitHub mirror for the
+   release build, distribution through Obtainium and, if accepted, F-Droid (open questions:
+   [fdroid/questions-to-fdroid.md](fdroid/questions-to-fdroid.md)). Still needed: store icon and screenshots, release
+   signing key, CI details, About-screen source link.
+2. **Target SDK 36.** Upgrade as its own step with a full regression pass (background jobs, foreground services, audio
+   focus), before the in-car validation.
+3. **Backup and restore.** Export and import notes, audio and settings through the system file picker (works with
+   Nextcloud and similar), optionally encrypted, with merge or replace on restore.
+4. **In-car validation.** Headset button alongside a music app, Android Auto on a real head unit, car hands-free
+   microphone, speech-check tuning for road noise, a guard against repetition loops in transcripts.
+5. **Automated model benchmarking.** A repeatable harness that compares new speech models (Whisper family first, engine
+   and model kept swappable) on word error rate, hallucinations, language identification, speed and memory, using only
+   generated or openly licensed speech. Recordings of the maintainers' own voices are never uploaded or published.
+
+## Known gaps
+
+- No boot receiver: after a reboot, waiting notes and the headset-button service need the app opened once.
+- Some transcripts start with "..."; the repetition guard does not exist yet.
+- Only tested on one phone model; CPU variants without i8mm/fp16/dotprod are verified to work but are slower.
+- The widget and tile "add" buttons, voice start in Android Auto and the daily cleanup job's schedule are untested.

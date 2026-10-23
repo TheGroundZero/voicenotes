@@ -48,6 +48,8 @@ against. Build and release instructions are in [BUILDING.md](BUILDING.md) and [R
 5. **Automated model benchmarking.** A repeatable harness that compares new speech models (Whisper family first, engine
    and model kept swappable) on word error rate, hallucinations, language identification, speed and memory, using only
    generated or openly licensed speech. Recordings of the maintainers' own voices are never uploaded or published.
+6. **Colour themes (for fun, last).** A few extra schemes next to the system light and dark theme and dynamic colour:
+   high contrast, "Matrix" and "Dracula". Chosen in the app, with the default staying "follow the system".
 
 ## Known gaps
 

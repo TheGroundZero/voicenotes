@@ -43,6 +43,14 @@ android {
         }
     }
 
+    // The Android Gradle Plugin otherwise adds a list of the app's dependencies to the APK, encrypted with a Google
+    // public key (and with fresh randomness, so no two builds are identical). Nobody but Google can read it, which
+    // F-Droid does not accept and which makes reproducible builds impossible.
+    dependenciesInfo {
+        includeInApk = false
+        includeInBundle = false
+    }
+
     buildTypes {
         release {
             isMinifyEnabled = true

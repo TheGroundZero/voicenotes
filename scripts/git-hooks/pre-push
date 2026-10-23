@@ -1,0 +1,16 @@
+#!/bin/sh
+# SPDX-License-Identifier: GPL-3.0-or-later
+#
+# Refuses direct pushes to main: changes reach main only through a pull request (see CONTRIBUTING.md). Tangled cannot
+# enforce this on the server yet, so this hook does it locally. The one exception is syncing the GitHub mirror: pushing
+# main to the `github` remote is allowed when it is exactly origin/main (what was merged on Tangled).
+remote="$1"
+while read -r local_ref local_sha remote_ref remote_sha; do
+  case "$remote_ref" in
+    refs/heads/main)
+      if [ "$remote" = github ] && [ "$local_sha" = "$(git rev-parse -q --verify origin/main)" ]; then continue; fi
+      echo "pre-push: direct pushes to main are not allowed ($remote). Push a feature branch and open a pull request." >&2
+      exit 1 ;;
+  esac
+done
+exit 0

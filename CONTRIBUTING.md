@@ -29,6 +29,17 @@ These are checked by the build (`scripts/check.sh`) and will fail a change that 
 - By contributing you agree that your contribution is licensed under GPL-3.0-or-later. Sign off your commits
   (`git commit -s`) to state that you have the right to submit them (Developer Certificate of Origin).
 
+## Branches and pull requests
+
+`main` only changes through a pull request. Work on a feature branch named after the commit type and the topic
+(`feat/note-search`, `fix/waiting-notes-after-reboot`, `docs/roadmap`, `ci/...`), push the branch to Tangled and open a
+pull request there. Run `scripts/check.sh` first; the CI on Tangled only repeats the light checks, and the GitHub
+mirror builds nothing except tagged releases, so testing happens on your machine. After the merge, the maintainer
+updates the mirror with `git push github main`.
+
+Tangled cannot protect a branch on the server yet ([issue #432](https://tangled.org/tangled.org/core/issues/432)), so
+`scripts/install-hooks.sh` installs a `pre-push` hook that refuses direct pushes to `main`. Install it once per clone.
+
 ## Commit messages
 
 [Conventional Commits 1.0.0](https://www.conventionalcommits.org/en/v1.0.0/): `type(scope): summary`, in the imperative,

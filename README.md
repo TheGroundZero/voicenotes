@@ -6,6 +6,9 @@ button, or from Android Auto), speak, stop. The speech is turned into text **on 
 > **Status: early development (version 0.1.0).** It works well on the developer's own phone, but it has not been
 > tested on a wide range of devices, and the limits below matter.
 
+> **Where things live:** the project is developed at <https://tangled.org/sequr.be/voicenotes> (issues and contributions
+> go there). The GitHub repository `TheGroundZero/voicenotes` is a read-only mirror that builds the release APKs.
+
 ## What it does
 
 - **Recording from several places:** an in-app button, a Quick Settings tile, a home-screen widget, a Bluetooth

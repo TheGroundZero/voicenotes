@@ -5,7 +5,8 @@ welcome.
 
 ## Before you start
 
-- Open an issue on the repository to discuss anything bigger than a small fix.
+- Report bugs and discuss anything bigger than a small fix in the [issue tracker](https://tangled.org/sequr.be/voicenotes/issues/).
+- User-visible changes go under "Unreleased" in [CHANGELOG.md](CHANGELOG.md); `scripts/release.sh` turns that into the dated release section.
 - Read [docs/BUILDING.md](docs/BUILDING.md) to set up the tools, and [docs/ROADMAP.md](docs/ROADMAP.md) for the design rules and the open work.
 
 ## Rules that protect the privacy promise
@@ -23,10 +24,18 @@ These are checked by the build (`scripts/check.sh`) and will fail a change that 
 
 - Kotlin, Jetpack Compose, the style of the surrounding code. Comments say *why*, not what.
 - Every source file starts with `SPDX-License-Identifier: GPL-3.0-or-later`. Run `scripts/check.sh` before sending a change.
-- Keep commits small and explain the reason in the message. Test on a real device when you touch recording,
+- Keep commits small and explain the reason in the message (see *Commit messages* below). Test on a real device when you touch recording,
   transcription, Bluetooth or Android Auto; say in the message what you tested.
 - By contributing you agree that your contribution is licensed under GPL-3.0-or-later. Sign off your commits
   (`git commit -s`) to state that you have the right to submit them (Developer Certificate of Origin).
+
+## Commit messages
+
+[Conventional Commits 1.0.0](https://www.conventionalcommits.org/en/v1.0.0/): `type(scope): summary`, in the imperative,
+then a body that says why. Types: `feat`, `fix`, `docs`, `build`, `ci`, `test`, `refactor`, `perf`, `chore`. Mark a
+breaking change with `!` after the type or a `BREAKING CHANGE:` footer. Suggested scopes: `recording`, `transcription`,
+`models`, `export`, `auto` (Android Auto), `ui`, `build`, `fdroid`. User-visible `feat` and `fix` commits also get a line
+under "Unreleased" in `CHANGELOG.md`. The initial commit predates this rule and is the only exception.
 
 ## Reporting problems
 

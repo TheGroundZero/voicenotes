@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
@@ -21,6 +22,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+
+private const val SOURCE_URL = "https://tangled.org/sequr.be/voicenotes"
 
 private class Component(val name: String, val what: String, val licence: String, val copyright: String)
 
@@ -96,6 +99,10 @@ fun AboutScreen(onBack: () -> Unit) {
                                 "Public License, version 3, or (at your option) any later version. It comes with no warranty.",
                             style = MaterialTheme.typography.bodySmall,
                         )
+                        // Plain, selectable text: the app opens no links itself (it has no web view and no network code outside the model downloader).
+                        SelectionContainer {
+                            Text("Source code: $SOURCE_URL", style = MaterialTheme.typography.bodySmall)
+                        }
                     }
                 }
             }

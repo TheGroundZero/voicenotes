@@ -19,7 +19,7 @@ today="$(date +%F)"
 echo "version:      $old_name -> $version"
 echo "versionCode:  $old_code -> $new_code"
 echo "files:        $gradle, CHANGELOG.md, fastlane/metadata/android/en-US/changelogs/$new_code.txt"
-echo "git:          commit \"Release $version\" and annotated tag v$version"
+echo "git:          commit \"chore(release): $version\" and annotated tag v$version"
 if [ "$mode" != "--apply" ]; then echo "(preview only; add --apply to do it)"; exit 0; fi
 
 git rev-parse --verify HEAD >/dev/null 2>&1 || { echo "There are no commits yet." >&2; exit 1; }
@@ -38,4 +38,4 @@ PY
 notes="fastlane/metadata/android/en-US/changelogs/$new_code.txt"
 [ -e "$notes" ] || echo "See the changelog for $version." > "$notes"
 echo "Edit CHANGELOG.md and $notes, then review the diff and commit:"
-echo "  git add -A && git commit -s -m \"Release $version\" && git tag -a v$version -m \"Voice Notes $version\""
+echo "  git add -A && git commit -s -m \"chore(release): $version\" && git tag -a v$version -m \"Voice Notes $version\""

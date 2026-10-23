@@ -5,12 +5,11 @@ Categories:
   - Writing
   - Multimedia
 License: GPL-3.0-or-later
-# TODO when the repository exists:
-# AuthorName:
-# WebSite:
-# SourceCode:
-# IssueTracker:
-# Changelog:
+AuthorName: Sequr
+WebSite: https://tangled.org/sequr.be/voicenotes
+SourceCode: https://tangled.org/sequr.be/voicenotes
+IssueTracker: https://tangled.org/sequr.be/voicenotes/issues/
+Changelog: https://tangled.org/sequr.be/voicenotes/blob/main/CHANGELOG.md
 
 # Open question 1: the app can download speech models from huggingface.co (a service that is not free software) when the
 # user asks. Whether F-Droid wants an anti-feature for that (for example NonFreeNet) is for the F-Droid team to say;
@@ -22,7 +21,7 @@ License: GPL-3.0-or-later
 AutoName: Voice Notes
 
 RepoType: git
-# Repo: TODO
+Repo: https://tangled.org/sequr.be/voicenotes.git  # TODO: confirm the clone URL form F-Droid's server can use (https, anonymous)
 
 Builds:
   - versionName: 0.1.0

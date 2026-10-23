@@ -11,7 +11,7 @@ Subject: Voice Notes (be.sequr.voicenotes): three packaging questions before I s
 
 Hello,
 
-I'd like to submit Voice Notes, an offline voice-note app (GPL-3.0-or-later, source: <REPOSITORY URL>). It transcribes
+I'd like to submit Voice Notes, an offline voice-note app (GPL-3.0-or-later, source: https://tangled.org/sequr.be/voicenotes). It transcribes
 on the device with whisper.cpp (a git submodule, built with the NDK). Draft recipe: `docs/fdroid/be.sequr.voicenotes.yml`.
 Three questions:
 
@@ -25,4 +25,4 @@ Three questions:
    so we would like to enable reproducible-build verification.
 
 Thanks,
-<NAME>
+Sequr

@@ -19,7 +19,7 @@ Studio can install the SDK, NDK and CMake) and set `JAVA_HOME` and `ANDROID_HOME
 ## Steps
 
 ```sh
-git clone --recurse-submodules <repository-url> voicenotes
+git clone --recurse-submodules https://tangled.org/sequr.be/voicenotes voicenotes
 cd voicenotes
 scripts/setup-third-party.sh      # checks the whisper.cpp version and applies our patch (safe to repeat)
 scripts/setup-toolchain.sh        # once; Linux x86_64 only

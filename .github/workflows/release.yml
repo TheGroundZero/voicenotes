@@ -1,9 +1,12 @@
-# DRAFT, untested: for the optional GitHub mirror of the Tangled repository (the heavy build runs here, Tangled stays
-# the source of truth). Before first use: pin every `uses:` to a commit SHA you have reviewed, and add the secrets
+# Optional GitHub mirror of the Tangled repository: the heavy build (NDK, lint, tests, release APK) runs here, Tangled
+# stays the source of truth. Pushes to main build and check an unsigned release APK; a tag `v*` also signs it and
+# attaches it to a GitHub release. Untested until the mirror exists. Only GitHub's own actions are used, pinned to
+# commit SHAs (checkout v4.4.0, setup-java v4.9.1); update them deliberately. Before the first tag add the secrets
 # KEYSTORE_BASE64, KEYSTORE_PASSWORD, KEY_ALIAS and KEY_PASSWORD (see docs/RELEASING.md).
 name: release
 on:
   push:
+    branches: [main]
     tags: ["v*"]
   workflow_dispatch:
 
@@ -15,10 +18,10 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 60
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
         with:
           submodules: true
-      - uses: actions/setup-java@v4
+      - uses: actions/setup-java@cf277c60eb25467037889841efdb72551f06f6c3 # v4.9.1
         with:
           distribution: temurin
           java-version: "17"
@@ -26,9 +29,12 @@ jobs:
         run: |
           yes | "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --licenses > /dev/null || true
           "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" "platforms;android-35" "build-tools;35.0.0" "ndk;27.2.12479018" "cmake;3.22.1"
+      - name: Apply our whisper.cpp patch (the native build refuses to configure without it)
+        run: scripts/setup-third-party.sh
       - name: Checks
         run: scripts/check.sh
-      - name: Signing key
+      - name: Signing key (tags only)
+        if: startsWith(github.ref, 'refs/tags/v')
         env:
           KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
           KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
@@ -38,16 +44,15 @@ jobs:
           echo "$KEYSTORE_BASE64" | base64 -d > "$RUNNER_TEMP/release.jks"
           printf 'storeFile=%s\nstorePassword=%s\nkeyAlias=%s\nkeyPassword=%s\n' \
             "$RUNNER_TEMP/release.jks" "$KEYSTORE_PASSWORD" "$KEY_ALIAS" "$KEY_PASSWORD" > keystore.properties
-      - name: Build the signed release APK
-        run: ./gradlew --no-daemon assembleRelease
-      - name: Name the APK and write its checksum
+      - name: Build the release APK (signed when the signing key was set up, otherwise unsigned)
+        run: ./gradlew --no-daemon clean assembleRelease
+      - name: Publish (tags only)
+        if: startsWith(github.ref, 'refs/tags/v')
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
           version="${GITHUB_REF_NAME#v}"
           mkdir -p dist
           cp app/build/outputs/apk/release/app-release.apk "dist/voicenotes-${version}.apk"
           (cd dist && sha256sum "voicenotes-${version}.apk" > "voicenotes-${version}.apk.sha256")
-      - name: Publish
-        if: startsWith(github.ref, 'refs/tags/v')
-        uses: softprops/action-gh-release@v2
-        with:
-          files: dist/*
+          gh release create "$GITHUB_REF_NAME" dist/* --title "Voice Notes ${version}" --notes-file <(sed -n "/^## \\[${version}\\]/,/^## \\[/p" CHANGELOG.md | sed '$d')

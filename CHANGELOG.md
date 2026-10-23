@@ -5,6 +5,8 @@ versions follow [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [0.1.0] - 2026-10-23
+
 First public version (0.1.0). Everything below is new.
 
 ### Added

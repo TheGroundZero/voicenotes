@@ -27,7 +27,7 @@ These are checked by the build (`scripts/check.sh`) and will fail a change that 
 - Keep commits small and explain the reason in the message (see *Commit messages* below). Test on a real device when you touch recording,
   transcription, Bluetooth or Android Auto; say in the message what you tested.
 - By contributing you agree that your contribution is licensed under GPL-3.0-or-later, and you state that you have the
-  right to submit it. Commits do not need a `Signed-off-by` line.
+  right to submit it.
 
 ## Branches and pull requests
 

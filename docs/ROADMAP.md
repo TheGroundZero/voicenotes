@@ -30,6 +30,7 @@ against. Build and release instructions are in [BUILDING.md](BUILDING.md) and [R
 - Battery-aware transcription (pauses below 15 %, resumes at 25 % or on charger, none in battery saver, manual always
   allowed); optional automatic removal of old recordings.
 - Share and export: share sheet, Markdown export, append to a user-chosen file.
+- Labels and one search bar (words search the text, `label:name` the labels only; version 0.3.0).
 - Backup and restore (version 0.2.0): one file, optionally encrypted, merge or replace, checked before and after ([BACKUP.md](BACKUP.md)).
 - Release readiness: GPL-3.0-or-later with REUSE metadata, pinned toolchain script, dependency verification, a check
   script (licences, lint, tests, privacy guards), run-time CPU variant selection, shrunk release build, store texts.
@@ -41,19 +42,12 @@ against. Build and release instructions are in [BUILDING.md](BUILDING.md) and [R
    the app.
 2. **Target SDK 36.** Upgrade as its own step with a full regression pass (background jobs, foreground services, audio
    focus), before the in-car validation.
-3. **Labels.** Give notes user-defined labels (a note can have several) and filter the list by label (through the search bar, see Search). Labels are created
-   and renamed in the app, removed from a note without deleting the label, and part of export and backup.
-4. **Search.** One search bar. Words match what was said, in the transcripts. A `label:` prefix matches label names
-   only, for example `label:shopping milk` finds notes labelled "shopping" whose transcript contains "milk". Every
-   other word matches transcript text only, so a note that merely *says* "shopping" is not found by `label:shopping`.
-   There is no separate label filter: while typing `label:` the bar suggests the existing labels, and tapping a label on
-   a note fills the bar with its `label:` term.
-5. **In-car validation.** Headset button alongside a music app, Android Auto on a real head unit, car hands-free
+3. **In-car validation.** Headset button alongside a music app, Android Auto on a real head unit, car hands-free
    microphone, speech-check tuning for road noise, a guard against repetition loops in transcripts.
-6. **Automated model benchmarking.** A repeatable harness that compares new speech models (Whisper family first, engine
+4. **Automated model benchmarking.** A repeatable harness that compares new speech models (Whisper family first, engine
    and model kept swappable) on word error rate, hallucinations, language identification, speed and memory, using only
    generated or openly licensed speech. Recordings of the maintainers' own voices are never uploaded or published.
-7. **Colour themes (for fun, last).** A few extra schemes next to the system light and dark theme and dynamic colour:
+5. **Colour themes (for fun, last).** A few extra schemes next to the system light and dark theme and dynamic colour:
    high contrast, "Matrix" and "Dracula". Chosen in the app, with the default staying "follow the system".
 
 ## Known gaps

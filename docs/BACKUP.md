@@ -15,8 +15,8 @@ authenticated stream (it starts with `VNBK`). Entries, in this order:
 
 | Entry | Content |
 |---|---|
-| `manifest.json` | `format` (`voicenotes-backup`), `formatVersion`, `appVersion`, `appVersionCode`, `createdAt` (ms), `noteCount`, `audioCount`, `models` (ids used by the transcripts), `settings` (`preferredLanguages`, `recordLanguage`, `defaultModel`) |
-| `notes.json` | `{"notes": [...]}`; each note has `createdAt`, `audioFile`, `language`, `status`, `micSource`, `audioDeleted`, `audio` (`size`, `sha256`, or `null`) and all its `transcripts` (`text`, `model`, `language`, `detected`, `source`, `createdAt`, `isCurrent`) |
+| `manifest.json` | `format` (`voicenotes-backup`), `formatVersion`, `appVersion`, `appVersionCode`, `createdAt` (ms), `noteCount`, `audioCount`, `models` (ids used by the transcripts), `labels` (every label name, also unused ones; new in version 2), `settings` (`preferredLanguages`, `recordLanguage`, `defaultModel`) |
+| `notes.json` | `{"notes": [...]}`; each note has `createdAt`, `audioFile`, `language`, `status`, `micSource`, `audioDeleted`, `audio` (`size`, `sha256`, or `null`), `labels` (names; version 2) and all its `transcripts` (`text`, `model`, `language`, `detected`, `source`, `createdAt`, `isCurrent`) |
 | `audio/<name>.wav` | the recordings (16 kHz mono WAV), one per note that has one; `<name>` matches `[A-Za-z0-9._-]{1,100}\.wav` and does not start with a dot |
 
 Notes are stored as data, not as a copy of the database, so a restore can merge into existing notes and does not depend on
@@ -35,6 +35,12 @@ file fails a later block, because the end of the stream is itself authenticated.
 empty. There is no recovery path for a lost passphrase, and the format has no back door.
 
 ## Restore rules
+
+- **Format versions.** Version 1 (release 0.2.0) has no labels; version 2 adds them. A reader refuses a
+  higher version than it knows with "update the app", so labels are never dropped silently. Label names that cannot be a name
+  (quotes, control characters, too long) are dropped on reading.
+- **Labels.** Labels in the backup are created if they do not exist (names compare ignoring case and accents) and put on the
+  notes that are added; notes that were already here keep their own labels. "Replace everything" replaces the labels too.
 
 - The file is read and checked completely (structure, file names, every recording's size and SHA-256) before anything on the phone changes.
 - Any entry that is not `manifest.json`, `notes.json` or a declared `audio/*.wav` makes the backup unusable (no path tricks).

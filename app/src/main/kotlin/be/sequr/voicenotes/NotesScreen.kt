@@ -9,11 +9,13 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
@@ -36,6 +38,9 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
+import androidx.compose.material3.SuggestionChip
+import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -47,6 +52,8 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.res.painterResource
@@ -68,18 +75,45 @@ class NoteActions(
     val shareAudio: (Note) -> Unit,
     val append: (NoteWithTranscripts) -> Unit,
     val removeAudio: (Note) -> Unit,
+    val addNewLabel: (Note, String) -> Unit,
+    val setLabel: (Note, Label, Boolean) -> Unit,
+    /** Search for the notes with this label (a chip on a note was tapped). */
+    val filterByLabel: (String) -> Unit,
 )
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun NotesTopBar(onOpenModels: () -> Unit, onOpenExport: () -> Unit, onOpenBackup: () -> Unit, onOpenTriggers: () -> Unit, onOpenStorage: () -> Unit, onOpenPrivacy: () -> Unit, onOpenAbout: () -> Unit) {
+private fun NotesTopBar(
+    searching: Boolean,
+    query: String,
+    onQuery: (String) -> Unit,
+    onSearching: (Boolean) -> Unit,
+    onOpenModels: () -> Unit,
+    onOpenExport: () -> Unit,
+    onOpenBackup: () -> Unit,
+    onOpenLabels: () -> Unit,
+    onOpenTriggers: () -> Unit,
+    onOpenStorage: () -> Unit,
+    onOpenPrivacy: () -> Unit,
+    onOpenAbout: () -> Unit,
+) {
     var menu by remember { mutableStateOf(false) }
     TopAppBar(
-        title = { Text(stringResource(R.string.app_name)) },
+        title = {
+            if (searching) SearchField(query, onQuery) else Text(stringResource(R.string.app_name))
+        },
         actions = {
+            if (searching) {
+                TextButton(onClick = { onQuery(""); onSearching(false) }) { Text("✕") }
+            } else {
+                IconButton(onClick = { onSearching(true) }) {
+                    Icon(painterResource(R.drawable.ic_search), contentDescription = "Search")
+                }
+            }
             Box {
                 TextButton(onClick = { menu = true }) { Text("⋮") }
                 DropdownMenu(expanded = menu, onDismissRequest = { menu = false }) {
+                    DropdownMenuItem(text = { Text("Labels") }, onClick = { menu = false; onOpenLabels() })
                     DropdownMenuItem(text = { Text("Triggers") }, onClick = { menu = false; onOpenTriggers() })
                     DropdownMenuItem(text = { Text("Export & sharing") }, onClick = { menu = false; onOpenExport() })
                     DropdownMenuItem(text = { Text("Backup & restore") }, onClick = { menu = false; onOpenBackup() })
@@ -95,8 +129,42 @@ private fun NotesTopBar(onOpenModels: () -> Unit, onOpenExport: () -> Unit, onOp
 }
 
 @Composable
+private fun SearchField(query: String, onQuery: (String) -> Unit) {
+    val focus = remember { FocusRequester() }
+    LaunchedEffect(Unit) { focus.requestFocus() }
+    TextField(
+        value = query,
+        onValueChange = onQuery,
+        singleLine = true,
+        placeholder = { Text("Search, or label:name") },
+        modifier = Modifier.fillMaxWidth().focusRequester(focus),
+        colors = TextFieldDefaults.colors(
+            focusedContainerColor = Color.Transparent, unfocusedContainerColor = Color.Transparent,
+            focusedIndicatorColor = Color.Transparent, unfocusedIndicatorColor = Color.Transparent,
+        ),
+    )
+}
+
+/** Labels that fit what is being typed after `label:`; tapping one completes the term. */
+@Composable
+private fun LabelSuggestions(query: String, labels: List<LabelCount>, onQuery: (String) -> Unit) {
+    val fragment = SearchQuery.parse(query).labelFragment ?: return
+    val matching = labels.filter { LabelName.fold(it.name).startsWith(fragment) }
+    if (matching.isEmpty()) return
+    Row(Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()).padding(horizontal = 16.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+        matching.forEach { label ->
+            SuggestionChip(onClick = { onQuery(SearchQuery.withLabel(query, label.name) + " ") }, label = { Text(label.name) })
+        }
+    }
+}
+
+@Composable
 fun NotesScreen(
     notes: List<NoteWithTranscripts>?,
+    query: String,
+    labels: List<LabelCount>,
+    onQuery: (String) -> Unit,
+    onOpenLabels: () -> Unit,
     playingId: Long?,
     recording: Boolean,
     recordLanguage: String,
@@ -119,15 +187,24 @@ fun NotesScreen(
 ) {
     val snackbar = remember { SnackbarHostState() }
     LaunchedEffect(events) { events.collect { snackbar.showSnackbar(it) } }
+    var searching by rememberSaveable { mutableStateOf(query.isNotEmpty()) }
+    // a label chip or the label list may start a search from outside the search bar
+    LaunchedEffect(query) { if (query.isNotEmpty()) searching = true }
     Scaffold(
-        topBar = { NotesTopBar(onOpenModels, onOpenExport, onOpenBackup, onOpenTriggers, onOpenStorage, onOpenPrivacy, onOpenAbout) },
+        topBar = {
+            Column {
+                NotesTopBar(searching, query, onQuery, { searching = it }, onOpenModels, onOpenExport, onOpenBackup, onOpenLabels, onOpenTriggers, onOpenStorage, onOpenPrivacy, onOpenAbout)
+                if (searching) LabelSuggestions(query, labels, onQuery)
+            }
+        },
         snackbarHost = { SnackbarHost(snackbar) },
         floatingActionButton = { RecordControl(recording, recordLanguage, preferred, onRecordLanguage, onPreferred, onToggleRecording) },
     ) { padding ->
         when {
             notes == null -> Unit
             notes.isEmpty() -> Text(
-                "No notes yet. Tap the record button, speak, and tap it again. You can also add the Note tile to Quick Settings.",
+                if (query.isNotEmpty()) "No note matches “$query”. Words are searched in the text; label:name only in the labels."
+                else "No notes yet. Tap the record button, speak, and tap it again. You can also add the Note tile to Quick Settings.",
                 style = MaterialTheme.typography.bodyLarge,
                 modifier = Modifier.padding(padding).padding(24.dp),
             )
@@ -148,7 +225,7 @@ fun NotesScreen(
                     verticalArrangement = Arrangement.spacedBy(12.dp),
                 ) {
                     items(notes, key = { it.note.id }) { item ->
-                        NoteCard(item, playing = playingId == item.note.id, preferred = preferred, models = installedModels, appendTarget = appendTarget, batteryHold = batteryHold, actions = actions)
+                        NoteCard(item, playing = playingId == item.note.id, preferred = preferred, models = installedModels, labels = labels, appendTarget = appendTarget, batteryHold = batteryHold, actions = actions)
                     }
                 }
             }
@@ -162,6 +239,7 @@ private fun NoteCard(
     playing: Boolean,
     preferred: List<String>,
     models: List<String>,
+    labels: List<LabelCount>,
     appendTarget: String?,
     batteryHold: String?,
     actions: NoteActions,
@@ -212,6 +290,10 @@ private fun NoteCard(
                 )
             }
 
+            if (item.labels.isNotEmpty()) {
+                LabelChips(item.labels, actions.filterByLabel)
+            }
+
             Row(horizontalArrangement = Arrangement.spacedBy(4.dp), verticalAlignment = Alignment.CenterVertically) {
                 if (note.status != NoteStatus.RECORDING) {
                     if (note.audioDeleted) {
@@ -249,6 +331,7 @@ private fun NoteCard(
                                     onClick = { menu = false; showHistory = !showHistory },
                                 )
                             }
+                            DropdownMenuItem(text = { Text("Labels…") }, onClick = { menu = false; dialog = NoteDialog.LABELS })
                             HorizontalDivider()
                             if (current != null) {
                                 DropdownMenuItem(text = { Text("Share text…") }, onClick = { menu = false; actions.shareText(item) })
@@ -288,6 +371,13 @@ private fun NoteCard(
             onDismiss = { dialog = NoteDialog.NONE },
             onStart = { language, model -> dialog = NoteDialog.NONE; expanded = true; actions.retranscribe(note, language, model) },
         )
+        NoteDialog.LABELS -> LabelsDialog(
+            note = note,
+            on = item.labels.map { it.id }.toSet(),
+            all = labels,
+            actions = actions,
+            onDismiss = { dialog = NoteDialog.NONE },
+        )
         NoteDialog.REMOVE_AUDIO -> AlertDialog(
             onDismissRequest = { dialog = NoteDialog.NONE },
             title = { Text("Remove the recording?") },
@@ -305,7 +395,45 @@ private fun NoteCard(
     }
 }
 
-private enum class NoteDialog { NONE, EDIT, RETRANSCRIBE, REMOVE_AUDIO, DELETE }
+private enum class NoteDialog { NONE, EDIT, RETRANSCRIBE, LABELS, REMOVE_AUDIO, DELETE }
+
+/** The note's labels; tapping one searches for the notes with that label. */
+@Composable
+private fun LabelChips(labels: List<Label>, onClick: (String) -> Unit) {
+    Row(Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()), horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+        labels.sortedBy { LabelName.fold(it.name) }.forEach { label ->
+            SuggestionChip(onClick = { onClick(label.name) }, label = { Text(label.name, style = MaterialTheme.typography.labelMedium) })
+        }
+    }
+}
+
+/** Tick the labels this note should have, or type a new one (which is created and put on the note). */
+@Composable
+private fun LabelsDialog(note: Note, on: Set<Long>, all: List<LabelCount>, actions: NoteActions, onDismiss: () -> Unit) {
+    var newName by rememberSaveable(note.id) { mutableStateOf("") }
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text("Labels") },
+        text = {
+            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                Column(Modifier.heightIn(max = 280.dp).verticalScroll(rememberScrollState())) {
+                    if (all.isEmpty()) Text("No labels yet. Type a name below to make the first one.", style = MaterialTheme.typography.bodyMedium)
+                    all.forEach { label ->
+                        Row(Modifier.fillMaxWidth().clickable { actions.setLabel(note, Label(label.id, label.name), label.id !in on) }, verticalAlignment = Alignment.CenterVertically) {
+                            Checkbox(checked = label.id in on, onCheckedChange = { actions.setLabel(note, Label(label.id, label.name), it) })
+                            Text(label.name, style = MaterialTheme.typography.bodyLarge)
+                        }
+                    }
+                }
+                OutlinedTextField(
+                    value = newName, onValueChange = { newName = it }, singleLine = true, label = { Text("New label") }, modifier = Modifier.fillMaxWidth(),
+                )
+                TextButton(enabled = newName.isNotBlank(), onClick = { actions.addNewLabel(note, newName); newName = "" }) { Text("Add") }
+            }
+        },
+        confirmButton = { TextButton(onClick = onDismiss) { Text("Done") } },
+    )
+}
 
 /** A small icon for the microphone that recorded the note, plus the device's name for Bluetooth and car. Nothing for old notes. */
 @Composable

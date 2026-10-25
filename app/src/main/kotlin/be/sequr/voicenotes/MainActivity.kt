@@ -27,7 +27,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 
-private enum class Screen { ONBOARDING, NOTES, MODELS, EXPORT, BACKUP, TRIGGERS, PRIVACY, ABOUT, STORAGE }
+private enum class Screen { ONBOARDING, NOTES, MODELS, EXPORT, BACKUP, LABELS, TRIGGERS, PRIVACY, ABOUT, STORAGE }
 
 class MainActivity : ComponentActivity() {
     private val viewModel: NotesViewModel by viewModels()
@@ -46,7 +46,9 @@ class MainActivity : ComponentActivity() {
                 // minSdk is 34, so the wallpaper-based colours are always available.
                 colorScheme = if (dark) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context),
             ) {
-                val notes by viewModel.notes.collectAsStateWithLifecycle()
+                val notes by viewModel.visibleNotes.collectAsStateWithLifecycle()
+                val query by viewModel.query.collectAsStateWithLifecycle()
+                val labels by viewModel.labels.collectAsStateWithLifecycle()
                 val playingId by viewModel.playingId.collectAsStateWithLifecycle()
                 val recording by RecordingService.recording.collectAsStateWithLifecycle()
                 var preferred by remember { mutableStateOf(Settings.preferredLanguages(context)) }
@@ -64,6 +66,9 @@ class MainActivity : ComponentActivity() {
                         shareAudio = { NoteExport.shareAudio(this@MainActivity, it) },
                         append = viewModel::append,
                         removeAudio = viewModel::removeAudio,
+                        addNewLabel = viewModel::addNewLabel,
+                        setLabel = viewModel::setLabelOnNote,
+                        filterByLabel = { viewModel.setQuery(SearchQuery.withLabel(viewModel.query.value, it)) },
                     )
                 }
                 // Permissions are explained first and asked for in context; only a fresh install without the microphone sees this.
@@ -85,6 +90,17 @@ class MainActivity : ComponentActivity() {
                     }
                     Screen.BACKUP -> {
                         BackupScreen(backupViewModel, onBack = { screen = Screen.NOTES })
+                        return@MaterialTheme
+                    }
+                    Screen.LABELS -> {
+                        LabelsScreen(
+                            labels = labels,
+                            onBack = { screen = Screen.NOTES },
+                            onCreate = viewModel::createLabel,
+                            onRename = viewModel::renameLabel,
+                            onDelete = viewModel::deleteLabel,
+                            onShow = { viewModel.setQuery(SearchQuery.term(it)); screen = Screen.NOTES },
+                        )
                         return@MaterialTheme
                     }
                     Screen.TRIGGERS -> {
@@ -124,6 +140,10 @@ class MainActivity : ComponentActivity() {
                 }
                 NotesScreen(
                     notes = notes,
+                    query = query,
+                    labels = labels,
+                    onQuery = viewModel::setQuery,
+                    onOpenLabels = { screen = Screen.LABELS },
                     playingId = playingId,
                     recording = recording,
                     recordLanguage = recordLanguage,

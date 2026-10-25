@@ -19,4 +19,11 @@ class NoteExportTest {
         val joined = NoteExport.entry(1_000L, "en", "one") + NoteExport.entry(2_000L, "en", "two")
         assertEquals(2, Regex("(?m)^## ").findAll(joined).count())
     }
+
+    @Test fun labelsBecomeTagsAfterTheText() {
+        val e = NoteExport.entry(0L, "en", "Buy milk", listOf("Shopping", "to do"))
+        assertTrue(e.endsWith("Buy milk\n\nLabels: #Shopping #to-do\n\n"))
+        assertEquals("## ", NoteExport.entry(0L, "en", "x").take(3))
+        assertEquals(false, NoteExport.entry(0L, "en", "x").contains("Labels"))
+    }
 }

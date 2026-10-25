@@ -27,7 +27,7 @@ SPDX-License-Identifier = "GPL-3.0-or-later"
 
 # Material Design icons (Google).
 [[annotations]]
-path = ["app/src/main/res/drawable/ic_source_*.xml"]
+path = ["app/src/main/res/drawable/ic_source_*.xml", "app/src/main/res/drawable/ic_search.xml"]
 precedence = "override"
 SPDX-FileCopyrightText = "Google LLC"
 SPDX-License-Identifier = "Apache-2.0"

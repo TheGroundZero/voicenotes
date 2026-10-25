@@ -5,6 +5,16 @@ versions follow [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Added
+
+- **Labels:** give a note any number of your own labels (a note's ⋯ menu → Labels…, or the Labels screen in the menu to
+  create, rename and delete them). Labels show as chips on the note; tapping one searches for it.
+- **Search:** the search icon opens one search bar. Words match what was said (current text, ignoring case and accents);
+  `label:name` (or `label:"two words"`) matches labels only, never the text, and typing `label:` suggests your labels.
+  `label:shopping milk` means labelled "shopping" and containing "milk".
+- Backups now carry the labels (backup format version 2; version 1 files from 0.2.0 are still read), and the
+  Markdown export lists a note's labels as `#tags`.
+
 ## [0.2.0] - 2026-10-25
 
 ### Added

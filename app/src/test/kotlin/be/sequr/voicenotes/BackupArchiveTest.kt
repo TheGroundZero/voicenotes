@@ -78,7 +78,7 @@ class BackupArchiveTest {
         }
     }
 
-    @Test fun aVersion1BackupFromTheFirstReleaseIsStillRead() {
+    @Test fun aVersion1BackupFromRelease020IsStillRead() {
         val notes = listOf(note("a.wav", 1000, wavA))
         val m = manifest(notes)
         val manifestJson = org.json.JSONObject(String(manifestBytes(notes, m))).apply { put("formatVersion", 1); remove("labels") }

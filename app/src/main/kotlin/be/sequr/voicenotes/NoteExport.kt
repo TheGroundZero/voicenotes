@@ -22,14 +22,18 @@ object NoteExport {
 
     private fun timestamp(millis: Long) = SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.US).format(Date(millis))
 
-    /** One note as a Markdown section: a heading with date and language, then the text. */
-    fun entry(createdAt: Long, language: String, text: String): String =
-        "## ${timestamp(createdAt)} · ${language.uppercase()}\n\n${text.trim()}\n\n"
+    /** A label as a Markdown/Obsidian tag: spaces become hyphens. */
+    fun tag(label: String): String = "#" + label.trim().replace(Regex("\\s+"), "-")
+
+    /** One note as a Markdown section: a heading with date and language, the text, and its labels as tags when it has any. */
+    fun entry(createdAt: Long, language: String, text: String, labels: List<String> = emptyList()): String =
+        "## ${timestamp(createdAt)} · ${language.uppercase()}\n\n${text.trim()}\n\n" +
+            if (labels.isEmpty()) "" else labels.joinToString(" ", prefix = "Labels: ", postfix = "\n\n", transform = ::tag)
 
     /** Null when the note has no text yet. */
     fun entry(item: NoteWithTranscripts): String? {
         val current = item.current?.takeIf { it.text.isNotBlank() } ?: return null
-        return entry(item.note.createdAt, current.language, current.text)
+        return entry(item.note.createdAt, current.language, current.text, item.labels.map { it.name }.sortedBy { LabelName.fold(it) })
     }
 
     fun shareText(context: Context, item: NoteWithTranscripts) {

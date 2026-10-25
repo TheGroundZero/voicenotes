@@ -15,6 +15,8 @@ button, or from Android Auto), speak, stop. The speech is turned into text **on 
   headset's or car's play/pause button, and Android Auto (as a media app with a Record button).
 - **Offline transcription** with [whisper.cpp](https://github.com/ggml-org/whisper.cpp) and OpenAI's Whisper models.
   The language is detected automatically among the languages you prefer (English, Dutch, French and others).
+- **Labels and search:** label notes yourself and find them again with one search bar: words search the text, `label:name`
+  searches the labels only.
 - **Several versions of every transcript:** re-transcribe with another model or language, edit by hand, switch back.
 - **Speech check:** recordings with no speech (silence, road noise) are not sent to Whisper, which would otherwise
   invent text for them.

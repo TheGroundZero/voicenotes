@@ -9,7 +9,7 @@ Everything here is free software. The in-app *About* screen lists the same compo
 | [Silero VAD](https://github.com/snakers4/silero-vad) v5.1.2, converted for whisper.cpp | telling speech from silence and noise | `app/src/main/assets/ggml-silero-v5.1.2.bin` | MIT, (c) 2020-present Silero Team |
 | AndroidX (Core, Activity, Lifecycle, Compose, Material 3, Room) | user interface, database | Maven dependencies in `app/build.gradle.kts` | Apache-2.0, (c) The Android Open Source Project |
 | Kotlin and kotlinx.coroutines | language and concurrency | pulled in by the above | Apache-2.0, (c) JetBrains |
-| [Material Design icons](https://github.com/google/material-design-icons) | the small microphone-source symbols | `app/src/main/res/drawable/ic_source_*.xml` | Apache-2.0, (c) Google LLC |
+| [Material Design icons](https://github.com/google/material-design-icons) | the small microphone-source symbols and the search button | `app/src/main/res/drawable/ic_source_*.xml`, `ic_search.xml` | Apache-2.0, (c) Google LLC |
 | Gradle wrapper | building | `gradle/wrapper`, `gradlew` | Apache-2.0, (c) Gradle Inc. |
 
 The licence texts are in `LICENSES/`. File-level licences are stated in `REUSE.toml` and in the SPDX headers of the

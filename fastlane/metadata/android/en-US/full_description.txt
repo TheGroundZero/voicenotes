@@ -4,6 +4,8 @@ It is built for use while driving: start a note from a Quick Settings tile, a ho
 
 <b>Features</b>
 • Offline speech recognition with Whisper (whisper.cpp); the language is detected automatically among the languages you prefer, such as English, Dutch and French
+• Your own labels on notes, and one search bar: words search the text, label:name searches only the labels
+• Backup and restore to a file you choose (optionally encrypted with a passphrase); nothing is sent by the app itself
 • Several versions of every transcript: re-transcribe with another model or language, edit by hand, go back
 • Recordings with no speech (silence, road noise) are skipped instead of producing invented text
 • Waits while the battery is low or battery saver is on, then continues

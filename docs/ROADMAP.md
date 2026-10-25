@@ -18,7 +18,7 @@ against. Build and release instructions are in [BUILDING.md](BUILDING.md) and [R
   build).
 - **Never lose a note.** Audio is saved before transcription; a failed transcription keeps the audio.
 - **Extensible.** Triggers and transcription engines are separate extension points.
-- **Reproducible and verifiable.** Pinned toolchain and dependencies; a clean local build and the CI build of v0.1.0 are byte-identical.
+- **Reproducible and verifiable.** Pinned toolchain and dependencies; a clean local build and the CI build of every release (v0.1.0 to v0.3.0) are byte-identical.
 
 ## Done
 
@@ -37,7 +37,7 @@ against. Build and release instructions are in [BUILDING.md](BUILDING.md) and [R
 
 ## Next, in order
 
-1. **Publishing, remaining part.** v0.1.0 is released (Tangled, GitHub mirror, Obtainium). Still to do: ask the F-Droid
+1. **Publishing, remaining part.** Versions 0.1.0 to 0.3.0 are released (Tangled, GitHub mirror, Obtainium). Still to do: ask the F-Droid
    team the open questions ([fdroid/questions-to-fdroid.md](fdroid/questions-to-fdroid.md)) and, if they agree, submit
    the app.
 2. **Target SDK 36.** Upgrade as its own step with a full regression pass (background jobs, foreground services, audio
@@ -54,5 +54,6 @@ against. Build and release instructions are in [BUILDING.md](BUILDING.md) and [R
 
 - No boot receiver: after a reboot, waiting notes and the headset-button service need the app opened once.
 - Some transcripts start with "..."; the repetition guard does not exist yet.
+- Search covers the current text of a note, not its older versions or the Markdown file it was appended to.
 - Only tested on one phone model; CPU variants without i8mm/fp16/dotprod are verified to work but are slower.
 - The widget and tile "add" buttons, voice start in Android Auto and the daily cleanup job's schedule are untested.

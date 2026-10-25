@@ -45,7 +45,9 @@ adb shell "run-as be.sequr.voicenotes sh -c 'mkdir -p files/models && cp /data/l
 
 ## Testing on a phone
 
-Enable *Wireless debugging* (or USB debugging) and `adb install -r app/build/outputs/apk/debug/app-debug.apk`. Android
+Enable *Wireless debugging* (or USB debugging) and `adb install -r app/build/outputs/apk/debug/app-debug.apk`. To try a
+shrunk release build without touching the real app, use `./gradlew assembleReleaseCheck`: it installs next to it as
+`be.sequr.voicenotes.releasecheck` with its own data. Android
 Auto can be tried without a car with the Desktop Head Unit: `WITH_DHU=yes scripts/setup-toolchain.sh`, then
 `scripts/dhu.sh start` (see the comments in that script for the phone-side steps).
 
@@ -66,4 +68,4 @@ that (see `docs/RELEASING.md`). Do not add anything to the build that embeds a t
 
 ## Releases
 
-Not yet documented here: signing and the release process are still being set up (see [ROADMAP.md](ROADMAP.md)).
+Signing, the release process and the reproducibility check are in [RELEASING.md](RELEASING.md).

@@ -3,11 +3,37 @@
 A private voice-note recorder for Android, made for use while driving. Start a note with one tap (or a headset
 button, or from Android Auto), speak, stop. The speech is turned into text **on the phone**; nothing is uploaded.
 
-> **Status: early development (version 0.1.0).** It works well on the developer's own phone, but it has not been
+> **Status: early development (versions 0.x).** It works well on the developer's own phone, but it has not been
 > tested on a wide range of devices, and the limits below matter.
 
 > **Where things live:** the project is developed at <https://tangled.org/sequr.be/voicenotes> (issues and contributions
 > go there). The GitHub repository `TheGroundZero/voicenotes` is a read-only mirror, updated automatically, that builds the releases.
+
+## Screenshots
+
+<p>
+  <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/8-labels-dark.png" width="23%" alt="The note list with label chips on two notes">
+  <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/9-search-dark.png" width="23%" alt="Searching with label:Errands shows the two notes with that label">
+  <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/6-backup-dark.png" width="23%" alt="The Backup and restore screen after an encrypted backup">
+  <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/3-models-dark.png" width="23%" alt="The Models screen with the downloadable speech models">
+</p>
+
+More, in light and dark, are in [fastlane/metadata/android/en-US/images/phoneScreenshots](fastlane/metadata/android/en-US/images/phoneScreenshots).
+They show invented demo notes, never real recordings.
+
+## Install
+
+There is no app store yet (F-Droid is being looked into). Two ways:
+
+- **[Obtainium](https://obtainium.imranr.dev/)** (recommended, it also updates the app): add the source
+  `https://github.com/TheGroundZero/voicenotes`.
+- **By hand:** download `voicenotes-X.Y.Z.apk` and its `.sha256` file from the
+  [releases](https://github.com/TheGroundZero/voicenotes/releases) page, check the checksum (`sha256sum -c`) and install it.
+
+Every release is signed with the same key, so updates install over the previous version. Its certificate fingerprint
+(SHA-256) is `2E:17:59:6E:99:B8:8F:97:0F:FF:56:42:3D:B2:86:44:90:FB:20:88:CF:EC:BB:E8:04:25:5B:88:C4:F1:5E:1E`; check it with
+`apksigner verify --print-certs`. A release can also be rebuilt from this source and compared byte for byte
+([docs/RELEASING.md](docs/RELEASING.md)). Make a backup (menu → *Backup & restore*) before updating if the notes matter to you.
 
 ## What it does
 
@@ -16,14 +42,15 @@ button, or from Android Auto), speak, stop. The speech is turned into text **on 
 - **Offline transcription** with [whisper.cpp](https://github.com/ggml-org/whisper.cpp) and OpenAI's Whisper models.
   The language is detected automatically among the languages you prefer (English, Dutch, French and others).
 - **Labels and search:** label notes yourself and find them again with one search bar: words search the text, `label:name`
-  searches the labels only.
+  searches the labels only (never the text), and the search suggests your labels as you type `label:`.
 - **Several versions of every transcript:** re-transcribe with another model or language, edit by hand, switch back.
 - **Speech check:** recordings with no speech (silence, road noise) are not sent to Whisper, which would otherwise
   invent text for them.
 - **Battery aware:** transcription waits while the battery is low or battery saver is on, then resumes.
 - **Sharing on your terms:** share text or audio, append notes to a Markdown file you choose (for example in an
   Obsidian vault or a Nextcloud folder), or export everything.
-- **Backup and restore** to a file you choose (for example in Nextcloud), optionally encrypted with a passphrase.
+- **Backup and restore** to a file you choose (for example in Nextcloud): notes, every transcript version, labels and,
+  if you want, the recordings; optionally encrypted with a passphrase ([docs/BACKUP.md](docs/BACKUP.md)).
 - **Bluetooth microphone** (optional) to record through a headset or a car's hands-free system.
 
 ## Privacy
@@ -50,7 +77,8 @@ network use is downloading a speech model from huggingface.co, and only when you
 ## Building
 
 See [docs/BUILDING.md](docs/BUILDING.md). In short: `scripts/setup-toolchain.sh`, `source env.sh`,
-`./gradlew assembleDebug`.
+`./gradlew assembleDebug`. How releases are made and checked: [docs/RELEASING.md](docs/RELEASING.md); what comes next:
+[docs/ROADMAP.md](docs/ROADMAP.md); how to contribute: [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## Licence
 

@@ -6,7 +6,7 @@ Voice Notes is designed so that your voice and your words stay on your phone.
 
 - **Recordings** (16 kHz mono WAV) and **transcripts** (every version, including your edits), plus which microphone
   recorded each note, are stored in the app's private storage. Other apps cannot read it.
-- **Settings** (languages, chosen model, options) are stored the same way.
+- **Labels** you give your notes, and **settings** (languages, chosen model, options), are stored the same way.
 - Android's cloud backup and device-to-device transfer are **switched off** for this app (`allowBackup="false"`,
   and extraction rules that exclude everything).
 - Deleting a note removes its recording and all versions of its text. Uninstalling the app removes everything.
@@ -16,11 +16,11 @@ Voice Notes is designed so that your voice and your words stay on your phone.
 
 ## What leaves the phone
 
-- **Only what you send:** *Share* (text or audio), *Export*, *Add to file* (a Markdown file you picked), or a *Backup*
-  you save. The app never sends a note anywhere by itself.
+- **Only what you send:** *Share* (text or audio), *Export*, *Add to file* (a Markdown file you picked; the Markdown lists
+  a note's labels as `#tags`), or a *Backup* you save. The app never sends a note anywhere by itself.
 - **Backups:** *Backup & restore* writes one file to a location you pick with Android's file picker. The app that
   provides the location (for example Nextcloud) does any uploading, not Voice Notes. A backup holds every note, all
-  versions of its text and, if you leave it on, every recording. **Switch on the passphrase** (it is on by default):
+  versions of its text, the labels and, if you leave it on, every recording. **Switch on the passphrase** (it is on by default):
   the file is then encrypted (AES-256-GCM, key from your passphrase with PBKDF2-HMAC-SHA256, 600,000 rounds), and nobody,
   including the developer, can open it without the passphrase, which cannot be recovered. Without a passphrase, anyone
   who can read the file can hear and read everything in it. Restoring reads the file you pick and changes nothing

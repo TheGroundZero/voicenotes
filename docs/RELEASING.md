@@ -1,6 +1,6 @@
 # Releasing
 
-Status: a draft process. Nothing here has been run end to end yet (there is no public repository and no signing key).
+Status: used for v0.1.0 (2026-10-23), v0.2.0 and v0.3.0 (2026-10-25). Each signed APK built by GitHub Actions was byte-identical to a clean local build.
 
 ## Versions
 
@@ -72,6 +72,18 @@ real app with its own data.
    of a deploy key with write access on the GitHub repository, listed as a bypass actor in the ruleset that protects
    `main` there).
 3. F-Droid (optional): the recipe in `docs/fdroid/` goes to F-Droid's data repository; F-Droid builds from the tag.
+
+## Store screenshots
+
+They live in `fastlane/metadata/android/en-US/images/phoneScreenshots/`, numbered, in dark and light. Taken from the
+`releasecheck` build (`./gradlew assembleReleaseCheck`, installed next to the real app) seeded with invented notes, never
+with real recordings or the maintainer's own app. Rules learned the hard way:
+
+- Crop the status bar and the navigation bar, switch the system theme for the second set, and keep the keyboard out of
+  the picture (its suggestion strip can show a personal e-mail address). Shrink the PNGs with `pngquant`.
+- **Add new screenshots under new numbers; never rename existing ones.** A Tangled pull request counts a renamed image as
+  a new one and refuses to carry that much image data ("Some binary files are too large to carry in this patch", and
+  merging then leaves them out). Keep each pull request to a few small images.
 
 ## Checklist before a release
 

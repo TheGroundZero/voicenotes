@@ -6,7 +6,8 @@ SPDX-License-Identifier: GPL-3.0-or-later
 # Backup format
 
 *Menu → Backup & restore.* A backup is one file the user saves with Android's file picker (Nextcloud and other providers
-appear there); the app itself never touches the network for this. Format version 1.
+appear there); the app itself never touches the network for this. Format version 2 (version 1 files are still read). An encrypted
+backup is saved as `.vnbk`, an unencrypted one as `.zip`.
 
 ## Layout
 
@@ -41,7 +42,6 @@ empty. There is no recovery path for a lost passphrase, and the format has no ba
   (quotes, control characters, too long) are dropped on reading.
 - **Labels.** Labels in the backup are created if they do not exist (names compare ignoring case and accents) and put on the
   notes that are added; notes that were already here keep their own labels. "Replace everything" replaces the labels too.
-
 - The file is read and checked completely (structure, file names, every recording's size and SHA-256) before anything on the phone changes.
 - Any entry that is not `manifest.json`, `notes.json` or a declared `audio/*.wav` makes the backup unusable (no path tricks).
 - A backup with a newer `formatVersion` is refused with a message to update the app.
@@ -59,7 +59,8 @@ empty. There is no recovery path for a lost passphrase, and the format has no ba
 
 ## Tests
 
-`BackupCryptoTest`, `BackupArchiveTest` and `BackupPlanTest` cover round trips at block boundaries, wrong passphrases,
+`BackupCryptoTest`, `BackupArchiveTest` and `BackupPlanTest` cover round trips at block boundaries (labels included, and
+version 1 files), wrong passphrases,
 every kind of damage (flipped bytes, truncation, reordered blocks, unreasonable iteration counts), path tricks, missing,
 extra, oversized and corrupt recordings, newer formats and the merge rules.
 
@@ -71,3 +72,7 @@ both transcript versions and which one is current, microphone sources and langua
 text-only backup (notes marked as having no recording, the old files deleted: this found that they used to stay behind) and
 with a full one. Not tried on a phone: truncated or flipped files and a real Nextcloud location (both covered by unit
 tests, except the provider).
+
+Labels (2026-10-25, 0.3.0 development build): a backup made with three labels on two notes carries them in
+`manifest.json` and `notes.json`; after deleting a label and restoring with *Replace everything* the label and its note
+links were back.

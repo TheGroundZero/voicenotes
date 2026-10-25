@@ -33,7 +33,8 @@ These are checked by the build (`scripts/check.sh`) and will fail a change that 
 
 `main` only changes through a pull request. Work on a feature branch named after the commit type and the topic
 (`feat/note-search`, `fix/waiting-notes-after-reboot`, `docs/roadmap`, `ci/...`), push the branch to Tangled and open a
-pull request there. Run `scripts/check.sh` first; the CI on Tangled only repeats the light checks. After the merge,
+pull request there. Delete the source branch only after the pull request's pipeline has finished: the merge rewrites commit
+IDs, and a pipeline that starts for a commit that no longer exists fails in its clone step ("expected 'packfile'"). Run `scripts/check.sh` first; the CI on Tangled only repeats the light checks. After the merge,
 a Tangled workflow (`sync-github.yml`) copies `main` and version tags to the GitHub mirror by itself. There GitHub runs
 the full checks and builds a development APK, kept 14 days as a workflow artifact (it installs next to the real app as
 `be.sequr.voicenotes.releasecheck`); only a version tag publishes a signed release.

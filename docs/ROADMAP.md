@@ -40,14 +40,18 @@ against. Build and release instructions are in [BUILDING.md](BUILDING.md) and [R
 1. **Publishing, remaining part.** Versions 0.1.0 to 0.3.0 are released (Tangled, GitHub mirror, Obtainium). Still to do: ask the F-Droid
    team the open questions ([fdroid/questions-to-fdroid.md](fdroid/questions-to-fdroid.md)) and, if they agree, submit
    the app.
-2. **Target SDK 36.** Upgrade as its own step with a full regression pass (background jobs, foreground services, audio
+2. **Sorting notes (version 0.4.0).** The list is newest first and cannot be changed. First step: a toggle for newest or
+   oldest first, plus day headers ("Today", "Yesterday", "23 Oct"), and the choice is remembered between starts.
+   Later, if wanted: by recording length (to clean up storage) and by state (waiting, failed, no speech; probably a
+   filter rather than a sort). Sorting by label is left out: a note can carry several labels and `label:` search covers it.
+3. **Target SDK 36.** Upgrade as its own step with a full regression pass (background jobs, foreground services, audio
    focus), before the in-car validation.
-3. **In-car validation.** Headset button alongside a music app, Android Auto on a real head unit, car hands-free
+4. **In-car validation.** Headset button alongside a music app, Android Auto on a real head unit, car hands-free
    microphone, speech-check tuning for road noise, a guard against repetition loops in transcripts.
-4. **Automated model benchmarking.** A repeatable harness that compares new speech models (Whisper family first, engine
+5. **Automated model benchmarking.** A repeatable harness that compares new speech models (Whisper family first, engine
    and model kept swappable) on word error rate, hallucinations, language identification, speed and memory, using only
    generated or openly licensed speech. Recordings of the maintainers' own voices are never uploaded or published.
-5. **Colour themes (for fun, last).** A few extra schemes next to the system light and dark theme and dynamic colour:
+6. **Colour themes (for fun, last).** A few extra schemes next to the system light and dark theme and dynamic colour:
    high contrast, "Matrix" and "Dracula". Chosen in the app, with the default staying "follow the system".
 
 ## Known gaps

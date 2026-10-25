@@ -1,0 +1,1 @@
+Updated for Android 16: the app now targets API level 36, which newer phones and stores expect. Recording, the headset button, model downloads, background transcription and navigation were checked on a phone running Android 16. Nothing changes in how you use it, and nothing leaves your phone.

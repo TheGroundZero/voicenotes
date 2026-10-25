@@ -5,6 +5,8 @@ versions follow [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [0.5.0] - 2026-10-25
+
 ### Changed
 
 - **Target Android 16 (API 36)**, as Google Play and newer phones expect. Nothing changes for you: recording from the

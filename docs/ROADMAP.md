@@ -18,7 +18,7 @@ against. Build and release instructions are in [BUILDING.md](BUILDING.md) and [R
   build).
 - **Never lose a note.** Audio is saved before transcription; a failed transcription keeps the audio.
 - **Extensible.** Triggers and transcription engines are separate extension points.
-- **Reproducible and verifiable.** Pinned toolchain and dependencies; a clean local build and the CI build of every release (v0.1.0 to v0.4.0) are byte-identical.
+- **Reproducible and verifiable.** Pinned toolchain and dependencies; a clean local build and the CI build of every release (v0.1.0 to v0.5.0) are byte-identical.
 
 ## Done
 
@@ -39,7 +39,7 @@ against. Build and release instructions are in [BUILDING.md](BUILDING.md) and [R
 
 ## Next, in order
 
-1. **Publishing, remaining part.** Versions 0.1.0 to 0.4.0 are released (Tangled, GitHub mirror, Obtainium). Still to do: ask the F-Droid
+1. **Publishing, remaining part.** Versions 0.1.0 to 0.5.0 are released (Tangled, GitHub mirror, Obtainium). Still to do: ask the F-Droid
    team the open questions ([fdroid/questions-to-fdroid.md](fdroid/questions-to-fdroid.md)) and, if they agree, submit
    the app.
 2. **In-car validation.** Headset button alongside a music app, Android Auto on a real head unit, car hands-free

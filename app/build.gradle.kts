@@ -10,13 +10,13 @@ plugins {
 
 android {
     namespace = "be.sequr.voicenotes"
-    compileSdk = 35
+    compileSdk = 36
     ndkVersion = "27.2.12479018"
 
     defaultConfig {
         applicationId = "be.sequr.voicenotes"
         minSdk = 34
-        targetSdk = 35
+        targetSdk = 36
         versionCode = 5
         versionName = "0.4.0"
 

@@ -21,7 +21,7 @@ JDK_URL="https://github.com/adoptium/temurin17-binaries/releases/download/jdk-17
 JDK_SHA256="3808d1d15e3ec6bd5b84057fb5d84c33d8a1536a258146bcea2e603fc726e08e"   # published next to the download by Adoptium
 CMDLINE_URL="https://dl.google.com/android/repository/commandlinetools-linux-11076708_latest.zip"
 CMDLINE_SHA256="2d2d50857e4eb553af5a6dc3ad507a17adf43d115264b1afc116f95c92e5e258"
-SDK_PACKAGES=("platform-tools" "platforms;android-35" "build-tools;35.0.0" "ndk;27.2.12479018" "cmake;3.22.1")
+SDK_PACKAGES=("platform-tools" "platforms;android-36" "build-tools;35.0.0" "ndk;27.2.12479018" "cmake;3.22.1")
 # Gradle itself comes from the Gradle wrapper (gradle/wrapper/gradle-wrapper.properties pins version and checksum).
 
 fetch() { # url sha256 file

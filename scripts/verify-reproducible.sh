@@ -14,6 +14,13 @@ root="$PWD"
 work="${REPRO_DIR:-$HOME/.cache/voicenotes-repro}"
 apk=app/build/outputs/apk/release/app-release-unsigned.apk
 
+# With a keystore.properties file the release build is signed; this check compares unsigned APKs (a signed one is the
+# unsigned one plus a signature), so the file is set aside while the check runs and put back on every exit.
+if [ -f keystore.properties ]; then
+  mv keystore.properties keystore.properties.aside
+  trap 'mv keystore.properties.aside keystore.properties' EXIT
+fi
+
 echo "== building here (complete rebuild)"
 ./gradlew --no-daemon -q assembleRelease --rerun-tasks
 mine="$(sha256sum "$apk" | cut -d' ' -f1)"

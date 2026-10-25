@@ -17,8 +17,8 @@ run()  { "$@" || { echo "FAILED: $*"; fail=1; }; }
 step "licence information"
 run python3 scripts/check-licenses.py
 
-step "Gradle wrapper checksum (published at services.gradle.org/distributions/gradle-8.9-wrapper.jar.sha256)"
-echo "498495120a03b9a6ab5d155f5de3c8f0d986a449153702fb80fc80e134484f17  gradle/wrapper/gradle-wrapper.jar" | sha256sum -c --quiet - && echo ok || { echo "FAILED: wrapper jar differs"; fail=1; }
+step "Gradle wrapper checksum (published at services.gradle.org/distributions/gradle-8.11.1-wrapper.jar.sha256)"
+echo "2db75c40782f5e8ba1fc278a5574bab070adccb2d21ca5a6e5ed840888448046  gradle/wrapper/gradle-wrapper.jar" | sha256sum -c --quiet - && echo ok || { echo "FAILED: wrapper jar differs"; fail=1; }
 
 step "scripts"
 for f in scripts/*.sh env.sh; do bash -n "$f" && echo "ok $f" || { echo "FAILED: $f"; fail=1; }; done

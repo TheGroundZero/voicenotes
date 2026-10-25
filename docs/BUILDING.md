@@ -5,10 +5,10 @@
 | Tool | Version | Notes |
 |---|---|---|
 | JDK | 17 (Temurin 17.0.20.1 used) | newer JDKs do not work with the pinned Android Gradle Plugin |
-| Android SDK | platform 35, build-tools 35.0.0, platform-tools | command-line tools 11076708 |
+| Android SDK | platform 36, build-tools 35.0.0, platform-tools | command-line tools 11076708 |
 | Android NDK | 27.2.12479018 | the native speech code is built with CMake |
 | CMake | 3.22.1 | from the SDK manager |
-| Gradle | 8.9 | the wrapper downloads it and checks its SHA-256 |
+| Gradle | 8.11.1 | the wrapper downloads it and checks its SHA-256 (Android Gradle Plugin 8.9.3, the first line that supports API 36) |
 | git | any | the whisper.cpp source is a submodule |
 
 On Linux x86_64 `scripts/setup-toolchain.sh` installs the JDK and the SDK pieces into `~/toolchain` (override with

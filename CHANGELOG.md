@@ -5,6 +5,13 @@ versions follow [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Changed
+
+- **Target Android 16 (API 36)**, as Google Play and newer phones expect. Nothing changes for you: recording from the
+  button, the tile and a headset, the model download, the transcription jobs that wait for the battery, the back
+  button and every screen were checked on a phone running Android 16. Builds now use Android Gradle Plugin 8.9.3 and
+  Gradle 8.11.1 (the first versions that support API 36).
+
 ## [0.4.0] - 2026-10-25
 
 ### Added

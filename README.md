@@ -12,10 +12,10 @@ button, or from Android Auto), speak, stop. The speech is turned into text **on 
 ## Screenshots
 
 <p>
+  <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/10-sorting-dark.png" width="23%" alt="The note list, oldest first, with a header for each day">
   <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/8-labels-dark.png" width="23%" alt="The note list with label chips on two notes">
   <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/9-search-dark.png" width="23%" alt="Searching with label:Errands shows the two notes with that label">
   <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/6-backup-dark.png" width="23%" alt="The Backup and restore screen after an encrypted backup">
-  <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/3-models-dark.png" width="23%" alt="The Models screen with the downloadable speech models">
 </p>
 
 More, in light and dark, are in [fastlane/metadata/android/en-US/images/phoneScreenshots](fastlane/metadata/android/en-US/images/phoneScreenshots).
@@ -41,7 +41,7 @@ Every release is signed with the same key, so updates install over the previous 
   headset's or car's play/pause button, and Android Auto (as a media app with a Record button).
 - **Offline transcription** with [whisper.cpp](https://github.com/ggml-org/whisper.cpp) and OpenAI's Whisper models.
   The language is detected automatically among the languages you prefer (English, Dutch, French and others).
-- **Sorting and day headers:** newest or oldest first, remembered, with a header for each day.
+- **Sorting and day headers:** newest or oldest first (menu), remembered, with a header for each day.
 - **Labels and search:** label notes yourself and find them again with one search bar: words search the text, `label:name`
   searches the labels only (never the text), and the search suggests your labels as you type `label:`.
 - **Several versions of every transcript:** re-transcribe with another model or language, edit by hand, switch back.

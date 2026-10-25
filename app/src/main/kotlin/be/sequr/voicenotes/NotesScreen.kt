@@ -229,8 +229,14 @@ fun NotesScreen(
                 val rows = NoteList.rows(notes, { it.note.createdAt }, oldestFirst)
                 // Changing the order starts at the top of the new order.
                 LaunchedEffect(oldestFirst) { listState.scrollToItem(0) }
-                // A new note shows up at the top (newest first) or the bottom (oldest first); show it unless the user is reading elsewhere.
+                // A note newer than any seen so far shows up at the top (newest first) or the bottom (oldest first); show it
+                // unless the user is reading elsewhere. Not on the first load, and not while a search changes what the list holds.
+                var newest by remember { mutableStateOf<Long?>(null) }
                 LaunchedEffect(notes.maxOf { it.note.createdAt }) {
+                    val latest = notes.maxOf { it.note.createdAt }
+                    val before = newest
+                    newest = maxOf(latest, before ?: latest)
+                    if (before == null || latest <= before || query.isNotEmpty()) return@LaunchedEffect
                     if (oldestFirst) {
                         val shown = listState.layoutInfo.visibleItemsInfo.lastOrNull()?.index ?: 0
                         if (shown >= rows.lastIndex - 3) listState.animateScrollToItem(rows.lastIndex)

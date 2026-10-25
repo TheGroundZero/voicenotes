@@ -31,6 +31,7 @@ against. Build and release instructions are in [BUILDING.md](BUILDING.md) and [R
   allowed); optional automatic removal of old recordings.
 - Share and export: share sheet, Markdown export, append to a user-chosen file.
 - Labels and one search bar (words search the text, `label:name` the labels only; version 0.3.0).
+- Sorting: newest or oldest first, remembered, with a header for each day (version 0.4.0).
 - Backup and restore (version 0.2.0): one file, optionally encrypted, merge or replace, checked before and after ([BACKUP.md](BACKUP.md)).
 - Release readiness: GPL-3.0-or-later with REUSE metadata, pinned toolchain script, dependency verification, a check
   script (licences, lint, tests, privacy guards), run-time CPU variant selection, shrunk release build, store texts.
@@ -40,22 +41,20 @@ against. Build and release instructions are in [BUILDING.md](BUILDING.md) and [R
 1. **Publishing, remaining part.** Versions 0.1.0 to 0.3.0 are released (Tangled, GitHub mirror, Obtainium). Still to do: ask the F-Droid
    team the open questions ([fdroid/questions-to-fdroid.md](fdroid/questions-to-fdroid.md)) and, if they agree, submit
    the app.
-2. **Sorting notes (version 0.4.0).** The list is newest first and cannot be changed. First step: a toggle for newest or
-   oldest first, plus day headers ("Today", "Yesterday", "23 Oct"), and the choice is remembered between starts.
-   Later, if wanted: by recording length (to clean up storage) and by state (waiting, failed, no speech; probably a
-   filter rather than a sort). Sorting by label is left out: a note can carry several labels and `label:` search covers it.
-3. **Target SDK 36.** Upgrade as its own step with a full regression pass (background jobs, foreground services, audio
+2. **Target SDK 36.** Upgrade as its own step with a full regression pass (background jobs, foreground services, audio
    focus), before the in-car validation.
-4. **In-car validation.** Headset button alongside a music app, Android Auto on a real head unit, car hands-free
+3. **In-car validation.** Headset button alongside a music app, Android Auto on a real head unit, car hands-free
    microphone, speech-check tuning for road noise, a guard against repetition loops in transcripts.
-5. **Automated model benchmarking.** A repeatable harness that compares new speech models (Whisper family first, engine
+4. **Automated model benchmarking.** A repeatable harness that compares new speech models (Whisper family first, engine
    and model kept swappable) on word error rate, hallucinations, language identification, speed and memory, using only
    generated or openly licensed speech. Recordings of the maintainers' own voices are never uploaded or published.
-6. **Colour themes (for fun, last).** A few extra schemes next to the system light and dark theme and dynamic colour:
+5. **Colour themes (for fun, last).** A few extra schemes next to the system light and dark theme and dynamic colour:
    high contrast, "Matrix" and "Dracula". Chosen in the app, with the default staying "follow the system".
 
 ## Known gaps
 
+- Sorting is by time only. Other orders (by recording length, to clean up storage; by state, probably better as a
+  filter) were left out; sorting by label is covered by `label:` search.
 - No boot receiver: after a reboot, waiting notes and the headset-button service need the app opened once.
 - Some transcripts start with "..."; the repetition guard does not exist yet.
 - Search covers the current text of a note, not its older versions or the Markdown file it was appended to.

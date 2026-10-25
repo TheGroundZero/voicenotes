@@ -40,6 +40,13 @@ class BackupPlanTest {
         assertTrue("x-restored3.wav" in names)
     }
 
+    @Test fun aNoteWithoutRecordingNeverSharesAnotherNotesFileName() {
+        // the existing note a.wav still has its recording; a restored note without one must not be named a.wav, or deleting it would delete that recording
+        val plan = BackupPlan.plan(setOf(NoteKey(5, "a.wav")), setOf("a.wav"), listOf(note("a.wav", 1000, withAudio = false)), emptySet(), replace = false)
+        assertEquals("a-restored2.wav", plan.toAdd.single().audioFile)
+        assertFalse(plan.toAdd.single().hasAudio)
+    }
+
     @Test fun uniqueNameCountsUp() {
         assertEquals("a.wav", BackupPlan.uniqueName("a.wav", emptySet()))
         assertEquals("a-restored2.wav", BackupPlan.uniqueName("a.wav", setOf("a.wav")))

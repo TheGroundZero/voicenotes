@@ -240,7 +240,7 @@ private fun ReviewDialog(step: RestoreStep.Review, onRestore: (RestoreStep.Revie
                 }
                 if (mode == RestoreMode.REPLACE) {
                     Text(
-                        "This deletes all notes and recordings on this phone first, after the backup has been read and checked. " +
+                        "This removes all notes and recordings on this phone, but only after the backup has been read and checked. " +
                             "Make a backup of the current notes before you do this.",
                         color = MaterialTheme.colorScheme.error, style = MaterialTheme.typography.bodySmall,
                     )

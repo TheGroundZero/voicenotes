@@ -13,7 +13,8 @@ class RestorePlan(val toAdd: List<PlannedNote>, val alreadyPresent: Int)
 object BackupPlan {
     /**
      * @param existing the notes in the app now
-     * @param existingFiles every file name in the app's recording folder (taken names, whether or not a note uses them)
+     * @param existingFiles every recording file name that is taken here: the files in the recording folder and the names stored in
+     *   existing notes (a note whose recording was removed still has a name, and deleting a note deletes the file of that name)
      * @param stagedAudio the recordings that came with the backup and passed their checks
      * @param replace true when the existing notes are about to be removed: they are not compared against, and their copies are added again
      */
@@ -27,8 +28,10 @@ object BackupPlan {
                 continue
             }
             val hasAudio = note.audioFile in stagedAudio
-            val file = if (hasAudio) uniqueName(note.audioFile, taken) else note.audioFile
-            if (hasAudio) taken.add(file)
+            // Every restored note gets a name nobody else uses, with or without a recording: deleting a note deletes the file of
+            // that name, which must never be another note's recording.
+            val file = uniqueName(note.audioFile, taken)
+            taken.add(file)
             toAdd.add(PlannedNote(note, file, hasAudio, restoredStatus(note.status, hasAudio)))
         }
         return RestorePlan(toAdd, present)

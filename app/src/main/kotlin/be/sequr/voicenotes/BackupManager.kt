@@ -153,7 +153,7 @@ object BackupManager {
             val replace = mode == RestoreMode.REPLACE
             val notesDir = NoteFiles.dir(context)
             val oldFiles = if (replace) dao.listAll().map { it.note.audioFile } else emptyList()
-            val plan = BackupPlan.plan(dao.keys().toSet(), notesDir.list()?.toSet() ?: emptySet(), notes, staged.audio, replace)
+            val plan = BackupPlan.plan(dao.keys().toSet(), (notesDir.list()?.toSet() ?: emptySet()) + dao.keys().map { it.audioFile }, notes, staged.audio, replace)
             for (p in plan.toAdd.filter { it.hasAudio }) {
                 val target = File(notesDir, p.audioFile)
                 val source = File(staging, p.source.audioFile)
@@ -180,10 +180,8 @@ object BackupManager {
             committed = true // from here on the notes exist, so their recordings must stay whatever else goes wrong
             val waiting = plan.toAdd.count { it.status == NoteStatus.WAITING }
             runCatching {
-                if (replace) {
-                    val kept = plan.toAdd.map { it.audioFile }.toSet()
-                    oldFiles.filter { it !in kept }.forEach { File(notesDir, it).delete() }
-                }
+                // New notes never reuse a name that was taken, so every file of the replaced notes can go.
+                if (replace) oldFiles.forEach { File(notesDir, it).delete() }
                 if (withSettings) applySettings(context, manifest.settings)
                 if (waiting > 0) TranscriptionJobService.schedule(context)
             }

@@ -1,0 +1,1 @@
+New: Backup & restore. Save all notes, every transcript version and, if you want, the recordings as one file in a place you choose, optionally encrypted with a passphrase. Restoring shows what the file holds first, adds to your notes or replaces them, and changes nothing if the file is damaged. Nothing is sent over the network by the app.

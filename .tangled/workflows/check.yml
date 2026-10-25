@@ -1,4 +1,5 @@
 # Tested 2026-10-23: passes on a clean tree and fails when an audio file is committed (throwaway branch, since deleted).
+# scripts/check.sh needs grep and xargs: without them its `if grep ...` tests find nothing and pass silently.
 # Only the light checks run here: the hosted spindle has no Android SDK and a default timeout of five minutes.
 # Lint, unit tests and the build run with scripts/check.sh on a machine with the tools (docs/BUILDING.md), or on the
 # GitHub mirror (.github/workflows/release.yml).
@@ -16,7 +17,9 @@ dependencies:
   nixpkgs:
     - bash
     - coreutils
+    - findutils
     - git
+    - gnugrep
     - python3
 
 steps:

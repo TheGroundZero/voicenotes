@@ -99,6 +99,11 @@ object Settings {
         .putLong("last_backup_time", backup.time).putInt("last_backup_notes", backup.notes)
         .putBoolean("last_backup_encrypted", backup.encrypted).putBoolean("last_backup_audio", backup.withAudio).apply()
 
+    /** The note list shows the oldest notes first when this is on; newest first is the default. */
+    fun oldestFirst(context: Context): Boolean = prefs(context).getBoolean("notes_oldest_first", false)
+
+    fun setOldestFirst(context: Context, oldestFirst: Boolean) = prefs(context).edit().putBoolean("notes_oldest_first", oldestFirst).apply()
+
     /** What the backup form starts with (never the passphrase). Encryption is on until the user turns it off. */
     fun backupEncrypt(context: Context): Boolean = prefs(context).getBoolean("backup_encrypt", true)
 

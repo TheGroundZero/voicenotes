@@ -41,6 +41,7 @@ Every release is signed with the same key, so updates install over the previous 
   headset's or car's play/pause button, and Android Auto (as a media app with a Record button).
 - **Offline transcription** with [whisper.cpp](https://github.com/ggml-org/whisper.cpp) and OpenAI's Whisper models.
   The language is detected automatically among the languages you prefer (English, Dutch, French and others).
+- **Sorting and day headers:** newest or oldest first, remembered, with a header for each day.
 - **Labels and search:** label notes yourself and find them again with one search bar: words search the text, `label:name`
   searches the labels only (never the text), and the search suggests your labels as you type `label:`.
 - **Several versions of every transcript:** re-transcribe with another model or language, edit by hand, switch back.

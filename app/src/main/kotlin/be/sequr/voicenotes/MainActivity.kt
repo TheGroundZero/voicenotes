@@ -48,6 +48,7 @@ class MainActivity : ComponentActivity() {
             ) {
                 val notes by viewModel.visibleNotes.collectAsStateWithLifecycle()
                 val query by viewModel.query.collectAsStateWithLifecycle()
+                val oldestFirst by viewModel.oldestFirst.collectAsStateWithLifecycle()
                 val labels by viewModel.labels.collectAsStateWithLifecycle()
                 val playingId by viewModel.playingId.collectAsStateWithLifecycle()
                 val recording by RecordingService.recording.collectAsStateWithLifecycle()
@@ -145,6 +146,8 @@ class MainActivity : ComponentActivity() {
                     labels = labels,
                     onQuery = viewModel::setQuery,
                     onOpenLabels = { screen = Screen.LABELS },
+                    oldestFirst = oldestFirst,
+                    onOldestFirst = viewModel::setOldestFirst,
                     playingId = playingId,
                     recording = recording,
                     recordLanguage = recordLanguage,

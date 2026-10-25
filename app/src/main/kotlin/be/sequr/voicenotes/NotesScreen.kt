@@ -55,6 +55,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.semantics.heading
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextOverflow
@@ -94,6 +96,8 @@ private fun NotesTopBar(
     onOpenExport: () -> Unit,
     onOpenBackup: () -> Unit,
     onOpenLabels: () -> Unit,
+    oldestFirst: Boolean,
+    onOldestFirst: (Boolean) -> Unit,
     onOpenTriggers: () -> Unit,
     onOpenStorage: () -> Unit,
     onOpenPrivacy: () -> Unit,
@@ -115,6 +119,10 @@ private fun NotesTopBar(
             Box {
                 TextButton(onClick = { menu = true }) { Text("⋮") }
                 DropdownMenu(expanded = menu, onDismissRequest = { menu = false }) {
+                    DropdownMenuItem(
+                        text = { Text(if (oldestFirst) "Show newest first" else "Show oldest first") },
+                        onClick = { menu = false; onOldestFirst(!oldestFirst) },
+                    )
                     DropdownMenuItem(text = { Text("Labels") }, onClick = { menu = false; onOpenLabels() })
                     DropdownMenuItem(text = { Text("Triggers") }, onClick = { menu = false; onOpenTriggers() })
                     DropdownMenuItem(text = { Text("Export & sharing") }, onClick = { menu = false; onOpenExport() })
@@ -171,6 +179,8 @@ fun NotesScreen(
     labels: List<LabelCount>,
     onQuery: (String) -> Unit,
     onOpenLabels: () -> Unit,
+    oldestFirst: Boolean,
+    onOldestFirst: (Boolean) -> Unit,
     playingId: Long?,
     recording: Boolean,
     recordLanguage: String,
@@ -199,7 +209,7 @@ fun NotesScreen(
     Scaffold(
         topBar = {
             Column {
-                NotesTopBar(searching, query, onQuery, { searching = it }, onOpenModels, onOpenExport, onOpenBackup, onOpenLabels, onOpenTriggers, onOpenStorage, onOpenPrivacy, onOpenAbout)
+                NotesTopBar(searching, query, onQuery, { searching = it }, onOpenModels, onOpenExport, onOpenBackup, onOpenLabels, oldestFirst, onOldestFirst, onOpenTriggers, onOpenStorage, onOpenPrivacy, onOpenAbout)
                 if (searching) LabelSuggestions(query, labels, onQuery)
             }
         },
@@ -216,9 +226,17 @@ fun NotesScreen(
             )
             else -> {
                 val listState = rememberLazyListState()
-                // A new note is inserted above the first visible one; show it unless the user is reading further down.
-                LaunchedEffect(notes.first().note.id) {
-                    if (listState.firstVisibleItemIndex <= 1) listState.animateScrollToItem(0)
+                val rows = NoteList.rows(notes, { it.note.createdAt }, oldestFirst)
+                // Changing the order starts at the top of the new order.
+                LaunchedEffect(oldestFirst) { listState.scrollToItem(0) }
+                // A new note shows up at the top (newest first) or the bottom (oldest first); show it unless the user is reading elsewhere.
+                LaunchedEffect(notes.maxOf { it.note.createdAt }) {
+                    if (oldestFirst) {
+                        val shown = listState.layoutInfo.visibleItemsInfo.lastOrNull()?.index ?: 0
+                        if (shown >= rows.lastIndex - 3) listState.animateScrollToItem(rows.lastIndex)
+                    } else if (listState.firstVisibleItemIndex <= 2) {
+                        listState.animateScrollToItem(0)
+                    }
                 }
                 LazyColumn(
                     state = listState,
@@ -230,13 +248,28 @@ fun NotesScreen(
                     ),
                     verticalArrangement = Arrangement.spacedBy(12.dp),
                 ) {
-                    items(notes, key = { it.note.id }) { item ->
+                    items(rows, key = { if (it is NoteRow.Day) "day${it.epochDay}" else (it as NoteRow.Item).value.note.id }) { row ->
+                        if (row is NoteRow.Day) {
+                            DayHeader(row.title)
+                            return@items
+                        }
+                        val item = (row as NoteRow.Item).value
                         NoteCard(item, playing = playingId == item.note.id, preferred = preferred, models = installedModels, labels = labels, appendTarget = appendTarget, batteryHold = batteryHold, actions = actions)
                     }
                 }
             }
         }
     }
+}
+
+@Composable
+private fun DayHeader(title: String) {
+    Text(
+        title,
+        style = MaterialTheme.typography.labelLarge,
+        color = MaterialTheme.colorScheme.onSurfaceVariant,
+        modifier = Modifier.padding(start = 4.dp, top = 8.dp).semantics { heading() },
+    )
 }
 
 @Composable

@@ -31,6 +31,15 @@ class NotesViewModel(app: Application) : AndroidViewModel(app) {
     /** Every label with its number of notes, for suggestions, the label dialog and the label list. */
     val labels: StateFlow<List<LabelCount>> = dao.observeLabels().stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
 
+    /** Whether the list starts with the oldest notes. Remembered between starts. */
+    private val _oldestFirst = MutableStateFlow(Settings.oldestFirst(app))
+    val oldestFirst: StateFlow<Boolean> = _oldestFirst.asStateFlow()
+
+    fun setOldestFirst(oldestFirst: Boolean) {
+        _oldestFirst.value = oldestFirst
+        Settings.setOldestFirst(getApplication(), oldestFirst)
+    }
+
     /** What is typed in the search bar (empty: no search). Kept while the app is open. */
     private val _query = MutableStateFlow("")
     val query: StateFlow<String> = _query.asStateFlow()
@@ -47,7 +56,7 @@ class NotesViewModel(app: Application) : AndroidViewModel(app) {
         return LabelName.fold(t.text).also { foldedText[t.id] = t.text to it }
     }
 
-    /** The notes that match the search, newest first. Equal to [notes] while the search is empty. */
+    /** The notes that match the search (the screen orders them). Equal to [notes] while the search is empty. */
     val visibleNotes: StateFlow<List<NoteWithTranscripts>?> = combine(notes, _query) { all, text -> all to text }
         .map { (all, text) ->
             val query = SearchQuery.parse(text)

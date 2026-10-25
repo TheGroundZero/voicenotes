@@ -5,6 +5,12 @@ versions follow [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Added
+
+- **Sorting:** the note list can show the oldest notes first (menu → *Show oldest first*, and back with *Show newest
+  first*); the choice is remembered. Every day has a header ("Today", "Yesterday", then the date), also in search
+  results. A new note is shown at the top or the bottom, depending on the order, unless you are reading elsewhere.
+
 ## [0.3.0] - 2026-10-25
 
 ### Added

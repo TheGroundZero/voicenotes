@@ -1,0 +1,35 @@
+# Copies what is merged on Tangled to the GitHub mirror, so nobody has to push there by hand: every push to main, and
+# every version tag (the tag starts the release build on GitHub). Needs the pipeline secret GITHUB_MIRROR_SSH_KEY (the
+# private half of a deploy key with write access on the GitHub repository, which is on the bypass list of the ruleset
+# that protects main there). Nothing is forced: if GitHub has commits Tangled lacks, the push fails and says so.
+when:
+  - event: ["push", "manual"]
+    branch: ["main"]
+  - event: ["push"]
+    tag: ["v*"]
+
+engine: nixery
+
+clone:
+  depth: 1
+  submodules: false
+
+dependencies:
+  nixpkgs:
+    - bash
+    - coreutils
+    - git
+    - openssh
+
+steps:
+  - name: "Push the same ref to GitHub"
+    command: |
+      set -eu
+      umask 077
+      mkdir -p "$HOME/.ssh"
+      printf '%s\n' "$GITHUB_MIRROR_SSH_KEY" | tr -d '\r' > "$HOME/.ssh/mirror_key"
+      # GitHub's published SSH host key (https://api.github.com/meta), so the host is not trusted blindly
+      echo "github.com ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOMqqnkVzrm0SdG6UOoqKLsabgH5C9okWi0dh2l9GKJl" > "$HOME/.ssh/known_hosts"
+      export GIT_SSH_COMMAND="ssh -i $HOME/.ssh/mirror_key -o IdentitiesOnly=yes -o UserKnownHostsFile=$HOME/.ssh/known_hosts -o StrictHostKeyChecking=yes"
+      git fetch --unshallow --tags --quiet || true
+      git push git@github.com:TheGroundZero/voicenotes.git "$TANGLED_SHA:$TANGLED_REF"

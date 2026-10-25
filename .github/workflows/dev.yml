@@ -1,0 +1,50 @@
+# Development build of the GitHub mirror. The Tangled workflow sync-github.yml pushes every merge to main here; this
+# runs the full checks (lint, unit tests, privacy guards) and builds the release code with the debug key, as the
+# separate app `be.sequr.voicenotes.releasecheck`, which installs next to the real app. The APK is only a workflow
+# artifact (kept 14 days), never a release. It is signed with a debug key generated on the runner, which differs on
+# every build: uninstall the previous dev build before installing the next one. Signed releases come from release.yml.
+name: dev
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: dev-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          submodules: true
+      - uses: actions/setup-java@b843ebf9b913146b38da2eaa7aeddf76074ae1ad # v6.1.0
+        with:
+          distribution: temurin
+          java-version: "17"
+      - name: Android SDK pieces (versions as in scripts/setup-toolchain.sh)
+        run: |
+          yes | "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --licenses > /dev/null || true
+          "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" "platforms;android-35" "build-tools;35.0.0" "ndk;27.2.12479018" "cmake;3.22.1"
+      - name: Apply our whisper.cpp patch (the native build refuses to configure without it)
+        run: scripts/setup-third-party.sh
+      - name: Checks
+        run: scripts/check.sh
+      - name: Build the development APK
+        run: ./gradlew --no-daemon assembleReleaseCheck
+      - name: Name the APK
+        run: |
+          mkdir -p dist
+          cp app/build/outputs/apk/releaseCheck/app-releaseCheck.apk "dist/voicenotes-dev-${GITHUB_SHA::7}.apk"
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: voicenotes-dev-${{ github.sha }}
+          path: dist/*.apk
+          retention-days: 14
+          if-no-files-found: error

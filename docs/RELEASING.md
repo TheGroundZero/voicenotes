@@ -61,11 +61,16 @@ To try a release build on a phone without replacing the real app, use `./gradlew
 shrunk build under the application ID `be.sequr.voicenotes.releasecheck`, signed with the debug key, installed next to the
 real app with its own data.
 
-## Publishing (planned)
+## Publishing
 
-1. Tag and push to Tangled (`git push origin main --follow-tags`).
-2. The GitHub mirror (optional) builds, signs from repository secrets and attaches `voicenotes-X.Y.Z.apk` and its
-   SHA-256 to a release; Obtainium follows that release page. See `.github/workflows/release.yml` (draft).
+1. Merge the release pull request on Tangled, then tag the merged commit and push the tag to Tangled only
+   (`git push origin vX.Y.Z`; never tag a feature-branch commit, the merge rewrites commit IDs).
+2. The Tangled workflow `sync-github.yml` pushes the tag to the GitHub mirror, where `release.yml` builds, signs from
+   repository secrets and attaches `voicenotes-X.Y.Z.apk` and its SHA-256 to a release; Obtainium follows that release
+   page. Every merge to `main` is synced the same way and starts `dev.yml` (full checks, development APK as a
+   14-day artifact, never a release). The sync needs the Tangled pipeline secret `GITHUB_MIRROR_SSH_KEY` (private half
+   of a deploy key with write access on the GitHub repository, listed as a bypass actor in the ruleset that protects
+   `main` there).
 3. F-Droid (optional): the recipe in `docs/fdroid/` goes to F-Droid's data repository; F-Droid builds from the tag.
 
 ## Checklist before a release

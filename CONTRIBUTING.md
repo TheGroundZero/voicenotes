@@ -33,9 +33,10 @@ These are checked by the build (`scripts/check.sh`) and will fail a change that 
 
 `main` only changes through a pull request. Work on a feature branch named after the commit type and the topic
 (`feat/note-search`, `fix/waiting-notes-after-reboot`, `docs/roadmap`, `ci/...`), push the branch to Tangled and open a
-pull request there. Run `scripts/check.sh` first; the CI on Tangled only repeats the light checks, and the GitHub
-mirror builds nothing except tagged releases, so testing happens on your machine. After the merge, the maintainer
-updates the mirror with `git push github main`.
+pull request there. Run `scripts/check.sh` first; the CI on Tangled only repeats the light checks. After the merge,
+a Tangled workflow (`sync-github.yml`) copies `main` and version tags to the GitHub mirror by itself. There GitHub runs
+the full checks and builds a development APK, kept 14 days as a workflow artifact (it installs next to the real app as
+`be.sequr.voicenotes.releasecheck`); only a version tag publishes a signed release.
 
 Tangled cannot protect a branch on the server yet ([issue #432](https://tangled.org/tangled.org/core/issues/432)), so
 `scripts/install-hooks.sh` installs a `pre-push` hook that refuses direct pushes to `main`. Install it once per clone.

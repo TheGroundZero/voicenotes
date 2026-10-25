@@ -43,12 +43,13 @@ against. Build and release instructions are in [BUILDING.md](BUILDING.md) and [R
 3. **Backup and restore.** Export and import notes, audio and settings through the system file picker (works with
    Nextcloud and similar), optionally encrypted, with merge or replace on restore. The backup format carries a version
    number and a manifest, so later additions such as labels can be included without breaking old backups.
-4. **Labels.** Give notes user-defined labels (a note can have several) and filter the list by label. Labels are created
+4. **Labels.** Give notes user-defined labels (a note can have several) and filter the list by label (through the search bar, see Search). Labels are created
    and renamed in the app, removed from a note without deleting the label, and part of export and backup.
-5. **Search.** Find notes by what was said, in the transcripts. Labels are searched separately and never mix with the
-   words: either a dedicated label filter next to the search box, or a `label:` prefix in the query (for example
-   `label:shopping milk`), where `label:` matches label names only and every other word matches transcript text only.
-   A note that merely *says* "shopping" is not found by `label:shopping`.
+5. **Search.** One search bar. Words match what was said, in the transcripts. A `label:` prefix matches label names
+   only, for example `label:shopping milk` finds notes labelled "shopping" whose transcript contains "milk". Every
+   other word matches transcript text only, so a note that merely *says* "shopping" is not found by `label:shopping`.
+   There is no separate label filter: while typing `label:` the bar suggests the existing labels, and tapping a label on
+   a note fills the bar with its `label:` term.
 6. **In-car validation.** Headset button alongside a music app, Android Auto on a real head unit, car hands-free
    microphone, speech-check tuning for road noise, a guard against repetition loops in transcripts.
 7. **Automated model benchmarking.** A repeatable harness that compares new speech models (Whisper family first, engine

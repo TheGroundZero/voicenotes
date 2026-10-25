@@ -1,0 +1,1 @@
+New: sorting. Show your notes oldest first or newest first (menu), remembered between starts, with a header for each day: Today, Yesterday, then the date. Also in search results. Notes, labels, search, backup and the offline transcription work as before; nothing leaves your phone.

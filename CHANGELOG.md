@@ -5,6 +5,8 @@ versions follow [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [0.4.0] - 2026-10-25
+
 ### Added
 
 - **Sorting:** the note list can show the oldest notes first (menu → *Show oldest first*, and back with *Show newest

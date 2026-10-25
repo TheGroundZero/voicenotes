@@ -19,6 +19,7 @@ dependencies:
     - bash
     - coreutils
     - git
+    - gnugrep
     - openssh
 
 steps:
@@ -27,6 +28,8 @@ steps:
       set -eu
       umask 077
       mkdir -p "$HOME/.ssh"
+      # The container runs as root without a passwd entry, and OpenSSH refuses to start then ("No user exists for uid")
+      id -un > /dev/null 2>&1 || echo "root:x:$(id -u):$(id -g):root:$HOME:/bin/bash" >> /etc/passwd
       key="$(printf '%s' "$GITHUB_MIRROR_SSH_KEY" | tr -d '\r')"
       # facts only, never the key itself: its size, line count and the public BEGIN/END marker lines
       echo "secret: ${#key} characters, $(printf '%s\n' "$key" | wc -l) lines"

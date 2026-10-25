@@ -22,14 +22,29 @@ dependencies:
     - openssh
 
 steps:
-  - name: "Push the same ref to GitHub"
+  - name: "Write the deploy key (tolerates a secret whose line breaks were lost)"
     command: |
       set -eu
       umask 077
       mkdir -p "$HOME/.ssh"
-      printf '%s\n' "$GITHUB_MIRROR_SSH_KEY" | tr -d '\r' > "$HOME/.ssh/mirror_key"
+      key="$(printf '%s' "$GITHUB_MIRROR_SSH_KEY" | tr -d '\r')"
+      case "$key" in *'\n'*) key="$(printf '%b' "$key")" ;; esac
+      if ! printf '%s' "$key" | grep -q '^-----END'; then
+        # the line breaks became spaces: put the header, the body in 70-character lines and the footer back
+        begin='-----BEGIN OPENSSH PRIVATE KEY-----'; end='-----END OPENSSH PRIVATE KEY-----'
+        body="${key#*"$begin"}"; body="${body%"$end"*}"
+        key="$(printf '%s\n%s\n%s' "$begin" "$(printf '%s' "$body" | tr -d ' \n' | fold -w 70)" "$end")"
+      fi
+      printf '%s\n' "$key" > "$HOME/.ssh/mirror_key"
+      ssh-keygen -y -f "$HOME/.ssh/mirror_key" > /dev/null
       # GitHub's published SSH host key (https://api.github.com/meta), so the host is not trusted blindly
       echo "github.com ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOMqqnkVzrm0SdG6UOoqKLsabgH5C9okWi0dh2l9GKJl" > "$HOME/.ssh/known_hosts"
+  - name: "Check that GitHub accepts the key"
+    command: |
+      ssh -i "$HOME/.ssh/mirror_key" -o IdentitiesOnly=yes -o UserKnownHostsFile="$HOME/.ssh/known_hosts" -o StrictHostKeyChecking=yes -T git@github.com || [ $? -eq 1 ]
+  - name: "Push the same ref to GitHub"
+    command: |
+      set -eu
       export GIT_SSH_COMMAND="ssh -i $HOME/.ssh/mirror_key -o IdentitiesOnly=yes -o UserKnownHostsFile=$HOME/.ssh/known_hosts -o StrictHostKeyChecking=yes"
       git fetch --unshallow --tags --quiet || true
       git push git@github.com:TheGroundZero/voicenotes.git "$TANGLED_SHA:$TANGLED_REF"

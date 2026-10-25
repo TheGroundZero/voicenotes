@@ -24,9 +24,9 @@ RepoType: git
 Repo: https://tangled.org/sequr.be/voicenotes.git  # TODO: confirm the clone URL form F-Droid's server can use (https, anonymous)
 
 Builds:
-  - versionName: 0.3.0
-    versionCode: 4
-    commit: v0.3.0
+  - versionName: 0.4.0
+    versionCode: 5
+    commit: v0.4.0
     subdir: app
     submodules: true
     gradle:
@@ -42,5 +42,5 @@ Builds:
 
 AutoUpdateMode: Version
 UpdateCheckMode: Tags
-CurrentVersion: 0.3.0
-CurrentVersionCode: 4
+CurrentVersion: 0.4.0
+CurrentVersionCode: 5

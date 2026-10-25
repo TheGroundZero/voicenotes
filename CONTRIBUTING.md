@@ -26,8 +26,8 @@ These are checked by the build (`scripts/check.sh`) and will fail a change that 
 - Every source file starts with `SPDX-License-Identifier: GPL-3.0-or-later`. Run `scripts/check.sh` before sending a change.
 - Keep commits small and explain the reason in the message (see *Commit messages* below). Test on a real device when you touch recording,
   transcription, Bluetooth or Android Auto; say in the message what you tested.
-- By contributing you agree that your contribution is licensed under GPL-3.0-or-later. Sign off your commits
-  (`git commit -s`) to state that you have the right to submit them (Developer Certificate of Origin).
+- By contributing you agree that your contribution is licensed under GPL-3.0-or-later, and you state that you have the
+  right to submit it. Commits do not need a `Signed-off-by` line.
 
 ## Branches and pull requests
 

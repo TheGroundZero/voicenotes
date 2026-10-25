@@ -38,4 +38,4 @@ PY
 notes="fastlane/metadata/android/en-US/changelogs/$new_code.txt"
 [ -e "$notes" ] || echo "See the changelog for $version." > "$notes"
 echo "Edit CHANGELOG.md and $notes, then review the diff and commit:"
-echo "  git add -A && git commit -s -m \"chore(release): $version\" && git tag -a v$version -m \"Voice Notes $version\""
+echo "  git add -A && git commit -m \"chore(release): $version\" && git tag -a v$version -m \"Voice Notes $version\""

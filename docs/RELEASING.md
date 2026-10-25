@@ -1,6 +1,6 @@
 # Releasing
 
-Status: used for v0.1.0 (2026-10-23) and v0.2.0 to v0.5.0 (2026-10-25). Each signed APK built by GitHub Actions was byte-identical to a clean local build.
+Status: used for v0.1.0 (2026-10-23), v0.2.0 to v0.4.0 (2026-10-25) and v0.5.0 (2026-10-26). Each signed APK built by GitHub Actions was byte-identical to a clean local build.
 
 ## Versions
 
@@ -8,7 +8,8 @@ Status: used for v0.1.0 (2026-10-23) and v0.2.0 to v0.5.0 (2026-10-25). Each sig
 - `versionName` and `versionCode` are written as **plain numbers/strings** in `app/build.gradle.kts` on purpose: F-Droid
   reads them from the tagged source. `versionCode` goes up by one for every release, including pre-releases.
 - `scripts/release.sh X.Y.Z` shows what a release would change; `scripts/release.sh X.Y.Z --apply` does it (refuses to
-  run with uncommitted changes or failing checks).
+  run with uncommitted changes or failing checks). It dates the changelog section with the day it runs: if the release
+  is published on a later day, correct the date.
 - Each release has a store changelog `fastlane/metadata/android/en-US/changelogs/<versionCode>.txt` (500 characters at most)
   and a section in `CHANGELOG.md`.
 
@@ -46,7 +47,7 @@ and R8 comes out slightly different), so always make a release with `./gradlew c
 On 2026-10-23 the signed v0.1.0 APK built by the GitHub Actions runner (Ubuntu 24.04, its own toolchain install) and a clean local build on a different machine were **byte-identical, signature included** (RSA signatures are deterministic). A fourth thing is needed for that: `dependenciesInfo { includeInApk = false }`, because the Android Gradle Plugin otherwise embeds a dependency list encrypted with a Google key and with fresh randomness, which differs on every build (and is rejected by F-Droid).
 Three more things made it so (keep them): `-ffile-prefix-map` and `--build-id=none` for the native code, git switched off for
 ggml's build stamp (it would write the commit and a "-dirty" flag into the library), and `vcsInfo.include = false`
-for the APK. `scripts/verify-reproducible.sh` repeats the test; run it before a release. What has **not** been tested:
+for the APK. `scripts/verify-reproducible.sh` repeats the test (it sets `keystore.properties` aside while it runs, because it compares unsigned files); run it before a release and after every change of the toolchain (the move to Android Gradle Plugin 8.9.3 and Gradle 8.11.1 for API 36 was checked this way). What has **not** been tested:
 another operating system, a different NDK or JDK build than the pinned ones, and F-Droid's own build server. A signed APK is the unsigned one plus a signature, so compare *unsigned* files (or use `apksigcopier`).
 
 ## Building a release
@@ -88,6 +89,9 @@ with real recordings or the maintainer's own app. Rules learned the hard way:
 ## Checklist before a release
 
 - [ ] `scripts/check.sh` passes; dependency updates reviewed (`gradle/verification-metadata.xml` changes are read, not just accepted)
+- [ ] after a change of the toolchain or of dependencies: one build with an empty Gradle home
+      (`GRADLE_USER_HOME=$(mktemp -d) ./gradlew --no-daemon lintDebug testDebugUnitTest assembleRelease`), because CI starts
+      with an empty cache and needs files (such as `.module` metadata) that a warm local cache never fetches
 - [ ] on a real phone: recording from the tile and the in-app button, a transcription in each preferred language, silence, a
       long note, share and export, Android Auto on the Desktop Head Unit
 - [ ] `CHANGELOG.md`, the store changelog and `PRIVACY.md` match what the release does

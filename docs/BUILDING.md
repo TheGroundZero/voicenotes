@@ -66,6 +66,10 @@ used. The libraries must be extracted at install time (`useLegacyPackaging`), be
 The release APK built from scratch should be byte-identical wherever it is built with the pinned tools (incremental builds can differ, so release with `./gradlew clean assembleRelease`); `scripts/verify-reproducible.sh` checks
 that (see `docs/RELEASING.md`). Do not add anything to the build that embeds a time, a path, a host name or a git state.
 
+When you change the toolchain or a dependency, update `gradle/verification-metadata.xml` and then build once with an empty Gradle home
+(`GRADLE_USER_HOME=$(mktemp -d) ./gradlew --no-daemon assembleRelease`): a warm cache hides files that a clean CI run still
+has to verify.
+
 ## Releases
 
 Signing, the release process and the reproducibility check are in [RELEASING.md](RELEASING.md).

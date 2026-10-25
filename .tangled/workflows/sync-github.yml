@@ -28,6 +28,9 @@ steps:
       umask 077
       mkdir -p "$HOME/.ssh"
       key="$(printf '%s' "$GITHUB_MIRROR_SSH_KEY" | tr -d '\r')"
+      # facts only, never the key itself: its size, line count and the public BEGIN/END marker lines
+      echo "secret: ${#key} characters, $(printf '%s\n' "$key" | wc -l) lines"
+      printf '%s\n' "$key" | grep -o -e '-----BEGIN [A-Z ]*-----' -e '-----END [A-Z ]*-----' || echo "no BEGIN/END marker found"
       case "$key" in *'\n'*) key="$(printf '%b' "$key")" ;; esac
       if ! printf '%s' "$key" | grep -q '^-----END'; then
         # the line breaks became spaces: put the header, the body in 70-character lines and the footer back

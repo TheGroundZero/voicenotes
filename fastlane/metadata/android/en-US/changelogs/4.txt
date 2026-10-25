@@ -1,0 +1,1 @@
+New: labels and search. Give a note any labels you like (a note's menu, or the new Labels screen) and find notes with the search bar: words search what was said, label:name searches only the labels, never the text. Backups and exports now carry the labels. Nothing leaves your phone.

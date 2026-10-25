@@ -5,6 +5,8 @@ versions follow [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [0.3.0] - 2026-10-25
+
 ### Added
 
 - **Labels:** give a note any number of your own labels (a note's ⋯ menu → Labels…, or the Labels screen in the menu to
@@ -14,6 +16,11 @@ versions follow [Semantic Versioning](https://semver.org/).
   `label:shopping milk` means labelled "shopping" and containing "milk".
 - Backups now carry the labels (backup format version 2; version 1 files from 0.2.0 are still read), and the
   Markdown export lists a note's labels as `#tags`.
+
+### Changed
+
+- The notes database is upgraded when the app first starts (version 4 to 5; your notes are kept). Going back to 0.2.0
+  afterwards is not possible without restoring a backup.
 
 ## [0.2.0] - 2026-10-25
 

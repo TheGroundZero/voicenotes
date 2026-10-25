@@ -18,10 +18,13 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -30,12 +33,14 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import kotlinx.coroutines.flow.Flow
 
 /** Create, rename and delete labels, and jump to the notes that carry one. Putting labels on notes happens on the note itself. */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LabelsScreen(
     labels: List<LabelCount>,
+    events: Flow<String>,
     onBack: () -> Unit,
     onCreate: (String) -> Unit,
     onRename: (Long, String) -> Unit,
@@ -45,8 +50,12 @@ fun LabelsScreen(
     var newName by rememberSaveable { mutableStateOf("") }
     var renaming by remember { mutableStateOf<LabelCount?>(null) }
     var deleting by remember { mutableStateOf<LabelCount?>(null) }
+    // the notes list shows these messages too, but it is not on screen here: "There is already a label…" would be lost
+    val snackbar = remember { SnackbarHostState() }
+    LaunchedEffect(events) { events.collect { snackbar.showSnackbar(it) } }
 
     Scaffold(
+        snackbarHost = { SnackbarHost(snackbar) },
         topBar = {
             TopAppBar(
                 title = { Text("Labels") },

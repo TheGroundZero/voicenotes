@@ -55,6 +55,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.TextRange
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -132,9 +134,13 @@ private fun NotesTopBar(
 private fun SearchField(query: String, onQuery: (String) -> Unit) {
     val focus = remember { FocusRequester() }
     LaunchedEffect(Unit) { focus.requestFocus() }
+    // Own the caret: when a suggestion or a label chip changes the query from outside, the caret goes to the end
+    // (a plain String value would leave it where it was, in the middle of the new text).
+    var field by remember { mutableStateOf(TextFieldValue(query, TextRange(query.length))) }
+    LaunchedEffect(query) { if (field.text != query) field = TextFieldValue(query, TextRange(query.length)) }
     TextField(
-        value = query,
-        onValueChange = onQuery,
+        value = field,
+        onValueChange = { field = it; if (it.text != query) onQuery(it.text) },
         singleLine = true,
         placeholder = { Text("Search, or label:name") },
         modifier = Modifier.fillMaxWidth().focusRequester(focus),

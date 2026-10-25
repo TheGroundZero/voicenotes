@@ -95,6 +95,7 @@ class MainActivity : ComponentActivity() {
                     Screen.LABELS -> {
                         LabelsScreen(
                             labels = labels,
+                            events = viewModel.events,
                             onBack = { screen = Screen.NOTES },
                             onCreate = viewModel::createLabel,
                             onRename = viewModel::renameLabel,

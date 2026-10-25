@@ -75,7 +75,7 @@ fun OnboardingScreen(onDone: () -> Unit) {
             Text("What stays on your phone", style = MaterialTheme.typography.titleMedium)
             Text(
                 "Your recordings and their text are stored only in this app, and are never uploaded. There is no account, " +
-                    "no analytics and no advertising. Notes leave the phone only when you share or export them.",
+                    "no analytics and no advertising. Notes leave the phone only when you share, export or back them up.",
                 style = MaterialTheme.typography.bodyMedium,
             )
             Text("What the app will ask for", style = MaterialTheme.typography.titleMedium)
@@ -176,7 +176,7 @@ fun PrivacyScreen(onBack: () -> Unit) {
                             "• Recordings, text and settings are kept in the app's private storage, which other apps cannot read.\n" +
                                 "• Android's cloud backup and device-to-device transfer are switched off for this app.\n" +
                                 "• No analytics, crash reporting, advertising or tracking.\n" +
-                                "• A note leaves the phone only through Share or Export, or into a Markdown file you chose.\n" +
+                                "• A note leaves the phone only through Share or Export, into a Markdown file you chose, or in a backup you save. A backup holds every recording, so keep its passphrase switched on; the app that provides the location you pick (for example Nextcloud) does any uploading.\n" +
                                 "• Deleting a note removes its recording and all versions of its text from the phone.\n" +
                                 "• Recordings are kept until you remove them. Storage can delete old ones automatically after a time you choose (off by default).\n" +
                                 "• Uninstalling the app removes everything it stored.",

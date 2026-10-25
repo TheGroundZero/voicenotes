@@ -148,6 +148,8 @@ dependencies {
     ksp("androidx.room:room-compiler:2.6.1")
 
     testImplementation("junit:junit:4.13.2")
+    // Android's own org.json is only a stub in local unit tests; backups use it, so the tests need the real one.
+    testImplementation("org.json:json:20240303")
 }
 
 // Privacy guard 3: no analytics, crash-reporting, advertising or Google-services libraries anywhere in the app's

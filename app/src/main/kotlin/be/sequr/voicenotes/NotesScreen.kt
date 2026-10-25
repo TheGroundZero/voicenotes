@@ -72,7 +72,7 @@ class NoteActions(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun NotesTopBar(onOpenModels: () -> Unit, onOpenExport: () -> Unit, onOpenTriggers: () -> Unit, onOpenStorage: () -> Unit, onOpenPrivacy: () -> Unit, onOpenAbout: () -> Unit) {
+private fun NotesTopBar(onOpenModels: () -> Unit, onOpenExport: () -> Unit, onOpenBackup: () -> Unit, onOpenTriggers: () -> Unit, onOpenStorage: () -> Unit, onOpenPrivacy: () -> Unit, onOpenAbout: () -> Unit) {
     var menu by remember { mutableStateOf(false) }
     TopAppBar(
         title = { Text(stringResource(R.string.app_name)) },
@@ -82,6 +82,7 @@ private fun NotesTopBar(onOpenModels: () -> Unit, onOpenExport: () -> Unit, onOp
                 DropdownMenu(expanded = menu, onDismissRequest = { menu = false }) {
                     DropdownMenuItem(text = { Text("Triggers") }, onClick = { menu = false; onOpenTriggers() })
                     DropdownMenuItem(text = { Text("Export & sharing") }, onClick = { menu = false; onOpenExport() })
+                    DropdownMenuItem(text = { Text("Backup & restore") }, onClick = { menu = false; onOpenBackup() })
                     DropdownMenuItem(text = { Text("Models") }, onClick = { menu = false; onOpenModels() })
                     DropdownMenuItem(text = { Text("Storage") }, onClick = { menu = false; onOpenStorage() })
                     HorizontalDivider()
@@ -106,6 +107,7 @@ fun NotesScreen(
     onToggleRecording: () -> Unit,
     onOpenModels: () -> Unit,
     onOpenExport: () -> Unit,
+    onOpenBackup: () -> Unit,
     onOpenTriggers: () -> Unit,
     onOpenPrivacy: () -> Unit,
     onOpenAbout: () -> Unit,
@@ -118,7 +120,7 @@ fun NotesScreen(
     val snackbar = remember { SnackbarHostState() }
     LaunchedEffect(events) { events.collect { snackbar.showSnackbar(it) } }
     Scaffold(
-        topBar = { NotesTopBar(onOpenModels, onOpenExport, onOpenTriggers, onOpenStorage, onOpenPrivacy, onOpenAbout) },
+        topBar = { NotesTopBar(onOpenModels, onOpenExport, onOpenBackup, onOpenTriggers, onOpenStorage, onOpenPrivacy, onOpenAbout) },
         snackbarHost = { SnackbarHost(snackbar) },
         floatingActionButton = { RecordControl(recording, recordLanguage, preferred, onRecordLanguage, onPreferred, onToggleRecording) },
     ) { padding ->

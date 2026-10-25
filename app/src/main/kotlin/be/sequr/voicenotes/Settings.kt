@@ -86,4 +86,25 @@ object Settings {
     fun appendError(context: Context): String? = prefs(context).getString("append_error", null)
 
     fun setAppendError(context: Context, message: String?) = prefs(context).edit().putString("append_error", message).apply()
+
+    /** The last successful backup: when, how many notes, and whether it was encrypted and held the recordings. Null before the first. */
+    class LastBackup(val time: Long, val notes: Int, val encrypted: Boolean, val withAudio: Boolean)
+
+    fun lastBackup(context: Context): LastBackup? = prefs(context).let {
+        if (!it.contains("last_backup_time")) null
+        else LastBackup(it.getLong("last_backup_time", 0), it.getInt("last_backup_notes", 0), it.getBoolean("last_backup_encrypted", false), it.getBoolean("last_backup_audio", true))
+    }
+
+    fun setLastBackup(context: Context, backup: LastBackup) = prefs(context).edit()
+        .putLong("last_backup_time", backup.time).putInt("last_backup_notes", backup.notes)
+        .putBoolean("last_backup_encrypted", backup.encrypted).putBoolean("last_backup_audio", backup.withAudio).apply()
+
+    /** What the backup form starts with (never the passphrase). Encryption is on until the user turns it off. */
+    fun backupEncrypt(context: Context): Boolean = prefs(context).getBoolean("backup_encrypt", true)
+
+    fun setBackupEncrypt(context: Context, encrypt: Boolean) = prefs(context).edit().putBoolean("backup_encrypt", encrypt).apply()
+
+    fun backupWithAudio(context: Context): Boolean = prefs(context).getBoolean("backup_with_audio", true)
+
+    fun setBackupWithAudio(context: Context, include: Boolean) = prefs(context).edit().putBoolean("backup_with_audio", include).apply()
 }

@@ -27,12 +27,13 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 
-private enum class Screen { ONBOARDING, NOTES, MODELS, EXPORT, TRIGGERS, PRIVACY, ABOUT, STORAGE }
+private enum class Screen { ONBOARDING, NOTES, MODELS, EXPORT, BACKUP, TRIGGERS, PRIVACY, ABOUT, STORAGE }
 
 class MainActivity : ComponentActivity() {
     private val viewModel: NotesViewModel by viewModels()
     private val modelsViewModel: ModelsViewModel by viewModels()
     private val exportViewModel: ExportViewModel by viewModels()
+    private val backupViewModel: BackupViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -80,6 +81,10 @@ class MainActivity : ComponentActivity() {
                     }
                     Screen.EXPORT -> {
                         ExportScreen(exportViewModel, onBack = { screen = Screen.NOTES }, onTargetChanged = viewModel::refreshAppendTarget)
+                        return@MaterialTheme
+                    }
+                    Screen.BACKUP -> {
+                        BackupScreen(backupViewModel, onBack = { screen = Screen.NOTES })
                         return@MaterialTheme
                     }
                     Screen.TRIGGERS -> {
@@ -134,6 +139,7 @@ class MainActivity : ComponentActivity() {
                     onToggleRecording = { toggleRecording(recordLanguage) },
                     onOpenModels = { screen = Screen.MODELS },
                     onOpenExport = { screen = Screen.EXPORT },
+                    onOpenBackup = { screen = Screen.BACKUP },
                     onOpenTriggers = { screen = Screen.TRIGGERS },
                     onOpenPrivacy = { screen = Screen.PRIVACY },
                     onOpenAbout = { screen = Screen.ABOUT },

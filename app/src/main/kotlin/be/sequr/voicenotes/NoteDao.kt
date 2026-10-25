@@ -25,6 +25,18 @@ abstract class NoteDao {
     @Query("SELECT COUNT(*) FROM transcripts WHERE noteId = :noteId")
     abstract fun countTranscripts(noteId: Long): Int
 
+    /** What a restore compares against; see [BackupPlan]. */
+    @Query("SELECT createdAt, audioFile FROM notes")
+    abstract fun keys(): List<NoteKey>
+
+    /** Notes that are being recorded or transcribed right now (or were, when the process died and has not been cleaned up yet). */
+    @Query("SELECT COUNT(*) FROM notes WHERE status IN ('RECORDING', 'QUEUED', 'TRANSCRIBING')")
+    abstract fun activeCount(): Int
+
+    /** Removes every note (and its transcripts, by cascade). Only a restore that replaces everything calls this. */
+    @Query("DELETE FROM notes")
+    abstract fun deleteAll()
+
     @Query("SELECT COUNT(*) FROM notes WHERE audioFile = :audioFile")
     abstract fun countByFile(audioFile: String): Int
 

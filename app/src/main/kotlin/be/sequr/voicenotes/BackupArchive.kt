@@ -28,6 +28,8 @@ class BackupManifest(
     val audioCount: Int,
     val models: List<String>,
     val settings: BackupSettings,
+    /** Every label that exists, including the ones no note uses (format version 2). */
+    val labels: List<String> = emptyList(),
 ) {
     val includesAudio: Boolean get() = audioCount > 0
 }
@@ -54,6 +56,8 @@ class BackupNote(
     val audioDeleted: Boolean,
     val audio: BackupAudio?,
     val transcripts: List<BackupTranscript>,
+    /** Label names (new in format version 2; a version 1 backup has none). */
+    val labels: List<String> = emptyList(),
 )
 
 /**
@@ -62,7 +66,8 @@ class BackupNote(
  * restore can merge into existing notes and does not depend on the database schema. See docs/BACKUP.md.
  */
 object BackupArchive {
-    const val FORMAT_VERSION = 1
+    /** 2 adds the labels of each note. Version 1 backups (0.1.0) are still read. */
+    const val FORMAT_VERSION = 2
     private const val FORMAT_NAME = "voicenotes-backup"
     private const val MANIFEST = "manifest.json"
     private const val NOTES = "notes.json"
@@ -200,6 +205,7 @@ object BackupArchive {
         put("noteCount", m.noteCount)
         put("audioCount", m.audioCount)
         put("models", JSONArray(m.models))
+        put("labels", JSONArray(m.labels))
         put(
             "settings",
             JSONObject().apply {
@@ -227,6 +233,7 @@ object BackupArchive {
             noteCount = noteCount,
             audioCount = json.getInt("audioCount"),
             models = strings(json.getJSONArray("models")),
+            labels = json.optJSONArray("labels")?.let(::strings).orEmpty().mapNotNull { LabelName.clean(it) }.distinct(),
             settings = BackupSettings(
                 preferredLanguages = strings(settings.getJSONArray("preferredLanguages")),
                 recordLanguage = settings.getString("recordLanguage"),
@@ -250,6 +257,7 @@ object BackupArchive {
                         put("micSource", n.micSource)
                         put("audioDeleted", n.audioDeleted)
                         put("audio", n.audio?.let { JSONObject().put("size", it.size).put("sha256", it.sha256) } ?: JSONObject.NULL)
+                        put("labels", JSONArray(n.labels))
                         put(
                             "transcripts",
                             JSONArray().apply {
@@ -312,6 +320,7 @@ object BackupArchive {
                 audioDeleted = n.getBoolean("audioDeleted"),
                 audio = audio,
                 transcripts = transcripts,
+                labels = n.optJSONArray("labels")?.let { l -> List(l.length()) { k -> l.getString(k) } }.orEmpty().mapNotNull { LabelName.clean(it) }.distinct(),
             )
         }
     }

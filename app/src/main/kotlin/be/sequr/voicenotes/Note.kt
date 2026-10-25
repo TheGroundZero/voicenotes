@@ -7,6 +7,7 @@ import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.Index
+import androidx.room.Junction
 import androidx.room.PrimaryKey
 import androidx.room.Relation
 import java.io.File
@@ -66,6 +67,10 @@ data class Transcript(
 data class NoteWithTranscripts(
     @Embedded val note: Note,
     @Relation(parentColumn = "id", entityColumn = "noteId") val transcripts: List<Transcript>,
+    @Relation(
+        parentColumn = "id", entityColumn = "id",
+        associateBy = Junction(value = NoteLabel::class, parentColumn = "noteId", entityColumn = "labelId"),
+    ) val labels: List<Label> = emptyList(),
 ) {
     val current: Transcript? get() = transcripts.firstOrNull { it.isCurrent }
 

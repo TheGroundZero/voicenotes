@@ -43,6 +43,7 @@ object BackupManager {
                 transcripts = n.transcripts.sortedBy { it.createdAt }.map {
                     BackupTranscript(it.text, it.model, it.language, it.detected, it.source, it.createdAt, it.isCurrent)
                 },
+                labels = n.labels.map { it.name },
             )
         }
         val manifest = BackupManifest(
@@ -54,6 +55,7 @@ object BackupManager {
             audioCount = backupNotes.count { it.audio != null },
             models = notes.flatMap { it.transcripts }.filter { it.source == TranscriptSource.WHISPER }.map { it.model }.distinct().sorted(),
             settings = BackupSettings(Settings.preferredLanguages(context), Settings.recordLanguage(context), Settings.defaultModel(context)),
+            labels = dao.labels().map { it.name }.sortedBy { LabelName.fold(it) },
         )
         val resolver = context.contentResolver
         try {
@@ -163,8 +165,13 @@ object BackupManager {
                 }
                 moved.add(target)
             }
+            val labels = Labels(db)
             db.runInTransaction {
-                if (replace) dao.deleteAll()
+                if (replace) {
+                    dao.deleteAll()
+                    dao.deleteAllLabels()
+                }
+                manifest.labels.forEach { labels.getOrCreate(it) } // also the labels no note uses
                 for (p in plan.toAdd) {
                     val id = dao.insert(
                         Note(
@@ -172,6 +179,7 @@ object BackupManager {
                             micSource = p.source.micSource, audioDeleted = p.source.audioDeleted || !p.hasAudio,
                         ),
                     )
+                    p.source.labels.forEach { name -> labels.getOrCreate(name)?.let { label -> labels.setOnNote(id, label.id, true) } }
                     p.source.transcripts.forEach {
                         dao.insert(Transcript(noteId = id, text = it.text, model = it.model, language = it.language, detected = it.detected, source = it.source, createdAt = it.createdAt, isCurrent = it.isCurrent))
                     }

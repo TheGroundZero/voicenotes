@@ -67,6 +67,40 @@ class BackupArchiveTest {
         }
     }
 
+    @Test fun labelsSurviveTheRoundTrip() {
+        val labelled = BackupNote(1000, "a.wav", "en", NoteStatus.DONE, "phone", true, null, emptyList(), listOf("Shopping", "to do"))
+        val bare = BackupNote(2000, "b.wav", "en", NoteStatus.DONE, "phone", true, null, emptyList())
+        val m = BackupManifest(BackupArchive.FORMAT_VERSION, "0.2.0", 3, 1, 2, 0, emptyList(), settings, labels = listOf("Shopping", "to do", "unused"))
+        BackupArchive.open(ByteArrayInputStream(build(listOf(labelled, bare), emptyMap(), m))).use {
+            assertEquals(listOf("Shopping", "to do"), it.notes[0].labels)
+            assertTrue(it.notes[1].labels.isEmpty())
+            assertEquals(listOf("Shopping", "to do", "unused"), it.manifest.labels)
+        }
+    }
+
+    @Test fun aVersion1BackupFromTheFirstReleaseIsStillRead() {
+        val notes = listOf(note("a.wav", 1000, wavA))
+        val m = manifest(notes)
+        val manifestJson = org.json.JSONObject(String(manifestBytes(notes, m))).apply { put("formatVersion", 1); remove("labels") }
+        val notesJson = org.json.JSONObject(String(notesBytes(notes))).also { root -> root.getJSONArray("notes").let { a -> for (i in 0 until a.length()) a.getJSONObject(i).remove("labels") } }
+        val bytes = zip("manifest.json" to manifestJson.toString().toByteArray(), "notes.json" to notesJson.toString().toByteArray(), "audio/a.wav" to wavA)
+        BackupArchive.open(ByteArrayInputStream(bytes)).use {
+            assertEquals(1, it.manifest.formatVersion)
+            assertTrue(it.notes.single().labels.isEmpty())
+            assertTrue(it.manifest.labels.isEmpty())
+            assertEquals(setOf("a.wav"), it.stageAudio(null))
+        }
+    }
+
+    @Test fun unusableLabelNamesInABackupAreDropped() {
+        val notes = listOf(note("a.wav", 1000, null))
+        val root = org.json.JSONObject(String(notesBytes(notes)))
+        root.getJSONArray("notes").getJSONObject(0).put("labels", org.json.JSONArray(listOf("ok", "bad\"quote", "", "ok", "  spaced   out ")))
+        BackupArchive.open(ByteArrayInputStream(zip("manifest.json" to manifestBytes(notes), "notes.json" to root.toString().toByteArray()))).use {
+            assertEquals(listOf("ok", "spaced out"), it.notes.single().labels)
+        }
+    }
+
     @Test fun checkingWithoutStagingWorks() {
         val notes = listOf(note("a.wav", 1000, wavA))
         BackupArchive.open(ByteArrayInputStream(build(notes, mapOf("a.wav" to wavA)))).use { assertEquals(setOf("a.wav"), it.stageAudio(null)) }

@@ -3,6 +3,7 @@ package be.sequr.voicenotes
 
 import androidx.room.Dao
 import androidx.room.Insert
+import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Transaction
 import kotlinx.coroutines.flow.Flow
@@ -24,6 +25,32 @@ abstract class NoteDao {
 
     @Query("SELECT COUNT(*) FROM transcripts WHERE noteId = :noteId")
     abstract fun countTranscripts(noteId: Long): Int
+
+    // --- labels ---
+
+    @Query("SELECT labels.id AS id, labels.name AS name, COUNT(note_labels.noteId) AS notes FROM labels LEFT JOIN note_labels ON note_labels.labelId = labels.id GROUP BY labels.id ORDER BY labels.name COLLATE NOCASE")
+    abstract fun observeLabels(): Flow<List<LabelCount>>
+
+    @Query("SELECT * FROM labels")
+    abstract fun labels(): List<Label>
+
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    abstract fun insertLabel(label: Label): Long
+
+    @Query("UPDATE labels SET name = :name WHERE id = :id")
+    abstract fun renameLabel(id: Long, name: String)
+
+    @Query("DELETE FROM labels WHERE id = :id")
+    abstract fun deleteLabel(id: Long)
+
+    @Query("DELETE FROM labels")
+    abstract fun deleteAllLabels()
+
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    abstract fun link(link: NoteLabel)
+
+    @Query("DELETE FROM note_labels WHERE noteId = :noteId AND labelId = :labelId")
+    abstract fun unlink(noteId: Long, labelId: Long)
 
     /** What a restore compares against; see [BackupPlan]. */
     @Query("SELECT createdAt, audioFile FROM notes")

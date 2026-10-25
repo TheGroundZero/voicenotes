@@ -16,8 +16,15 @@ Voice Notes is designed so that your voice and your words stay on your phone.
 
 ## What leaves the phone
 
-- **Only what you send:** *Share* (text or audio), *Export*, or *Add to file* (a Markdown file you picked). The app
-  never sends a note anywhere by itself.
+- **Only what you send:** *Share* (text or audio), *Export*, *Add to file* (a Markdown file you picked), or a *Backup*
+  you save. The app never sends a note anywhere by itself.
+- **Backups:** *Backup & restore* writes one file to a location you pick with Android's file picker. The app that
+  provides the location (for example Nextcloud) does any uploading, not Voice Notes. A backup holds every note, all
+  versions of its text and, if you leave it on, every recording. **Switch on the passphrase** (it is on by default):
+  the file is then encrypted (AES-256-GCM, key from your passphrase with PBKDF2-HMAC-SHA256, 600,000 rounds), and nobody,
+  including the developer, can open it without the passphrase, which cannot be recovered. Without a passphrase, anyone
+  who can read the file can hear and read everything in it. Restoring reads the file you pick and changes nothing
+  until you confirm. See [docs/BACKUP.md](docs/BACKUP.md) for the format.
 - **Model downloads:** when you tap *Download* on the Models screen, the phone connects to **huggingface.co** (and
   its content-delivery hosts) and downloads one speech-model file. Hugging Face can see the request, including your
   IP address, as for any download; the app sends no account, device identifier or other data and checks the file against a

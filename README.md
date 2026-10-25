@@ -21,6 +21,7 @@ button, or from Android Auto), speak, stop. The speech is turned into text **on 
 - **Battery aware:** transcription waits while the battery is low or battery saver is on, then resumes.
 - **Sharing on your terms:** share text or audio, append notes to a Markdown file you choose (for example in an
   Obsidian vault or a Nextcloud folder), or export everything.
+- **Backup and restore** to a file you choose (for example in Nextcloud), optionally encrypted with a passphrase.
 - **Bluetooth microphone** (optional) to record through a headset or a car's hands-free system.
 
 ## Privacy

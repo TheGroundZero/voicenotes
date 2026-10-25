@@ -5,6 +5,14 @@ versions follow [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Added
+
+- **Backup & restore** (menu): save all notes, every transcript version and, optionally, the recordings as one file in a
+  place you pick (Nextcloud and other providers work through Android's file picker). The file can be encrypted with a
+  passphrase (AES-256-GCM; on by default; a lost passphrase cannot be recovered). The backup is read back and checked
+  right after it is written. Restoring shows what the file holds first, can add to your notes (default) or replace
+  them, skips notes you already have, and changes nothing if anything is wrong with the file. See `docs/BACKUP.md`.
+
 ## [0.1.0] - 2026-10-23
 
 First public version (0.1.0). Everything below is new.

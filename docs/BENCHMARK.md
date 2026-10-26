@@ -54,7 +54,7 @@ These numbers are proposals: they are reviewed in the pull request that adds thi
 
 Three layers, each with its own licence story, so the repository stays clean:
 
-1. **Original sentences, committed (CC0).** [`benchmark/sentences/`](../benchmark/sentences): 35 per language to start
+1. **Original sentences, committed (CC0).** [`benchmark/sentences/`](../benchmark/sentences): 36 per language to start
    with (`en.tsv`, `nl.tsv`, `fr.tsv`), written for this project and invented from start to end (names, streets, numbers).
    Categories: reminders, shopping lists, addresses, amounts, dates and times, names, mixed-language words, short
    fragments, long run-ons, digit groups, hesitations, one-word notes, two languages in one note, a 30-second note and a

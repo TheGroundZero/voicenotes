@@ -12,10 +12,10 @@ nl-007	shopping	Pasta, tomaten, basilicum, parmezaan en een fles olijfolie.
 nl-008	address	Spreek met me af op Stationsstraat veertien in Gent, de ingang is aan de achterkant.
 nl-009	address	De garage ligt aan de Molenlaan, net na de rotonde met de grote eik.
 nl-010	address	Stuur het pakket naar Kerkstraat tweeëntwintig, bus drie, in Antwerpen.
-nl-011	amount	De herstelling kost driehonderdveertig euro en de banden nog eens tweehonderdtien.
-nl-012	amount	Schrijf vijftig euro over naar Tom voor de benzine en twaalf euro voor het parkeren.
+nl-011	amount	De herstelling kost driehonderdveertig euro en de banden nog eens tweehonderd en tien.
+nl-012	amount	Schrijf vijftig euro over naar Tom voor de benzine en twaalf en een halve euro voor het parkeren.
 nl-013	datetime	De afspraak is op drie november om kwart over negen.
-nl-014	datetime	Boek de trein voor vrijdag twaalf november, vertrek om twintig voor acht in de ochtend.
+nl-014	datetime	Boek de trein voor vrijdag twaalf november, vertrek om twintig voor acht 's morgens.
 nl-015	datetime	De tandarts heeft mijn afspraak verplaatst van dinsdagmiddag naar woensdag om half drie.
 nl-016	name	Bel dokter Janssens over de resultaten en mail mevrouw Peeters het nieuwe schema.
 nl-017	name	Zeg tegen Priya en Matteo dat de sleutels bij meneer Van den Berghe hiernaast liggen.
@@ -28,12 +28,13 @@ nl-023	short	De lader zit in het handschoenkastje.
 nl-024	runon	Ik ben net de afslag naar de luchthaven voorbij en ik besefte dat ik vergeten ben aan Anna te zeggen dat het verslag klaar is, dus als ik thuiskom moet ik het versturen, dan de klant bellen en daarna nog de facturen nakijken voor het weekend begint.
 nl-025	runon	Na de vergadering wil ik de bandenspanning controleren, de boeken terugbrengen naar de bibliotheek, bloemen kopen voor de buurvrouw en nog tijd vinden om iets te koken dat geen pasta is.
 nl-026	numbers	De code van het slot is vier zeven één negen en het referentienummer is acht twee nul vijf vijf.
-nl-027	numbers	Het dossiernummer is zes drie negen twee en de kamer is nummer honderdvier.
+nl-027	numbers	Het dossiernummer is zes drie negen twee en de kamer is nummer honderd en vier.
 nl-028	hesitation	Euh, dus ik denk dat we, eh, de levering moeten verplaatsen naar vrijdag, nee wacht, naar maandag.
 nl-029	hesitation	Oké, dus, laat me even denken, het, het verslag heeft nog, euh, twee grafieken nodig.
 nl-030	oneword	Melk.
 nl-031	oneword	Morgen.
 nl-032	twolang	De vergadering is om tien uur, and afterwards we are going to have lunch together in the old town.
 nl-033	twolang	This is a note for Peter, en zeg hem alsjeblieft dat de bestanden op de gedeelde schijf staan.
-nl-034	long	Voor het weekend moet ik een paar dingen doen. Eerst de garage bellen en vragen of de wagen vrijdag klaar is, want de remmen hadden nieuwe blokken nodig. Ten tweede een verjaardagscadeau bestellen voor mijn zus, iets kleins dat in een envelop past. Ten derde nakijken of de vlucht naar Lissabon nog op tijd is, en zo niet, de taxi verplaatsen. En ten slotte niet vergeten de planten op het balkon water te geven, vooral de tomaten, want volgens de weersvoorspelling wordt het erg warm.
-nl-035	verylong	Oké, dit is het plan voor volgende week. Op maandag rijd ik vroeg naar kantoor, omdat de printers worden vervangen en ik er wil zijn wanneer de technieker aankomt. Op dinsdag is er om tien uur de kwartaalvergadering en ik moet nog de slides afwerken, vooral de pagina met het budget, die Marta me gisteravond heeft doorgestuurd. Woensdag is voor het klantenbezoek in Rotterdam, dus ik moet een parkeerplaats boeken in de buurt van de haven en de stalen meebrengen uit de bergruimte. Donderdag gaat de wagen binnen voor de jaarlijkse keuring en ik moet hen vragen om het geluid van het linkerachterwiel na te kijken. Vrijdag heb ik vrij, dus misschien kan ik eindelijk naar de bakker op de hoek gaan, een stevig brood kopen en de namiddag de garage opruimen, want de verhuisdozen staan nog steeds tegen de muur opgestapeld.
+nl-034	twolang	Korte recap van de meeting van daarnet: we moeten de constraint herformuleren want er zijn teveel grijze zones. Achteraf moeten die opnieuw gevalideerd worden met de developers. Deadline is volgende week woensdag.
+nl-035	long	Voor het weekend moet ik een paar dingen doen. Eerst de garage bellen en vragen of de wagen vrijdag klaar is, want de remmen hadden nieuwe blokken nodig. Ten tweede een verjaardagscadeau bestellen voor mijn zus, iets kleins dat in een envelop past. Ten derde nakijken of de vlucht naar Lissabon nog op tijd is, en zo niet, de taxi verplaatsen. En ten slotte niet vergeten de planten op het balkon water te geven, vooral de tomaten, want volgens de weersvoorspelling wordt het erg warm.
+nl-036	verylong	Oké, dit is het plan voor volgende week. Op maandag rijd ik vroeg naar kantoor, omdat de printers worden vervangen en ik er wil zijn wanneer de technieker aankomt. Op dinsdag is er om tien uur de kwartaalvergadering en ik moet nog de slides afwerken, vooral de pagina met het budget, die Marta me gisteravond heeft doorgestuurd. Woensdag is voor het klantenbezoek in Rotterdam, dus ik moet een parkeerplaats boeken in de buurt van de haven en de stalen meebrengen uit de bergruimte. Donderdag gaat de wagen binnen voor de jaarlijkse keuring en ik moet hen vragen om het geluid van het linkerachterwiel na te kijken. Vrijdag heb ik vrij, dus misschien kan ik eindelijk naar de bakker op de hoek gaan, een stevig brood kopen en de namiddag de garage opruimen, want de verhuisdozen staan nog steeds tegen de muur opgestapeld.

@@ -6,11 +6,14 @@ import android.util.Log
 import java.io.File
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
+import org.json.JSONObject
 
 /**
- * [speechSeconds], if given, runs first; a result of zero seconds means the note has no speech and is not transcribed.
+ * The Whisper engine. The transcription steps (speech check, window sizing, language detection among the preferred
+ * languages, beam search) run in native code that is shared with the benchmark tool (whisper_core.cpp), so the benchmark
+ * measures what the app does. [vadModel], if given, is the speech-check model: a note without speech is not transcribed.
  */
-class WhisperTranscriber(modelFile: File, private val speechSeconds: ((FloatArray) -> Float?)? = null) : Transcriber {
+class WhisperTranscriber(modelFile: File, private val vadModel: File? = null) : Transcriber {
     private val handle = WhisperBridge.nativeInit(modelFile.path)
 
     init {
@@ -18,36 +21,18 @@ class WhisperTranscriber(modelFile: File, private val speechSeconds: ((FloatArra
     }
 
     override fun transcribe(wav: File, language: String, preferred: List<String>): TranscriptionResult {
-        val samples = readSamples(wav)
-        // The app's own start beep is recorded at the start of every note. The speech check ignores it (it is
-        // evaluated on audio with the first 300 ms silenced), but Whisper gets the audio as recorded: silencing
-        // the start for Whisper made it repeat a one-word note 11 times, while the beep does no harm.
-        val forSpeechCheck = samples.copyOf().also { it.fill(0f, 0, minOf(it.size, START_BEEP_SAMPLES)) }
-        if (speechSeconds?.invoke(forSpeechCheck) == 0f) {
-            return TranscriptionResult("", language.takeIf { it != Transcriber.AUTO } ?: preferred.first(), detected = false, noSpeech = true)
-        }
-        val audioCtx = AudioContext.forSamples(samples.size)
-        val detected = language == Transcriber.AUTO
-        val t0 = System.nanoTime()
-        val lang = if (detected) detect(samples, preferred, audioCtx) else language
-        val t1 = System.nanoTime()
-        val text = String(WhisperBridge.nativeTranscribe(handle, samples, lang, THREADS, audioCtx), Charsets.UTF_8).trim()
-        // Timings only, never content.
-        Log.i(TAG, "audioCtx=$audioCtx detect=%.1fs transcribe=%.1fs".format((t1 - t0) / 1e9, (System.nanoTime() - t1) / 1e9))
-        return TranscriptionResult(text, lang, detected)
-    }
-
-    /**
-     * Whisper scores every language it knows; we only look at the preferred ones, so a short or
-     * noisy clip cannot come back as an unrelated language. If even the best preferred score is
-     * weak, fall back to the first preferred language.
-     */
-    private fun detect(samples: FloatArray, preferred: List<String>, audioCtx: Int): String {
         require(preferred.isNotEmpty()) { "No preferred languages" }
-        if (preferred.size == 1) return preferred.first()
-        val scores = WhisperBridge.nativeDetectLanguage(handle, samples, preferred.toTypedArray(), THREADS, audioCtx)
-        val best = scores.indices.maxBy { scores[it] }
-        return if (scores[best] >= MIN_CONFIDENCE) preferred[best] else preferred.first()
+        val samples = readSamples(wav)
+        val json = JSONObject(String(WhisperBridge.nativeTranscribeNote(handle, samples, language, preferred.toTypedArray(), vadModel?.path, THREADS), Charsets.UTF_8))
+        // Timings only, never content.
+        Log.i(TAG, "speech=%.2fs audioCtx=%d detect=%.1fs transcribe=%.1fs".format(
+            json.getDouble("speechSeconds"), json.getInt("audioCtx"), json.getDouble("detectSeconds"), json.getDouble("transcribeSeconds")))
+        return TranscriptionResult(
+            text = json.getString("text"),
+            language = json.getString("language"),
+            detected = json.getBoolean("detected"),
+            noSpeech = json.getBoolean("noSpeech"),
+        )
     }
 
     private fun readSamples(wav: File): FloatArray {
@@ -61,11 +46,7 @@ class WhisperTranscriber(modelFile: File, private val speechSeconds: ((FloatArra
     companion object {
         private const val TAG = "Transcription"
         private const val WAV_HEADER_SIZE = 44
-        private const val START_BEEP_SAMPLES = AudioContext.SAMPLE_RATE * 3 / 10 // first 300 ms
         private const val THREADS = 4 // 8 was not faster in the M0 benchmark
-
-        /** Probability (out of all ~99 languages) the best preferred language must reach to be trusted. */
-        private const val MIN_CONFIDENCE = 0.15f
 
         /** Installed model ids, the default first. */
         fun installedModels(context: Context): List<String> = ModelStore.ids(context)

@@ -5,6 +5,7 @@ build/
 .cxx/
 build-whisper-cli/
 build-whisper-cli-i8mm/
+build-vn-bench/
 *.log
 
 # Machine-specific

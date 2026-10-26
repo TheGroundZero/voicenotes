@@ -8,9 +8,10 @@
 
 #include "ggml-backend.h"
 #include "whisper.h"
+#include "whisper_core.h"
 
-// Returns the transcript as UTF-8 bytes: segment boundaries can split multi-byte
-// characters, which NewStringUTF() does not tolerate.
+// The transcription itself lives in whisper_core.cpp, shared with the benchmark tool. Text goes back to Kotlin as UTF-8
+// bytes (a JSON object): segment boundaries can split multi-byte characters, which NewStringUTF() does not tolerate.
 namespace {
 void log_to_android(ggml_log_level level, const char *text, void *) {
     // Only warnings and errors by default; informational lines (including which processor variant was loaded) at INFO.
@@ -67,109 +68,38 @@ Java_be_sequr_voicenotes_WhisperBridge_nativeInit(JNIEnv *env, jobject, jstring 
     return reinterpret_cast<jlong>(ctx);
 }
 
+// Transcribes one note (16 kHz mono floats): speech check, window sizing, language detection among `preferred`, beam
+// search. `vadModelPath` may be null to skip the speech check. Returns vn::to_json(result) as UTF-8 bytes.
 JNIEXPORT jbyteArray JNICALL
-Java_be_sequr_voicenotes_WhisperBridge_nativeTranscribe(JNIEnv *env, jobject, jlong handle,
-                                                  jfloatArray samples, jstring language,
-                                                  jint threads, jint audioCtx) {
+Java_be_sequr_voicenotes_WhisperBridge_nativeTranscribeNote(JNIEnv *env, jobject, jlong handle, jfloatArray samples,
+                                                      jstring language, jobjectArray preferred,
+                                                      jstring vadModelPath, jint threads) {
     auto *ctx = reinterpret_cast<whisper_context *>(handle);
-    const char *lang = env->GetStringUTFChars(language, nullptr);
-    jfloat *data = env->GetFloatArrayElements(samples, nullptr);
-    const jsize n = env->GetArrayLength(samples);
-
-    // Beam search, not greedy: in the M0 benchmark the large models silently dropped the first 30 s
-    // of a noisy clip with greedy decoding; beam size 5 fixed it (beam search was found necessary in benchmarks on large models).
-    whisper_full_params params = whisper_full_default_params(WHISPER_SAMPLING_BEAM_SEARCH);
-    params.beam_search.beam_size = 5;
-    params.language = lang;
-    params.n_threads = threads;
-    params.audio_ctx = audioCtx; // 0 = the full 30 s window; short notes use a shorter one (much faster)
-    params.translate = false;
-    params.no_timestamps = true;
-    params.print_progress = false;
-    params.print_realtime = false;
-    params.print_special = false;
-    params.print_timestamps = false;
-
-    std::string text;
-    if (whisper_full(ctx, params, data, n) == 0) {
-        const int segments = whisper_full_n_segments(ctx);
-        for (int i = 0; i < segments; i++) text += whisper_full_get_segment_text(ctx, i);
-    }
-
-    env->ReleaseFloatArrayElements(samples, data, JNI_ABORT);
-    env->ReleaseStringUTFChars(language, lang);
-
-    jbyteArray out = env->NewByteArray(static_cast<jsize>(text.size()));
-    env->SetByteArrayRegion(out, 0, static_cast<jsize>(text.size()),
-                            reinterpret_cast<const jbyte *>(text.data()));
-    return out;
-}
-
-// Probability of each candidate language code, in the order given (0 for codes whisper does not know).
-// Only the first ~30 s of audio are used. Restricting the choice to candidates is done by the caller.
-JNIEXPORT jfloatArray JNICALL
-Java_be_sequr_voicenotes_WhisperBridge_nativeDetectLanguage(JNIEnv *env, jobject, jlong handle,
-                                                      jfloatArray samples, jobjectArray codes,
-                                                      jint threads, jint audioCtx) {
-    auto *ctx = reinterpret_cast<whisper_context *>(handle);
-    jfloat *data = env->GetFloatArrayElements(samples, nullptr);
-    const jsize n = env->GetArrayLength(samples);
-
-    // Needs the Voice Notes patch to whisper.cpp (third_party/patches): upstream detection always encodes 30 s.
-    whisper_set_audio_ctx(ctx, audioCtx);
-    std::vector<float> probs(whisper_lang_max_id() + 1, 0.0f);
-    bool ok = whisper_pcm_to_mel(ctx, data, n, threads) == 0 &&
-              whisper_lang_auto_detect(ctx, 0, threads, probs.data()) >= 0;
-    env->ReleaseFloatArrayElements(samples, data, JNI_ABORT);
-
-    const jsize count = env->GetArrayLength(codes);
-    jfloatArray out = env->NewFloatArray(count);
-    std::vector<float> scores(count, 0.0f);
-    for (jsize i = 0; i < count && ok; i++) {
-        auto code = (jstring) env->GetObjectArrayElement(codes, i);
-        const char *c = env->GetStringUTFChars(code, nullptr);
-        const int id = whisper_lang_id(c);
-        if (id >= 0) scores[i] = probs[id];
-        env->ReleaseStringUTFChars(code, c);
+    vn::Options options;
+    options.threads = threads;
+    auto to_string = [&](jstring s) {
+        const char *c = env->GetStringUTFChars(s, nullptr);
+        std::string out(c);
+        env->ReleaseStringUTFChars(s, c);
+        return out;
+    };
+    options.language = to_string(language);
+    const jsize count = env->GetArrayLength(preferred);
+    for (jsize i = 0; i < count; i++) {
+        auto code = (jstring) env->GetObjectArrayElement(preferred, i);
+        options.preferred.push_back(to_string(code));
         env->DeleteLocalRef(code);
     }
-    env->SetFloatArrayRegion(out, 0, count, scores.data());
-    return out;
-}
-
-// Seconds of speech Silero VAD finds in the audio (segments of at least 250 ms), or -1 if the check could
-// not run. Used only to decide whether a note is worth transcribing at all.
-JNIEXPORT jfloat JNICALL
-Java_be_sequr_voicenotes_WhisperBridge_nativeSpeechSeconds(JNIEnv *env, jobject, jstring modelPath,
-                                                     jfloatArray samples, jfloat threshold,
-                                                     jint threads) {
-    const char *path = env->GetStringUTFChars(modelPath, nullptr);
-    whisper_vad_context_params cparams = whisper_vad_default_context_params();
-    cparams.use_gpu = false;
-    cparams.n_threads = threads;
-    whisper_vad_context *vctx = whisper_vad_init_from_file_with_params(path, cparams);
-    env->ReleaseStringUTFChars(modelPath, path);
-    if (vctx == nullptr) return -1.0f;
+    if (vadModelPath != nullptr) options.vad_model_path = to_string(vadModelPath);
 
     jfloat *data = env->GetFloatArrayElements(samples, nullptr);
-    const jsize n = env->GetArrayLength(samples);
-    whisper_vad_params vparams = whisper_vad_default_params();
-    vparams.threshold = threshold;
-    whisper_vad_segments *segments = whisper_vad_segments_from_samples(vctx, vparams, data, n);
+    const std::vector<float> pcm(data, data + env->GetArrayLength(samples));
     env->ReleaseFloatArrayElements(samples, data, JNI_ABORT);
 
-    float seconds = -1.0f;
-    if (segments != nullptr) {
-        seconds = 0.0f;
-        for (int i = 0; i < whisper_vad_segments_n_segments(segments); i++) {
-            // Segment times are in centiseconds.
-            seconds += (whisper_vad_segments_get_segment_t1(segments, i) -
-                        whisper_vad_segments_get_segment_t0(segments, i)) / 100.0f;
-        }
-        whisper_vad_free_segments(segments);
-    }
-    whisper_vad_free(vctx);
-    return seconds;
+    const std::string json = vn::to_json(vn::run(ctx, pcm, options));
+    jbyteArray out = env->NewByteArray(static_cast<jsize>(json.size()));
+    env->SetByteArrayRegion(out, 0, static_cast<jsize>(json.size()), reinterpret_cast<const jbyte *>(json.data()));
+    return out;
 }
 
 JNIEXPORT void JNICALL

@@ -61,6 +61,12 @@ the capabilities the kernel reports: i8mm, then dot-product with half-precision 
 baseline. ggml's own automatic choice picks an SVE2 variant on a Pixel 10, which is about twice as slow, so it is not
 used. The libraries must be extracted at install time (`useLegacyPackaging`), because ggml loads them by path.
 
+## The benchmark tool
+
+`scripts/benchmark-build.sh` builds the command-line tool that runs the app's transcription code on WAV files on this
+machine (see [BENCHMARK.md](BENCHMARK.md)); it needs cmake, a C++ compiler and about 5 minutes. The shared code is in
+`app/src/main/cpp/whisper_core.cpp`; `scripts/check.sh` also compiles and runs the tests for its pure parts.
+
 ## Reproducibility
 
 The release APK built from scratch should be byte-identical wherever it is built with the pinned tools (incremental builds can differ, so release with `./gradlew clean assembleRelease`); `scripts/verify-reproducible.sh` checks

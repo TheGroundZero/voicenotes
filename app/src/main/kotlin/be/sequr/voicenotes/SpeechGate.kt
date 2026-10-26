@@ -12,7 +12,8 @@ import java.security.MessageDigest
  * and can spend 30+ seconds doing it. Silero VAD (a ~1 MB model bundled in the app) is fast and cheap.
  *
  * The check can only SKIP a note, never delete it, and it fails open: if the detector cannot run, the
- * note is transcribed as usual.
+ * note is transcribed as usual. The check itself runs in native code (whisper_core.cpp, threshold 0.35, more sensitive
+ * than the library default of 0.5 so quiet speech is less likely to be missed); this object only provides the model file.
  */
 object SpeechGate {
     private const val TAG = "SpeechGate"
@@ -20,20 +21,8 @@ object SpeechGate {
     private const val SIZE = 885_098L
     private const val SHA256 = "29940d98d42b91fbd05ce489f3ecf7c72f0a42f027e4875919a28fb4c04ea2cf"
 
-    /** More sensitive than the library default (0.5), so quiet speech is less likely to be missed. */
-    private const val THRESHOLD = 0.35f
-
-    /** Seconds of speech found (segments of at least 250 ms), or null if the check could not run. */
-    fun speechSeconds(context: Context, samples: FloatArray): Float? {
-        val model = modelFile(context) ?: return null
-        val started = System.nanoTime()
-        val seconds = WhisperBridge.nativeSpeechSeconds(model.path, samples, THRESHOLD, 2)
-        Log.i(TAG, "speech=%.2fs check=%.2fs".format(seconds, (System.nanoTime() - started) / 1e9))
-        return seconds.takeIf { it >= 0f }
-    }
-
     /** The native code needs a real file path, so the bundled model is copied out once and verified. */
-    private fun modelFile(context: Context): File? {
+    fun modelFile(context: Context): File? {
         val file = File(File(context.filesDir, "vad").apply { mkdirs() }, ASSET)
         if (file.exists() && file.length() == SIZE) return file
         return try {

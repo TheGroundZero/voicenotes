@@ -5,7 +5,7 @@
 #   - licence information on every file
 #   - the Gradle wrapper is the genuine one
 #   - shell scripts parse; the third-party patch applies; the bundled model has its pinned checksum
-#   - Android Lint, unit tests, and the privacy guards (network only in ModelDownloader, no tracker libraries)
+#   - the native core tests (g++ only), Android Lint, unit tests, and the privacy guards (network only in ModelDownloader, no tracker libraries)
 # With --light only the checks that need no Android tools run (for a CI host without the SDK).
 # Needs the build tools otherwise: source env.sh (see docs/BUILDING.md).
 set -uo pipefail
@@ -39,6 +39,15 @@ step "no audio recordings in published files"
 if git ls-files --cached --others --exclude-standard | grep -i -E '\.(wav|m4a|mp3|ogg|opus|flac|aac|3gp|amr)$'; then
   echo "FAILED: audio files above (personal recordings must never be published)"; fail=1
 else echo ok; fi
+
+step "native core tests (audio-window sizing, JSON; need only a C++ compiler)"
+if [ "${1:-}" = "--light" ]; then echo "skipped (--light)"
+elif command -v g++ >/dev/null; then
+  core_test="$(mktemp)"
+  if g++ -std=c++17 -Wall -Wextra -I app/src/main/cpp benchmark/tests/core_test.cpp -o "$core_test" && "$core_test"; then echo ok
+  else echo "FAILED: native core tests"; fail=1; fi
+  rm -f "$core_test"
+else echo "skipped (no g++)"; fi
 
 step "lint, unit tests, privacy guards"
 if [ "${1:-}" = "--light" ]; then echo "skipped (--light)"

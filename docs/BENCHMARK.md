@@ -96,12 +96,26 @@ mid-sentence, two languages in one clip, and notes over 25 seconds (the full-win
 - **No new dependencies in the app or the build.** The scoring and corpus scripts are plain Python 3 with the standard
   library only.
 
+## Step 2: what was built and checked
+
+- `app/src/main/cpp/whisper_core.{h,cpp}` holds the whole per-note pipeline (speech check with the start beep silenced,
+  window sizing, restricted language detection, beam search); `audio_context.h` and `vn_result.h` are plain headers.
+  `whisper_jni.cpp` only converts types and calls the core; `WhisperTranscriber.kt` reads the JSON result.
+- `benchmark/vn_bench.cpp`, built by `scripts/benchmark-build.sh` into `build-vn-bench/`, prints one JSON line per clip
+  (transcript, language, speech seconds, window, timings) and the model load time and peak memory at the end.
+- `benchmark/tests/core_test.cpp` replaces the Kotlin `AudioContextTest` (same table, plus the exact 25-second edge)
+  and checks the JSON; `scripts/check.sh` runs it when a C++ compiler is present.
+- **Phone check (Pixel 10, `small` model, whisper.cpp's public-domain `jfk.wav`, 6 s of silence, 6 s of quiet noise, and a
+  33-second note):** the old and the new build gave the same text, language (detected), speech time (7.88 s) and window
+  (651); silence and noise were skipped by the speech check in both; the 33-second note used the full window. Timing was
+  within 0.1 s. The same clips on this machine through `vn-bench` gave the same text.
+
 ## Steps
 
 | Step | What | State |
 |---|---|---|
 | 1 | This design and the draft sentences, reviewed | in review |
-| 2 | Shared native core and `vn-bench`; the app re-tested on a phone | not started |
+| 2 | Shared native core and `vn-bench`; the app re-tested on a phone | done: same text, language, speech time and window as before on a phone, see below |
 | 3 | Corpus generation (voices, noise), scorer, first results for the installed models | not started |
 | 4 | Speed and memory on the Pixel 10 | not started |
 | 5 | Finding candidates automatically (new files on Hugging Face, whisper.cpp releases, leaderboards) | later |

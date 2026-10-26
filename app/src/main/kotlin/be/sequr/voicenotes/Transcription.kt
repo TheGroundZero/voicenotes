@@ -24,7 +24,7 @@ object Transcription {
         return try {
             WhisperBridge.ensureBackends(context) // picks the processor variant that suits this phone
             val start = System.nanoTime()
-            WhisperTranscriber(file, speechSeconds = if (checkForSpeech) { samples -> SpeechGate.speechSeconds(context, samples) } else null).use { TranscriptionOutcome(it.transcribe(wav, language, Settings.preferredLanguages(context)), model) }
+            WhisperTranscriber(file, vadModel = if (checkForSpeech) SpeechGate.modelFile(context) else null).use { TranscriptionOutcome(it.transcribe(wav, language, Settings.preferredLanguages(context)), model) }
                 .also {
                     val audioSeconds = (wav.length() - 44) / 32_000.0 // 16 kHz mono PCM16
                     Log.i(TAG, "model=$model audio=%.1fs took=%.1fs".format(audioSeconds, (System.nanoTime() - start) / 1e9))

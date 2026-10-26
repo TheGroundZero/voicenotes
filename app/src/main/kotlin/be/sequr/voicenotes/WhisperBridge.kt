@@ -21,8 +21,11 @@ object WhisperBridge {
 
     /** Returns a context handle, or 0 if the model could not be loaded. */
     external fun nativeInit(modelPath: String): Long
-    external fun nativeTranscribe(handle: Long, samples: FloatArray, language: String, threads: Int, audioCtx: Int): ByteArray
-    external fun nativeDetectLanguage(handle: Long, samples: FloatArray, codes: Array<String>, threads: Int, audioCtx: Int): FloatArray
-    external fun nativeSpeechSeconds(modelPath: String, samples: FloatArray, threshold: Float, threads: Int): Float
+    /**
+     * The whole transcription of one note in native code (shared with the benchmark tool): speech check (skipped when
+     * [vadModelPath] is null), window sizing, language detection among [preferred], beam search. [language] is a code or
+     * "auto". Returns a JSON object as UTF-8 bytes, see vn_result.h.
+     */
+    external fun nativeTranscribeNote(handle: Long, samples: FloatArray, language: String, preferred: Array<String>, vadModelPath: String?, threads: Int): ByteArray
     external fun nativeFree(handle: Long)
 }

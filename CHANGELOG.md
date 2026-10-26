@@ -5,6 +5,12 @@ versions follow [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Changed
+
+- Internal: the transcription steps (speech check, window sizing, language detection, beam search) moved from Kotlin into
+  native code shared with a new benchmark tool. On a phone the results are identical to 0.5.0 (same text, language and
+  speech detection on the same recordings).
+
 ## [0.5.0] - 2026-10-26
 
 ### Changed

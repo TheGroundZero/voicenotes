@@ -39,7 +39,7 @@ if(NOT WHISPER_HEADER MATCHES "whisper_set_audio_ctx")
 endif()
 add_subdirectory(${WHISPER_DIR} whisper.cpp)
 
-add_library(whisper_jni SHARED whisper_jni.cpp)
+add_library(whisper_jni SHARED whisper_jni.cpp whisper_core.cpp)
 target_link_libraries(whisper_jni whisper log)
 
 get_property(ALL_TARGETS DIRECTORY ${WHISPER_DIR}/ggml/src PROPERTY BUILDSYSTEM_TARGETS)

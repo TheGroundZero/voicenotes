@@ -1,0 +1,39 @@
+# Original sentences for the Voice Notes speech-model benchmark (docs/BENCHMARK.md). Written for this project and
+# released under CC0-1.0. Columns, separated by a tab: id, category, text. The text is both what a voice reads and the
+# exact reference the transcript is scored against, so numbers are written out in words (the scorer turns digits in a
+# transcript into words). Everything here is invented: names, streets and numbers are not real. DRAFT: to be reviewed.
+nl-001	reminder	Herinner me eraan om morgenochtend de tandarts te bellen en naar de factuur te vragen.
+nl-002	reminder	Vergeet niet om de stomerij op te halen voor vijf uur.
+nl-003	reminder	Notitie voor mezelf: het pakje voor de buren ligt achter de groene container.
+nl-004	reminder	Vraag aan Sam of de vergadering van donderdag een half uur later kan beginnen.
+nl-005	shopping	We hebben melk, eieren, een bruin brood, twee citroenen en een zak koffiebonen nodig.
+nl-006	shopping	Koop hondenvoer, batterijen voor de zaklamp en iets leuks voor de verjaardag van oma.
+nl-007	shopping	Pasta, tomaten, basilicum, parmezaan en een fles olijfolie.
+nl-008	address	Spreek met me af op Stationsstraat veertien in Gent, de ingang is aan de achterkant.
+nl-009	address	De garage ligt aan de Molenlaan, net na de rotonde met de grote eik.
+nl-010	address	Stuur het pakket naar Kerkstraat tweeëntwintig, bus drie, in Antwerpen.
+nl-011	amount	De herstelling kost driehonderdveertig euro en de banden nog eens tweehonderdtien.
+nl-012	amount	Schrijf vijftig euro over naar Tom voor de benzine en twaalf euro voor het parkeren.
+nl-013	datetime	De afspraak is op drie november om kwart over negen.
+nl-014	datetime	Boek de trein voor vrijdag twaalf november, vertrek om twintig voor acht in de ochtend.
+nl-015	datetime	De tandarts heeft mijn afspraak verplaatst van dinsdagmiddag naar woensdag om half drie.
+nl-016	name	Bel dokter Janssens over de resultaten en mail mevrouw Peeters het nieuwe schema.
+nl-017	name	Zeg tegen Priya en Matteo dat de sleutels bij meneer Van den Berghe hiernaast liggen.
+nl-018	name	Bedank Elena Kowalski voor de foto's van het huwelijk in Krakau.
+nl-019	mixed	Ik moet de meeting met de client verzetten en de slides nog even updaten.
+nl-020	mixed	Reserveer een tafel in de brasserie voor zaterdag en vraag om de croque monsieur.
+nl-021	short	Mama terugbellen.
+nl-022	short	Tanken voor maandag.
+nl-023	short	De lader zit in het handschoenkastje.
+nl-024	runon	Ik ben net de afslag naar de luchthaven voorbij en ik besefte dat ik vergeten ben aan Anna te zeggen dat het verslag klaar is, dus als ik thuiskom moet ik het versturen, dan de klant bellen en daarna nog de facturen nakijken voor het weekend begint.
+nl-025	runon	Na de vergadering wil ik de bandenspanning controleren, de boeken terugbrengen naar de bibliotheek, bloemen kopen voor de buurvrouw en nog tijd vinden om iets te koken dat geen pasta is.
+nl-026	numbers	De code van het slot is vier zeven één negen en het referentienummer is acht twee nul vijf vijf.
+nl-027	numbers	Het dossiernummer is zes drie negen twee en de kamer is nummer honderdvier.
+nl-028	hesitation	Euh, dus ik denk dat we, eh, de levering moeten verplaatsen naar vrijdag, nee wacht, naar maandag.
+nl-029	hesitation	Oké, dus, laat me even denken, het, het verslag heeft nog, euh, twee grafieken nodig.
+nl-030	oneword	Melk.
+nl-031	oneword	Morgen.
+nl-032	twolang	De vergadering is om tien uur, and afterwards we are going to have lunch together in the old town.
+nl-033	twolang	This is a note for Peter, en zeg hem alsjeblieft dat de bestanden op de gedeelde schijf staan.
+nl-034	long	Voor het weekend moet ik een paar dingen doen. Eerst de garage bellen en vragen of de wagen vrijdag klaar is, want de remmen hadden nieuwe blokken nodig. Ten tweede een verjaardagscadeau bestellen voor mijn zus, iets kleins dat in een envelop past. Ten derde nakijken of de vlucht naar Lissabon nog op tijd is, en zo niet, de taxi verplaatsen. En ten slotte niet vergeten de planten op het balkon water te geven, vooral de tomaten, want volgens de weersvoorspelling wordt het erg warm.
+nl-035	verylong	Oké, dit is het plan voor volgende week. Op maandag rijd ik vroeg naar kantoor, omdat de printers worden vervangen en ik er wil zijn wanneer de technieker aankomt. Op dinsdag is er om tien uur de kwartaalvergadering en ik moet nog de slides afwerken, vooral de pagina met het budget, die Marta me gisteravond heeft doorgestuurd. Woensdag is voor het klantenbezoek in Rotterdam, dus ik moet een parkeerplaats boeken in de buurt van de haven en de stalen meebrengen uit de bergruimte. Donderdag gaat de wagen binnen voor de jaarlijkse keuring en ik moet hen vragen om het geluid van het linkerachterwiel na te kijken. Vrijdag heb ik vrij, dus misschien kan ik eindelijk naar de bakker op de hoek gaan, een stevig brood kopen en de namiddag de garage opruimen, want de verhuisdozen staan nog steeds tegen de muur opgestapeld.

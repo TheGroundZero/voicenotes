@@ -16,6 +16,8 @@ local.properties
 # Large downloaded files: speech models (see docs/BUILDING.md) and benchmark caches
 models/
 benchmark/cache/
+benchmark/work/
+benchmark/private/
 
 # Signing keys and credentials must never be committed
 *.jks

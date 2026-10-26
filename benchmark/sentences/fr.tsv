@@ -1,0 +1,39 @@
+# Original sentences for the Voice Notes speech-model benchmark (docs/BENCHMARK.md). Written for this project and
+# released under CC0-1.0. Columns, separated by a tab: id, category, text. The text is both what a voice reads and the
+# exact reference the transcript is scored against, so numbers are written out in words (the scorer turns digits in a
+# transcript into words). Everything here is invented: names, streets and numbers are not real. DRAFT: to be reviewed.
+fr-001	reminder	Rappelle-moi d'appeler le dentiste demain matin et de demander la facture.
+fr-002	reminder	N'oublie pas de récupérer le pressing avant cinq heures.
+fr-003	reminder	Note pour moi-même : le colis des voisins est derrière la poubelle verte.
+fr-004	reminder	Demande à Sam si la réunion de jeudi peut commencer une demi-heure plus tard.
+fr-005	shopping	Il nous faut du lait, des œufs, un pain complet, deux citrons et un paquet de grains de café.
+fr-006	shopping	Acheter de la nourriture pour le chien, des piles pour la lampe de poche et un joli cadeau pour l'anniversaire de mamie.
+fr-007	shopping	Des pâtes, des tomates, du basilic, du parmesan et une bouteille d'huile d'olive.
+fr-008	address	Retrouvons-nous au quatorze, rue de la Gare, à Lille, l'entrée est à l'arrière.
+fr-009	address	Le garage se trouve avenue du Moulin, juste après le rond-point avec le grand chêne.
+fr-010	address	Envoie le colis au vingt-deux, rue des Écoles, appartement trois, à Bruxelles.
+fr-011	amount	La réparation coûtera trois cent quarante euros et les pneus encore deux cent dix.
+fr-012	amount	Vire cinquante euros à Tom pour l'essence et douze euros pour le parking.
+fr-013	datetime	Le rendez-vous est le trois novembre à neuf heures et quart.
+fr-014	datetime	Réserve le train pour vendredi douze novembre, départ à huit heures moins vingt du matin.
+fr-015	datetime	Le dentiste a déplacé mon rendez-vous de mardi après-midi à mercredi à deux heures et demie.
+fr-016	name	Appelle le docteur Lemaire pour les résultats et envoie le nouveau planning à madame Dubois.
+fr-017	name	Dis à Priya et à Matteo que les clés sont chez monsieur Van den Berghe à côté.
+fr-018	name	Remercie Elena Kowalski pour les photos du mariage à Cracovie.
+fr-019	mixed	Je dois décaler le meeting avec le client et mettre à jour les slides.
+fr-020	mixed	Ajoute melk, kaas et hagelslag à la liste pour le magasin belge.
+fr-021	short	Rappeler maman.
+fr-022	short	Faire le plein avant lundi.
+fr-023	short	Le chargeur est dans la boîte à gants.
+fr-024	runon	Je viens de dépasser la sortie pour l'aéroport et je me suis rendu compte que j'ai oublié de dire à Anna que le rapport est terminé, donc en rentrant je dois l'envoyer, puis appeler le client, et ensuite vérifier les factures avant que le week-end commence.
+fr-025	runon	Après la réunion, je veux vérifier la pression des pneus, rapporter les livres à la bibliothèque, acheter des fleurs pour la voisine et trouver encore le temps de cuisiner quelque chose qui ne soit pas des pâtes.
+fr-026	numbers	Le code de la serrure est quatre sept un neuf, et le numéro de référence est huit deux zéro cinq cinq.
+fr-027	numbers	Le numéro du dossier est six trois neuf deux et la salle porte le numéro cent quatre.
+fr-028	hesitation	Euh, alors je pense qu'on devrait, euh, décaler la livraison à vendredi, non attends, à lundi.
+fr-029	hesitation	Bon, alors, laisse-moi réfléchir, le, le rapport a encore besoin de, euh, deux graphiques.
+fr-030	oneword	Lait.
+fr-031	oneword	Demain.
+fr-032	twolang	La réunion est à dix heures, and afterwards we are going to have lunch together in the old town.
+fr-033	twolang	This is a note for Peter, et dis-lui s'il te plaît que les fichiers sont sur le disque partagé.
+fr-034	long	Avant le week-end, je dois faire quelques choses. D'abord, appeler le garage pour demander si la voiture sera prête vendredi, car les freins avaient besoin de nouvelles plaquettes. Ensuite, commander un cadeau d'anniversaire pour ma sœur, quelque chose de petit qui rentre dans une enveloppe. Troisièmement, vérifier si le vol pour Lisbonne est toujours à l'heure, et sinon, déplacer le taxi. Et enfin, ne pas oublier d'arroser les plantes du balcon, surtout les tomates, car la météo annonce une forte chaleur.
+fr-035	verylong	D'accord, voici le programme de la semaine prochaine. Lundi, je vais tôt au bureau, parce que les imprimantes sont remplacées et je veux être là quand le technicien arrivera. Mardi, il y a la revue trimestrielle à dix heures et je dois encore terminer les diapositives, surtout la page du budget que Marta m'a envoyée hier soir. Mercredi est réservé à la visite chez le client à Rotterdam, donc je dois réserver une place de parking près du port et apporter les échantillons du local de stockage. Jeudi, la voiture passe au contrôle technique annuel et je dois leur demander de vérifier le bruit de la roue arrière gauche. Vendredi, je suis libre, alors je pourrai peut-être enfin aller à la boulangerie du coin, acheter une vraie baguette et passer l'après-midi à ranger le garage, parce que les cartons du déménagement sont encore empilés contre le mur.

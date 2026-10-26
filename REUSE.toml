@@ -32,6 +32,12 @@ precedence = "override"
 SPDX-FileCopyrightText = "Google LLC"
 SPDX-License-Identifier = "Apache-2.0"
 
+# Original test sentences for the speech-model benchmark, released as public domain (docs/BENCHMARK.md).
+[[annotations]]
+path = ["benchmark/sentences/**"]
+SPDX-FileCopyrightText = "2026 The Voice Notes authors (sequr.be)"
+SPDX-License-Identifier = "CC0-1.0"
+
 # Silero VAD model, converted for whisper.cpp (see third_party/README.md).
 [[annotations]]
 path = ["app/src/main/assets/ggml-silero-v5.1.2.bin"]

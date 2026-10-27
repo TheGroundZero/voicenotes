@@ -5,6 +5,8 @@ versions follow [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [0.5.1] - 2026-10-27
+
 ### Changed
 
 - Internal: the transcription steps (speech check, window sizing, language detection, beam search) moved from Kotlin into

@@ -1,6 +1,6 @@
 # Releasing
 
-Status: used for v0.1.0 (2026-10-23), v0.2.0 to v0.4.0 (2026-10-25) and v0.5.0 (2026-10-26). Each signed APK built by GitHub Actions was byte-identical to a clean local build.
+Status: used for v0.1.0 (2026-10-23), v0.2.0 to v0.4.0 (2026-10-25) and v0.5.0 and v0.5.1 (2026-10-26 and 27). Each signed APK built by GitHub Actions was byte-identical to a clean local build.
 
 ## Versions
 

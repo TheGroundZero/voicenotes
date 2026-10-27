@@ -1,0 +1,1 @@
+Maintenance release. The transcription steps (speech check, language detection, beam search) moved into shared native code that a new benchmark tool also uses. Results are identical on the same recordings, and nothing changes in how you use the app. Nothing leaves your phone.

@@ -62,6 +62,7 @@ std::vector<std::string> split(const std::string &s, char sep) {
 
 int main(int argc, char **argv) {
     std::string model, vad;
+    bool fresh_context = true;                                // the app makes a new engine context for every note
     vn::Options options;
     options.preferred = {"en", "nl", "fr"};
     std::vector<std::string> clips;
@@ -73,6 +74,7 @@ int main(int argc, char **argv) {
         else if (arg == "--language") options.language = value();
         else if (arg == "--preferred") options.preferred = split(value(), ',');
         else if (arg == "--threads") options.threads = std::atoi(value().c_str());
+        else if (arg == "--reuse-context") fresh_context = false;   // faster, but state can leak from one clip into the next
         else if (arg == "--detect-audio-ctx") {        // the window of the language detection alone: same (as the app), auto, full or N
             const std::string v = value();
             options.detect_audio_ctx = v == "same" ? -2 : v == "auto" ? -1 : v == "full" ? 0 : std::atoi(v.c_str());
@@ -85,18 +87,22 @@ int main(int argc, char **argv) {
         else clips.push_back(arg);
     }
     if (model.empty() || clips.empty()) {
-        std::fprintf(stderr, "usage: vn-bench --model ggml-X.bin [--vad silero.bin] [--language auto|en|nl|fr] [--preferred en,nl,fr] [--threads N] [--audio-ctx auto|full|N] [--detect-audio-ctx same|auto|full|N] clip.wav...\n");
+        std::fprintf(stderr, "usage: vn-bench --model ggml-X.bin [--vad silero.bin] [--language auto|en|nl|fr] [--preferred en,nl,fr] [--threads N] [--audio-ctx auto|full|N] [--detect-audio-ctx same|auto|full|N] [--reuse-context] clip.wav...\n");
         return 2;
     }
     options.vad_model_path = vad;
 
+    auto load = [&]() {
+        whisper_context_params cparams = whisper_context_default_params();
+        cparams.use_gpu = false;
+        return whisper_init_from_file_with_params(model.c_str(), cparams);
+    };
     const auto load_started = std::chrono::steady_clock::now();
-    whisper_context_params cparams = whisper_context_default_params();
-    cparams.use_gpu = false;
-    whisper_context *ctx = whisper_init_from_file_with_params(model.c_str(), cparams);
+    whisper_context *ctx = load();
     if (ctx == nullptr) { std::fprintf(stderr, "could not load %s\n", model.c_str()); return 1; }
     const double load_seconds = std::chrono::duration<double>(std::chrono::steady_clock::now() - load_started).count();
-    std::printf("{\"type\":\"model\",\"path\":\"%s\",\"loadSeconds\":%.3f,\"threads\":%d}\n", vn::json_escape(model).c_str(), load_seconds, options.threads);
+    std::printf("{\"type\":\"model\",\"path\":\"%s\",\"loadSeconds\":%.3f,\"threads\":%d,\"freshContext\":%s}\n",
+                vn::json_escape(model).c_str(), load_seconds, options.threads, fresh_context ? "true" : "false");
 
     int errors = 0;
     for (const std::string &clip : clips) {
@@ -106,6 +112,11 @@ int main(int argc, char **argv) {
             std::printf("{\"type\":\"clip\",\"file\":\"%s\",\"error\":\"%s\"}\n", vn::json_escape(clip).c_str(), vn::json_escape(error).c_str());
             errors++;
             continue;
+        }
+        if (fresh_context && clip != clips.front()) {              // a new context for every clip, as the app has for every note
+            whisper_free(ctx);
+            ctx = load();
+            if (ctx == nullptr) { std::fprintf(stderr, "could not load %s\n", model.c_str()); return 1; }
         }
         const vn::Result result = vn::run(ctx, samples, options);
         std::printf("{\"type\":\"clip\",\"file\":\"%s\",\"audioSeconds\":%.3f,\"result\":%s}\n", vn::json_escape(clip).c_str(),

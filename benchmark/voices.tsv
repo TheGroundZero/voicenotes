@@ -1,0 +1,16 @@
+# Text-to-speech voices for the benchmark corpus (docs/BENCHMARK.md). Only voices whose training data is CC0, public domain or CC BY 4.0 are listed;
+# non-commercial, share-alike, AGPL, unclear ("see URL") and the Blizzard-licensed lessac voice were left out. Audio made with these voices is generated into
+# an ignored folder and never committed. Source of every voice: https://huggingface.co/rhasspy/piper-voices (licence of the repository: MIT; the
+# licence column is the licence of each voice's training data, from its MODEL_CARD, read on 2026-10-27). Columns, separated by a tab:
+# id, language, path, quality, sample rate, speaker ids used (- for a single-speaker voice), licence, dataset, onnx bytes, onnx sha256 (the SHA-256 Hugging Face publishes for the file).
+en_US-joe-medium	en	en/en_US/joe/medium	medium	22050	-	CC0	https://github.com/OHF-Voice/voice-datasets	63201294	58afce0321b8d9c46d7cdf9c16500cc55a793b4220212dba6b70fb788b3baf06
+en_US-mike-medium	en	en/en_US/mike/medium	medium	22050	-	CC0	https://github.com/OHF-Voice/voice-datasets	63221984	3157e69e2c580cab297483f4b301ee975a4590c17d35a9757e33347d0e90fae2
+en_GB-cori-medium	en	en/en_GB/cori/medium	medium	22050	-	public domain	https://librivox.org	63531379	1899f98e5fb8310154f3c2973f4b8a929ba7245e722b3d3a85680b833d95f10d
+en_GB-alba-medium	en	en/en_GB/alba/medium	medium	22050	-	CC BY 4.0	https://datashare.ed.ac.uk/handle/10283/3270	63201294	401369c4a81d09fdd86c32c5c864440811dbdcc66466cde2d64f7133a66ad03b
+nl_BE-nathalie-medium	nl	nl/nl_BE/nathalie/medium	medium	22050	-	CC0	https://github.com/rhasspy/dataset-voice-nathalie	63201294	49cf48023861f9fd42e13a8632f068fee67d1ce244a6ee38f29595afbf0a6be4
+nl_BE-rdh-medium	nl	nl/nl_BE/rdh/medium	medium	22050	-	CC0	https://github.com/r-dh/dutch-vl-tts	63104526	fb1a9d89ff53dbd510c5d10bd1365c36a5f76249c3ca603076646fd778003db1
+nl_NL-pim-medium	nl	nl/nl_NL/pim/medium	medium	22050	-	CC0	https://github.com/OHF-Voice/voice-datasets	63516050	403e58c3675c394f505c2428117bf34cc56e9542dcf6eadbdd3a84706c12e048
+nl_NL-ronnie-medium	nl	nl/nl_NL/ronnie/medium	medium	22050	-	CC0	https://github.com/OHF-Voice/voice-datasets	62950044	ac9aba346d2088ed1ddea646a843ef97dc8e1514cc75e969c90a0c843bb5cbf5
+fr_FR-siwis-medium	fr	fr/fr_FR/siwis/medium	medium	22050	-	CC BY 4.0	https://datashare.is.ed.ac.uk/handle/10283/2353	63201294	641d1ab097da2b81128c076810edb052b385decc8be3381814802a64a73baf99
+fr_FR-gilles-low	fr	fr/fr_FR/gilles/low	low	16000	-	CC0	https://www.kaggle.com/datasets/bryanpark/french-single-speaker-speech-dataset	63104526	5cd711846720e261c2a176f6924c198a7424d0a75dd4b0a5357a5fb9cb739285
+fr_FR-mls-medium	fr	fr/fr_FR/mls/medium	medium	22050	0,1	CC BY 4.0	http://openslr.org/94/	76733750	0ed223f78466917f2bae05ee90096ce69ab1fdeb251f55590d0e7422d234e162

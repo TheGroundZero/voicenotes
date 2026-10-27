@@ -18,6 +18,7 @@ path = [
   ".gitmodules",
   "gradle.properties",
   "docs/**",
+  "benchmark/voices.tsv",
   "fastlane/**",
   ".tangled/**",
   ".github/**",

@@ -67,11 +67,18 @@ Three layers, each with its own licence story, so the repository stays clean:
    fragments, long run-ons, digit groups, hesitations, one-word notes, two languages in one note, a 30-second note and a
    one-minute note. The reference is exact by construction. **You are expected to add real-life sentences.**
 2. **Synthetic speech from those sentences, generated, not committed.** A script produces several voices per language at
-   several speeds from the sentences. Only a manifest is committed (text, voice, engine version, seed, SHA-256 of the
-   audio). The proposed engine is Piper; **each voice has its own licence, derived from its training data, so every
-   voice used is checked and recorded** in `benchmark/voices.tsv` and voices with non-commercial or unclear terms are
-   excluded. Synthetic speech is cleaner than people: it ranks models but over-estimates real accuracy, so it is never
-   the only layer.
+   two speeds from the sentences. Only a manifest is committed (text, voice, engine version, seed, SHA-256 of the audio).
+   The engine is [Piper](https://github.com/rhasspy/piper) (MIT, archived; release 2023.11.14-2, `piper_linux_x86_64.tar.gz`,
+   SHA-256 `a50cb45f355b7af1f6d758c1b360717877ba0a398cc8cbe6d2a7a3a26e225992`, recorded at the first download because GitHub
+   publishes no digest for it; it is downloaded into the ignored cache, never committed, and runs offline). **Each voice has
+   its own licence, derived from its training data, so every voice used is checked and recorded** in
+   [`benchmark/voices.tsv`](../benchmark/voices.tsv), read from each voice's model card on 2026-10-27, with the SHA-256 of the
+   model file. **Rule: CC0, public domain or CC BY 4.0 only.** Left out: non-commercial (`ryan`, `hfc_*`, `l2arctic`, `semaine`),
+   share-alike (`northern_english_male`, `southern_english_female`, `upmc`), AGPL (`tom`), the Blizzard-licensed `lessac`, and
+   everything whose card says only "see URL" (`alan`, `amy`, `jenny_dioco`, `kusal`, `danny`, `arctic`). Chosen: English
+   `joe`, `mike` (CC0), `cori` (public domain), `alba` (CC BY 4.0); Dutch `nathalie` and `rdh` (**Belgian**, CC0), `pim`,
+   `ronnie` (CC0); French `siwis` (CC BY 4.0), `gilles` (CC0, low quality, 16 kHz) and two speakers of `mls` (CC BY 4.0). Synthetic
+   speech is cleaner than people: it ranks models but over-estimates real accuracy, so it is never the only layer.
 3. **Real human speech from public sources, downloaded by script into an ignored cache, never committed**
    (`benchmark/cache/`). Candidates: Mozilla Common Voice (CC0 for English, Dutch and French; its terms forbid
    re-hosting and identifying speakers, hence the cache) and per-file filtered Wikimedia speech. Licences are checked per
@@ -79,6 +86,15 @@ Three layers, each with its own licence story, so the repository stays clean:
 
 **Private holdout (never leaves the machine, git-ignored in `benchmark/private/`):** your own real notes with corrected
 transcripts, as a sanity check. **No recording of anybody's own voice is ever uploaded or committed.**
+
+**The plan** (`benchmark/vnbench/corpus.py`, pure and deterministic, tested): every sentence is made twice (two different
+voices, the second about 15 % faster), each in four conditions: clean and mixed with noise at 20, 10 and 5 dB signal-to-noise
+(the ratio of the speech's level to the noise's level, measured on the speech only; the noise kind rumble, pink or babble is
+fixed per sentence and rendition). That is 36 × 2 × 4 = 288 clips per language, 864 in all, plus the six one-word notes with
+12 seconds of silence around them and 16 clips without speech: silence (4, 8, 15 s), rumble and pink noise at three levels,
+overlapping babble, babble over a rumble (a television), two 35-second noises (the full-window path) and two short noises of 2 and 3
+seconds (where repetition loops have shown up). A smoke subset of 40 clips runs in minutes. Every speech clip starts with the
+app's start tone, as real notes do.
 
 **Conditions and special cases.** Each clip is made clean and mixed with noise at 20, 10 and 5 dB (fixed seeds): car-like
 low rumble, pink noise, and babble made from other synthetic voices (speech nobody wants). Noise is generated, not
@@ -123,7 +139,7 @@ mid-sentence, two languages in one clip, and notes over 25 seconds (the full-win
 | 1 | This design and the sentences, reviewed | done |
 | 2 | Shared native core and `vn-bench`; the app re-tested on a phone | done: same text, language, speech time and window as before on a phone (*Step 2* above) |
 | 3a | Scorer: normaliser, error rates, paired bootstrap, hallucination and repetition detectors (`benchmark/vnbench`, 28 tests) | done |
-| 3b | Corpus generation: voices with a licence check, generated noise, mixing at fixed levels, the start beep | not started |
+| 3b | Corpus: the voices with their licence check and the plan are done and tested; the audio utilities (resampling, noise, beep, mixing at an exact ratio) are done and tested; **making the audio waits for running the downloaded Piper program** | in progress |
 | 3c | Runner (`scripts/benchmark.sh`), report and the decision rule in code; first results for the installed models | not started |
 | 4 | Speed and memory on the Pixel 10 | not started |
 | 5 | Finding candidates automatically (new files on Hugging Face, whisper.cpp releases, leaderboards) | later |

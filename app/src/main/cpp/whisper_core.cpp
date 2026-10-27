@@ -96,7 +96,7 @@ Result run(whisper_context *ctx, const std::vector<float> &samples, const Option
         }
     }
 
-    result.audio_ctx = audio_context_for_samples(samples.size());
+    result.audio_ctx = options.audio_ctx >= 0 ? options.audio_ctx : audio_context_for_samples(samples.size());
     result.detected = detect;
     const auto detect_started = std::chrono::steady_clock::now();
     if (!detect) {

@@ -3,7 +3,7 @@
 // prints one JSON object per line. Build with scripts/benchmark-build.sh; see docs/BENCHMARK.md.
 //
 //   vn-bench --model ggml-small.bin [--vad ggml-silero-v5.1.2.bin] [--language auto|en|nl|fr] [--preferred en,nl,fr]
-//            [--threads 4] clip.wav...
+//            [--threads 4] [--audio-ctx auto|full|N] clip.wav...
 #include <chrono>
 #include <cstdio>
 #include <cstdlib>
@@ -73,11 +73,15 @@ int main(int argc, char **argv) {
         else if (arg == "--language") options.language = value();
         else if (arg == "--preferred") options.preferred = split(value(), ',');
         else if (arg == "--threads") options.threads = std::atoi(value().c_str());
+        else if (arg == "--audio-ctx") {               // auto (as the app), full (the whole 30 s window) or a number of frames
+            const std::string v = value();
+            options.audio_ctx = v == "auto" ? -1 : v == "full" ? 0 : std::atoi(v.c_str());
+        }
         else if (arg.rfind("--", 0) == 0) { std::fprintf(stderr, "unknown option %s\n", arg.c_str()); return 2; }
         else clips.push_back(arg);
     }
     if (model.empty() || clips.empty()) {
-        std::fprintf(stderr, "usage: vn-bench --model ggml-X.bin [--vad silero.bin] [--language auto|en|nl|fr] [--preferred en,nl,fr] [--threads N] clip.wav...\n");
+        std::fprintf(stderr, "usage: vn-bench --model ggml-X.bin [--vad silero.bin] [--language auto|en|nl|fr] [--preferred en,nl,fr] [--threads N] [--audio-ctx auto|full|N] clip.wav...\n");
         return 2;
     }
     options.vad_model_path = vad;

@@ -33,9 +33,10 @@ authority; `env.sh` points Java at the Debian system store when it exists. Do no
 
 ## Speech models
 
-The APK contains no speech model except the small voice-activity detector. To transcribe you need one of the models in
+The APK contains no model at all. To transcribe you need one of the models in
 `ModelCatalog.kt`: download it in the app (*Models* screen, needs network access and about 0.5 to 0.9 GB), or fetch it
-yourself and import it from a file. The catalog lists the exact files, sizes and SHA-256 checksums. For development
+yourself and import it from a file. The small speech-check model (Silero VAD) is downloaded with the first model, or
+imported (`scripts/fetch-vad-model.sh` fetches it and checks it against the catalog). The catalog lists the exact files, sizes and SHA-256 checksums. For development
 you can also copy a model into a debug build with adb:
 
 ```sh

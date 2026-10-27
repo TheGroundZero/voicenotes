@@ -1,14 +1,26 @@
 #!/bin/bash
 # SPDX-License-Identifier: GPL-3.0-or-later
 #
-# Re-downloads the Silero voice-activity-detection model bundled in the app and checks it against the committed copy,
-# so anyone can see that app/src/main/assets/ggml-silero-v5.1.2.bin is the unmodified upstream file.
-# Source: https://huggingface.co/ggml-org/whisper-vad (the model is MIT licensed, (c) 2020-present Silero Team).
+# The speech-check model (Silero VAD, MIT, (c) 2020-present Silero Team) is not part of the app: the app downloads it from
+# Hugging Face, like the speech models, at the revision and with the checksum pinned in ModelCatalog.kt. This script reads those
+# pins, downloads the same file and checks its size and SHA-256, so anyone can see the catalog entry is the genuine upstream file.
+#   scripts/fetch-vad-model.sh [DEST]      download, verify, keep at DEST (default models/ggml-silero-v5.1.2.bin, used by the benchmark)
+#   scripts/fetch-vad-model.sh --offline   only check that the pins in the catalog are well formed (no network; used by check.sh)
 set -euo pipefail
 cd "$(dirname "$0")/.."
-FILE=app/src/main/assets/ggml-silero-v5.1.2.bin
-SHA256=29940d98d42b91fbd05ce489f3ecf7c72f0a42f027e4875919a28fb4c04ea2cf
+CATALOG=app/src/main/kotlin/be/sequr/voicenotes/ModelCatalog.kt
+block="$(sed -n '/val speechCheck = ModelSpec(/,/^    )/p' "$CATALOG")"
+URL="$(grep -o 'url = "[^"]*"' <<<"$block" | cut -d'"' -f2)"
+SHA256="$(grep -o 'sha256 = "[^"]*"' <<<"$block" | cut -d'"' -f2)"
+SIZE="$(grep -o 'sizeBytes = [0-9_]*' <<<"$block" | grep -o '[0-9_]*$' | tr -d _)"
+[[ "$URL" =~ ^https://huggingface\.co/ggml-org/whisper-vad/resolve/[0-9a-f]{40}/ggml-silero-v5\.1\.2\.bin$ ]] || { echo "FAILED: the catalog URL is not pinned to a revision: $URL"; exit 1; }
+[[ "$SHA256" =~ ^[0-9a-f]{64}$ ]] || { echo "FAILED: the catalog SHA-256 is malformed: $SHA256"; exit 1; }
+[[ "$SIZE" =~ ^[0-9]+$ ]] || { echo "FAILED: the catalog size is malformed: $SIZE"; exit 1; }
+if [ "${1:-}" = "--offline" ]; then echo "ok (pins well formed)"; exit 0; fi
+DEST="${1:-models/ggml-silero-v5.1.2.bin}"
 TMP="$(mktemp)"; trap 'rm -f "$TMP"' EXIT
-curl -fsSL "https://huggingface.co/ggml-org/whisper-vad/resolve/main/ggml-silero-v5.1.2.bin" -o "$TMP"
-echo "$SHA256  $TMP" | sha256sum -c --quiet - && echo "upstream download matches the pinned checksum"
-echo "$SHA256  $FILE" | sha256sum -c --quiet - && echo "committed model matches the pinned checksum"
+curl -fsSL "$URL" -o "$TMP"
+[ "$(stat -c %s "$TMP")" = "$SIZE" ] || { echo "FAILED: the download has another size than the catalog says"; exit 1; }
+echo "$SHA256  $TMP" | sha256sum -c --quiet - || { echo "FAILED: the download does not match the catalog checksum"; exit 1; }
+mkdir -p "$(dirname "$DEST")"; mv "$TMP" "$DEST"; trap - EXIT
+echo "upstream file matches the catalog pins; saved to $DEST"

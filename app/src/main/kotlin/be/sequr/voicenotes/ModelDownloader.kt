@@ -10,7 +10,7 @@ import java.security.MessageDigest
 
 /**
  * The only class in the app that talks to the network (the build fails if any other file does;
- * see `verifyNetworkIsolation` in app/build.gradle.kts). It downloads one catalog model on request.
+ * see `verifyNetworkIsolation` in app/build.gradle.kts). It downloads one catalog model (or the small speech check) on request.
  *
  * Rules: HTTPS only, hosts limited to Hugging Face, no cookies or identifiers, resumable, and the
  * file is moved into place only after its size and SHA-256 match the catalog.
@@ -23,11 +23,12 @@ class ModelDownloader(private val context: Context) {
     }
 
     fun download(spec: ModelSpec, onProgress: (done: Long, total: Long) -> Unit, isCancelled: () -> Boolean): Result {
-        val part = File(ModelStore.dir(context), "${spec.fileName}.part")
+        val target = ModelStore.targetFor(context, spec)
+        val part = File(target.parentFile, "${spec.fileName}.part")
         try {
             var have = part.takeIf { it.exists() }?.length() ?: 0L
             if (have > spec.sizeBytes) { part.delete(); have = 0 }
-            if (spec.sizeBytes - have > ModelStore.dir(context).usableSpace) {
+            if (spec.sizeBytes - have > target.parentFile.usableSpace) {
                 return Result.Failed("Not enough free storage (needs ${(spec.sizeBytes - have) / 1_000_000} MB)")
             }
             if (have < spec.sizeBytes) {
@@ -58,7 +59,6 @@ class ModelDownloader(private val context: Context) {
                 part.delete()
                 return Result.Failed("The downloaded file did not match its checksum and was discarded")
             }
-            val target = ModelStore.file(context, spec.id)
             target.delete()
             return if (part.renameTo(target)) Result.Done else Result.Failed("Could not store the model")
         } catch (e: IOException) {

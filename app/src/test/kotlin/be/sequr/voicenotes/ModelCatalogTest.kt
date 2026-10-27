@@ -34,6 +34,21 @@ class ModelCatalogTest {
         }
     }
 
+    @Test fun theSpeechCheckIsPinnedLikeTheModelsButKeptOutOfTheModelList() {
+        val check = ModelCatalog.speechCheck
+        assertTrue(ModelCatalog.models.none { it.id == check.id })
+        assertTrue(Regex("[0-9a-f]{64}").matches(check.sha256))
+        assertEquals("ggml-silero-v5.1.2.bin", check.fileName)                 // the name earlier versions extracted their bundled copy under
+        assertEquals(885_098L, check.sizeBytes)
+        val uri = URI(check.url)
+        assertEquals("https", uri.scheme)
+        assertEquals("huggingface.co", uri.host)
+        assertTrue(Regex("/resolve/[0-9a-f]{40}/").containsMatchIn(check.url))
+        assertTrue(check.url.endsWith("/" + check.fileName))
+        assertEquals(check, ModelCatalog.downloadable(check.id))
+        assertNull(ModelCatalog.byId(check.id))                                // never offered as a transcription model
+    }
+
     @Test fun lookupById() {
         val first = ModelCatalog.models.first()
         assertEquals(first, ModelCatalog.byId(first.id))

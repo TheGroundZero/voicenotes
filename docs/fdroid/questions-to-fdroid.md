@@ -28,3 +28,15 @@ Three questions:
 
 Thanks,
 Sequr
+
+## Reply (2026-10-27)
+
+F-Droid answered the same day: open a Request For Packaging in fdroiddata (the app "is not ready for inclusion yet"; read the
+[Inclusion Policy](https://f-droid.org/docs/Inclusion_Policy/), especially the Quality criteria). Things must be built from
+source, or downloaded by the user; NonFreeNet might apply unless users can load the files from storage. The tools (NDK, CMake)
+are supported through sdkmanager and Debian. For quicker answers use the forum or chat (<https://f-droid.org/about#contact>).
+
+What changed because of it: the 885 KB speech-check model (question 1) is no longer in the APK. It is a catalog entry like the
+Whisper models: downloaded on request from huggingface.co at a pinned revision with a pinned SHA-256, or imported from a file.
+Questions 2 (anti-feature) and 3 (build tools; reproducible builds) remain for the request.
+

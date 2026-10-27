@@ -11,7 +11,7 @@ against. Build and release instructions are in [BUILDING.md](BUILDING.md) and [R
 
 ## Design rules
 
-- **Private by default.** No analytics, no accounts, no cloud. The only network use is downloading a speech model when
+- **Private by default.** No analytics, no accounts, no cloud. The only network use is downloading a speech model (and the small speech-check model) when
   the user asks for it (HTTPS, pinned revision, SHA-256 checked). Only `ModelDownloader.kt` may use network APIs, and the
   build fails otherwise. Models can also be imported from a file, so the app works with network access revoked.
 - **No Google services.** Built for GrapheneOS and plain AOSP; no Play Services, no tracker libraries (checked by the
@@ -39,9 +39,10 @@ against. Build and release instructions are in [BUILDING.md](BUILDING.md) and [R
 
 ## Next, in order
 
-1. **Publishing, remaining part.** Versions 0.1.0 to 0.5.1 are released (Tangled, GitHub mirror, Obtainium). Still to do: ask the F-Droid
-   team the open questions ([fdroid/questions-to-fdroid.md](fdroid/questions-to-fdroid.md)) and, if they agree, submit
-   the app.
+1. **Publishing, remaining part.** Versions 0.1.0 to 0.5.1 are released (Tangled, GitHub mirror, Obtainium). F-Droid answered the
+   questions ([fdroid/questions-to-fdroid.md](fdroid/questions-to-fdroid.md)): open a Request For Packaging, with everything built
+   from source or downloaded by the user. The one bundled binary (the speech-check model) is now downloaded like the Whisper models.
+   Still to do: read the Inclusion Policy's quality criteria, fix what they ask, and open the request.
 2. **Automated model benchmarking** (design and progress: [BENCHMARK.md](BENCHMARK.md); the decision rule is written down before any result; steps 1 and 2 of 5 are done). A repeatable harness that compares new speech models (Whisper family first, engine
    and model kept swappable) on word error rate, hallucinations, language identification, speed and memory, using only
    generated or openly licensed speech. Recordings of the maintainers' own voices are never uploaded or published.

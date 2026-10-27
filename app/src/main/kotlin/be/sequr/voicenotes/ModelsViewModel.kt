@@ -20,6 +20,10 @@ class ModelsViewModel(app: Application) : AndroidViewModel(app) {
     private val _defaultId = MutableStateFlow(ModelStore.resolve(app)?.id)
     val defaultId: StateFlow<String?> = _defaultId.asStateFlow()
 
+    /** Whether the speech check (see [SpeechGate]) is on the phone. */
+    private val _speechCheck = MutableStateFlow(SpeechGate.isInstalled(app))
+    val speechCheckInstalled: StateFlow<Boolean> = _speechCheck.asStateFlow()
+
     val downloads = ModelDownloads.states
 
     private val _allowMobileData = MutableStateFlow(Settings.allowMobileData(app))
@@ -41,6 +45,7 @@ class ModelsViewModel(app: Application) : AndroidViewModel(app) {
             val (models, default) = withContext(Dispatchers.IO) { ModelStore.installed(getApplication()) to ModelStore.resolve(getApplication())?.id }
             _installed.value = models
             _defaultId.value = default
+            _speechCheck.value = withContext(Dispatchers.IO) { SpeechGate.isInstalled(getApplication()) }
         }
     }
 
@@ -51,6 +56,13 @@ class ModelsViewModel(app: Application) : AndroidViewModel(app) {
     fun delete(id: String) {
         viewModelScope.launch {
             withContext(Dispatchers.IO) { ModelStore.delete(getApplication(), id) }
+            refresh()
+        }
+    }
+
+    fun deleteSpeechCheck() {
+        viewModelScope.launch {
+            withContext(Dispatchers.IO) { ModelStore.deleteSpeechCheck(getApplication()) }
             refresh()
         }
     }

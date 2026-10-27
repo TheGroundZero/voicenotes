@@ -44,4 +44,20 @@ object ModelCatalog {
     )
 
     fun byId(id: String) = models.firstOrNull { it.id == id }
+
+    /**
+     * The speech check (Silero VAD, 885 KB, MIT): not a transcription model, so it is not in [models] and never offered as one. It is
+     * downloaded like them, with the first model, or imported from a file; see [SpeechGate]. Pinned to a revision of ggml-org/whisper-vad.
+     */
+    val speechCheck = ModelSpec(
+        id = "silero-v5.1.2",
+        title = "Speech check",
+        description = "Tells speech from silence and noise, so notes without speech are skipped instead of getting invented text. Small, and used with every model.",
+        sizeBytes = 885_098,
+        sha256 = "29940d98d42b91fbd05ce489f3ecf7c72f0a42f027e4875919a28fb4c04ea2cf",
+        url = "https://huggingface.co/ggml-org/whisper-vad/resolve/9ffd54a1e1ee413ddf265af9913beaf518d1639b/ggml-silero-v5.1.2.bin",
+    )
+
+    /** Everything the downloader can fetch: the models and the speech check. */
+    fun downloadable(id: String): ModelSpec? = byId(id) ?: speechCheck.takeIf { it.id == id }
 }

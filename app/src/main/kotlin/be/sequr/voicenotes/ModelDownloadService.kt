@@ -52,7 +52,7 @@ class ModelDownloadService : Service() {
     }
 
     private fun start(modelId: String?) {
-        val spec = modelId?.let(ModelCatalog::byId)
+        val spec = modelId?.let(ModelCatalog::downloadable)
         // startForegroundService() obliges us to call startForeground() even when we refuse the job.
         ServiceCompat.startForeground(this, NOTIF_ID, notification(spec?.title ?: "model", 0, 0), ServiceInfo.FOREGROUND_SERVICE_TYPE_DATA_SYNC)
         if (spec == null || worker?.isAlive == true) {
@@ -67,32 +67,43 @@ class ModelDownloadService : Service() {
         cancelled = false
         ModelDownloads.set(spec.id, DownloadState.Downloading(0, spec.sizeBytes))
         worker = Thread {
-            var lastUpdate = 0L
-            val result = ModelDownloader(this).download(
-                spec,
-                onProgress = { done, total ->
-                    val now = System.currentTimeMillis()
-                    if (now - lastUpdate > 500) {
-                        lastUpdate = now
-                        if (done < total) {
-                            ModelDownloads.set(spec.id, DownloadState.Downloading(done, total))
-                            getSystemService(NotificationManager::class.java).notify(NOTIF_ID, notification(spec.title, done, total))
-                        } else {
-                            ModelDownloads.set(spec.id, DownloadState.Verifying)
-                        }
-                    }
-                },
-                isCancelled = { cancelled },
-            )
-            ModelDownloads.set(
-                spec.id,
-                when (result) {
-                    ModelDownloader.Result.Done, ModelDownloader.Result.Cancelled -> null
-                    is ModelDownloader.Result.Failed -> DownloadState.Failed(result.message)
-                },
-            )
+            val result = downloadOne(spec)
+            // The speech check is small and every model needs it: fetch it right after a model, unless it is there already.
+            if (result == ModelDownloader.Result.Done && spec.id != ModelCatalog.speechCheck.id && !SpeechGate.isInstalled(this)) {
+                ModelDownloads.set(ModelCatalog.speechCheck.id, DownloadState.Downloading(0, ModelCatalog.speechCheck.sizeBytes))
+                downloadOne(ModelCatalog.speechCheck)
+            }
             shutDown()
         }.also { it.start() }
+    }
+
+    /** Downloads [spec] and reports its progress under its own id. */
+    private fun downloadOne(spec: ModelSpec): ModelDownloader.Result {
+        var lastUpdate = 0L
+        val result = ModelDownloader(this).download(
+            spec,
+            onProgress = { done, total ->
+                val now = System.currentTimeMillis()
+                if (now - lastUpdate > 500) {
+                    lastUpdate = now
+                    if (done < total) {
+                        ModelDownloads.set(spec.id, DownloadState.Downloading(done, total))
+                        getSystemService(NotificationManager::class.java).notify(NOTIF_ID, notification(spec.title, done, total))
+                    } else {
+                        ModelDownloads.set(spec.id, DownloadState.Verifying)
+                    }
+                }
+            },
+            isCancelled = { cancelled },
+        )
+        ModelDownloads.set(
+            spec.id,
+            when (result) {
+                ModelDownloader.Result.Done, ModelDownloader.Result.Cancelled -> null
+                is ModelDownloader.Result.Failed -> DownloadState.Failed(result.message)
+            },
+        )
+        return result
     }
 
     /** A reason not to download right now, or null. Large files stay off mobile data unless the user allows it. */
@@ -140,7 +151,7 @@ class ModelDownloadService : Service() {
         private const val NOTIF_ID = 2
 
         fun start(context: Context, modelId: String) {
-            ModelDownloads.set(modelId, DownloadState.Downloading(0, ModelCatalog.byId(modelId)?.sizeBytes ?: 0))
+            ModelDownloads.set(modelId, DownloadState.Downloading(0, ModelCatalog.downloadable(modelId)?.sizeBytes ?: 0))
             context.startForegroundService(Intent(context, ModelDownloadService::class.java).setAction(ACTION_START).putExtra(EXTRA_MODEL, modelId))
         }
 

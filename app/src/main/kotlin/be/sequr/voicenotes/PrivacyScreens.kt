@@ -83,7 +83,7 @@ fun OnboardingScreen(onDone: () -> Unit) {
                 "• Microphone: to record your notes.\n" +
                     "• Notifications: to show that a note is being recorded or transcribed, with a Stop button.\n\n" +
                     "Two more are asked later, only if you use the feature: network access when you download a speech model " +
-                    "from huggingface.co, and nearby devices when you choose to record through a Bluetooth headset or car.",
+                    "(and its small speech-check companion) from huggingface.co, and nearby devices when you choose to record through a Bluetooth headset or car.",
                 style = MaterialTheme.typography.bodyMedium,
             )
             Text(
@@ -157,11 +157,11 @@ fun PrivacyScreen(onBack: () -> Unit) {
                     Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                         Text("Network", style = MaterialTheme.typography.titleMedium)
                         Text(
-                            "Used only to download a speech model from huggingface.co, and only when you tap Download on the " +
-                                "Models screen. Your recordings and text are never sent anywhere. Android cannot show whether " +
+                            "Used only to download a speech model, and the small speech-check model that skips notes without speech, from " +
+                                "huggingface.co, and only when you tap Download on the Models screen. Your recordings and text are never sent anywhere. Android cannot show whether " +
                                 "this is currently allowed. If you want the app to have no network access at all, switch it " +
                                 "off in the system's app settings (on GrapheneOS: Permissions → Network); everything except " +
-                                "downloads keeps working, and models can still be imported from a file.",
+                                "downloads keeps working, and models can still be imported from a file (the speech check too).",
                             style = MaterialTheme.typography.bodySmall,
                         )
                         OutlinedButton(onClick = { openAppSettings(context) }) { Text("Open app settings") }

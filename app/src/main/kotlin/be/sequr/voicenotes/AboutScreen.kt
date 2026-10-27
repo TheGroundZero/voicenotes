@@ -31,7 +31,7 @@ private class Component(val name: String, val what: String, val licence: String,
 private val components = listOf(
     Component("whisper.cpp and ggml", "Runs the speech recognition on the phone, and the speech detector.", "MIT", "Copyright (c) 2023-2026 The ggml authors"),
     Component("OpenAI Whisper", "The speech recognition models you download (model weights and design).", "MIT", "Copyright (c) 2022 OpenAI"),
-    Component("Silero VAD", "Tells speech from silence and noise (a small model bundled in the app).", "MIT", "Copyright (c) 2020-present Silero Team"),
+    Component("Silero VAD", "Tells speech from silence and noise (a small model, 885 KB, downloaded with the speech models).", "MIT", "Copyright (c) 2020-present Silero Team"),
     Component(
         "AndroidX: Core, Activity, Lifecycle, Compose, Material 3, Room",
         "The app's user interface and its database.",

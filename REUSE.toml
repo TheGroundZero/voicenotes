@@ -38,12 +38,6 @@ path = ["benchmark/sentences/**"]
 SPDX-FileCopyrightText = "2026 The Voice Notes authors (sequr.be)"
 SPDX-License-Identifier = "CC0-1.0"
 
-# Silero VAD model, converted for whisper.cpp (see third_party/README.md).
-[[annotations]]
-path = ["app/src/main/assets/ggml-silero-v5.1.2.bin"]
-SPDX-FileCopyrightText = "2020-present Silero Team"
-SPDX-License-Identifier = "MIT"
-
 # Our patch to whisper.cpp is a change to MIT-licensed code and stays under that licence.
 [[annotations]]
 path = ["third_party/patches/**"]

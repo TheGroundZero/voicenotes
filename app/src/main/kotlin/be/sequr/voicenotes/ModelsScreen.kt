@@ -46,7 +46,9 @@ fun ModelsScreen(viewModel: ModelsViewModel, onBack: () -> Unit) {
     val allowMobileData by viewModel.allowMobileData.collectAsStateWithLifecycle()
     val importing by viewModel.importing.collectAsStateWithLifecycle()
     val message by viewModel.message.collectAsStateWithLifecycle()
+    val speechCheckInstalled by viewModel.speechCheckInstalled.collectAsStateWithLifecycle()
     var deleting by remember { mutableStateOf<String?>(null) }
+    var deletingSpeechCheck by remember { mutableStateOf(false) }
     val picker = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()) { uri -> uri?.let(viewModel::importModel) }
     val busy = downloads.values.any { it !is DownloadState.Failed }
 
@@ -69,8 +71,9 @@ fun ModelsScreen(viewModel: ModelsViewModel, onBack: () -> Unit) {
         ) {
             item {
                 Text(
-                    "Speech recognition runs entirely on this phone. Models are downloaded from huggingface.co only when you " +
-                        "tap Download. Your recordings and transcripts are never uploaded.",
+                    "Speech recognition runs entirely on this phone. Models, and a small speech-check model that skips notes without " +
+                        "speech, are downloaded from huggingface.co only when you tap Download. Your recordings and transcripts are " +
+                        "never uploaded.",
                     style = MaterialTheme.typography.bodyMedium,
                 )
             }
@@ -87,6 +90,21 @@ fun ModelsScreen(viewModel: ModelsViewModel, onBack: () -> Unit) {
                     onCancel = viewModel::cancelDownload,
                     onMakeDefault = { viewModel.makeDefault(spec.id) },
                     onDelete = { deleting = spec.id },
+                )
+            }
+            item {
+                val check = ModelCatalog.speechCheck
+                CatalogCard(
+                    spec = check,
+                    installed = if (speechCheckInstalled) InstalledModel(check.id, check.sizeBytes, check) else null,
+                    isDefault = false,
+                    defaultable = false,
+                    state = downloads[check.id],
+                    anotherBusy = busy && downloads[check.id] == null,
+                    onDownload = { viewModel.download(check) },
+                    onCancel = viewModel::cancelDownload,
+                    onMakeDefault = {},
+                    onDelete = { deletingSpeechCheck = true },
                 )
             }
             val custom = installed.filter { it.id !in catalogIds }
@@ -138,6 +156,15 @@ fun ModelsScreen(viewModel: ModelsViewModel, onBack: () -> Unit) {
             dismissButton = { TextButton(onClick = { deleting = null }) { Text("Cancel") } },
         )
     }
+    if (deletingSpeechCheck) {
+        AlertDialog(
+            onDismissRequest = { deletingSpeechCheck = false },
+            title = { Text("Delete the speech check?") },
+            text = { Text("Without it, notes with no speech are transcribed too and can get invented text. You can download it again later.") },
+            confirmButton = { TextButton(onClick = { viewModel.deleteSpeechCheck(); deletingSpeechCheck = false }) { Text("Delete") } },
+            dismissButton = { TextButton(onClick = { deletingSpeechCheck = false }) { Text("Cancel") } },
+        )
+    }
     message?.let {
         AlertDialog(
             onDismissRequest = viewModel::dismissMessage,
@@ -152,6 +179,7 @@ private fun CatalogCard(
     spec: ModelSpec,
     installed: InstalledModel?,
     isDefault: Boolean,
+    defaultable: Boolean = true,
     state: DownloadState?,
     anotherBusy: Boolean,
     onDownload: () -> Unit,
@@ -179,7 +207,8 @@ private fun CatalogCard(
                     Text("Verifying checksum…", style = MaterialTheme.typography.bodySmall)
                 }
                 installed != null -> Row(verticalAlignment = Alignment.CenterVertically) {
-                    if (isDefault) Text("✓ Installed · default", color = MaterialTheme.colorScheme.primary, modifier = Modifier.padding(horizontal = 12.dp))
+                    if (!defaultable) Text("✓ Installed", modifier = Modifier.padding(horizontal = 12.dp))
+                    else if (isDefault) Text("✓ Installed · default", color = MaterialTheme.colorScheme.primary, modifier = Modifier.padding(horizontal = 12.dp))
                     else {
                         Text("✓ Installed", modifier = Modifier.padding(horizontal = 12.dp))
                         TextButton(onClick = onMakeDefault) { Text("Make default") }

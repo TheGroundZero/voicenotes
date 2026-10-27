@@ -36,9 +36,10 @@ Builds:
     ndk: 27.2.12479018
     # whisper.cpp is the submodule; our patch must be applied before the native build (CMake fails without it).
     prebuild: ../scripts/setup-third-party.sh
-    # Open question 3: the app bundles one small binary data file, app/src/main/assets/ggml-silero-v5.1.2.bin (the MIT
-    # licensed Silero voice-activity model, 885 KB; scripts/fetch-vad-model.sh proves it is the upstream file). The inclusion
-    # policy does not mention model files; ask whether it is acceptable or must be fetched at build time.
+    # Answered by F-Droid on 2026-10-27: things must be built, or downloaded by the user (NonFreeNet may apply, maybe not if
+    # users can load them from storage). So the app no longer bundles the one small binary file it used to (the MIT licensed
+    # Silero voice-activity model, 885 KB): like the Whisper models it is downloaded on request and checked against a pinned
+    # SHA-256, or imported from a file (scripts/fetch-vad-model.sh proves the pin is the upstream file). The APK has no model.
 
 AutoUpdateMode: Version
 UpdateCheckMode: Tags

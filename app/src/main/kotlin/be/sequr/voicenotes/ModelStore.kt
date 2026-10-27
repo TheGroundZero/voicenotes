@@ -25,6 +25,12 @@ object ModelStore {
     fun dir(context: Context) = File(context.filesDir, "models").apply { mkdirs() }
     fun file(context: Context, id: String) = File(dir(context), "ggml-$id.bin")
 
+    /** Where the speech check lives. Not in [dir]: it must never show up as a transcription model. (Versions up to 0.5.1 extracted their bundled copy here.) */
+    fun speechCheckFile(context: Context) = File(File(context.filesDir, "vad").apply { mkdirs() }, ModelCatalog.speechCheck.fileName)
+
+    /** The file a download of [spec] ends up in. */
+    fun targetFor(context: Context, spec: ModelSpec) = if (spec.id == ModelCatalog.speechCheck.id) speechCheckFile(context) else file(context, spec.id)
+
     /** Catalog models first (best first), then anything else the user imported. */
     fun installed(context: Context): List<InstalledModel> {
         val found = dir(context).listFiles().orEmpty().mapNotNull { f ->
@@ -83,6 +89,11 @@ object ModelStore {
                 }
             }
             val hash = digest.digest().joinToString("") { "%02x".format(it) }
+            if (hash == ModelCatalog.speechCheck.sha256) {          // the speech check, not a transcription model
+                val target = speechCheckFile(context)
+                target.delete()
+                return if (tmp.renameTo(target)) ImportResult.Imported(ModelCatalog.speechCheck.title, verified = true) else ImportResult.Failed("Could not store the speech check")
+            }
             val spec = ModelCatalog.models.firstOrNull { it.sha256 == hash }
             val id = spec?.id ?: customId(displayName)
             file(context, id).delete()
@@ -95,10 +106,15 @@ object ModelStore {
         }
     }
 
+    /** Removes the speech check; notes are then transcribed without it until it is downloaded or imported again. */
+    fun deleteSpeechCheck(context: Context) {
+        speechCheckFile(context).delete()
+    }
+
     private fun customId(displayName: String): String {
         val base = displayName.substringAfterLast('/').removeSuffix(".bin").removePrefix("ggml-")
             .replace(Regex("[^A-Za-z0-9._-]"), "_").trim('.', '_', '-').ifBlank { "custom" }
         // A custom file must never take a catalog name, or it would pass for a verified model.
-        return if (ModelCatalog.byId(base) != null) "custom-$base" else base
+        return if (ModelCatalog.downloadable(base) != null) "custom-$base" else base
     }
 }

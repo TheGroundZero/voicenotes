@@ -4,7 +4,7 @@
 # Everything that can be checked without a phone: run before sending a change, and by CI.
 #   - licence information on every file
 #   - the Gradle wrapper is the genuine one
-#   - shell scripts parse; the third-party patch applies; the bundled model has its pinned checksum
+#   - shell scripts parse; the third-party patch applies; the speech-check model's pins in the catalog are well formed
 #   - the native core tests (g++ only), Android Lint, unit tests, and the privacy guards (network only in ModelDownloader, no tracker libraries)
 # With --light only the checks that need no Android tools run (for a CI host without the SDK).
 # Needs the build tools otherwise: source env.sh (see docs/BUILDING.md).
@@ -27,8 +27,8 @@ for f in scripts/*.sh env.sh; do bash -n "$f" && echo "ok $f" || { echo "FAILED:
 step "whisper.cpp patches"
 run scripts/setup-third-party.sh
 
-step "bundled voice-activity model"
-echo "29940d98d42b91fbd05ce489f3ecf7c72f0a42f027e4875919a28fb4c04ea2cf  app/src/main/assets/ggml-silero-v5.1.2.bin" | sha256sum -c --quiet - && echo ok || { echo "FAILED: model checksum"; fail=1; }
+step "speech-check model: the pins in the catalog"
+run scripts/fetch-vad-model.sh --offline
 
 step "no personal paths in published files"
 if git ls-files --cached --others --exclude-standard | grep -v -E '^third_party/whisper.cpp$|\.(jar|bin)$' | xargs grep -n -I -E '/home/[a-z]+/' 2>/dev/null | grep -v '^scripts/.*\$HOME'; then

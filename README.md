@@ -57,7 +57,7 @@ Every release is signed with the same key, so updates install over the previous 
 ## Privacy
 
 No account, no analytics, no advertising, no cloud. Recordings and text stay in the app's private storage. The only
-network use is downloading a speech model from huggingface.co, and only when you ask for it. Details: [PRIVACY.md](PRIVACY.md).
+network use is downloading a speech model (and a small speech-check model) from huggingface.co, and only when you ask for it. Details: [PRIVACY.md](PRIVACY.md).
 
 ## Limits you should know about
 

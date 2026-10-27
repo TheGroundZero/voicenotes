@@ -118,6 +118,22 @@ mid-sentence, two languages in one clip, and notes over 25 seconds (the full-win
 - **No new dependencies in the app or the build.** The scoring and corpus scripts are plain Python 3 with the standard
   library only.
 
+## Running it
+
+```sh
+scripts/benchmark-build.sh                                    # the command-line tool (once, about 5 minutes)
+python3 benchmark/make_corpus.py --smoke                      # 40 clips; without --smoke all 886 (downloads about 700 MB of voices once)
+scripts/benchmark.sh models/ggml-small.bin                    # one model: benchmark/results/<date>-small.json and a summary
+scripts/benchmark.sh models/ggml-large-v3-turbo-q8_0.bin --audio-ctx full     # the same model with the full 30 s window
+python3 benchmark/compare.py benchmark/results/<default>.json benchmark/results/<candidate>.json [--device phone.json] [--licence licence.json]
+```
+
+`compare.py` applies the decision rule above to two result files and prints each rule with its numbers and the verdict. Rules 4
+(phone) and 5 (licence) stay "open" until their files are given, and a candidate that fails rule 1, 2 or 3 is "not worth adding"
+whatever the phone says. Results are plain JSON with the model's SHA-256, the settings and every clip's raw transcript (the
+sentences are synthetic, so nothing private is in them). Result files that justify a decision are committed under
+`benchmark/results/`; the generated audio never is.
+
 ## Step 2: what was built and checked
 
 - `app/src/main/cpp/whisper_core.{h,cpp}` holds the whole per-note pipeline (speech check with the start beep silenced,
@@ -140,7 +156,7 @@ mid-sentence, two languages in one clip, and notes over 25 seconds (the full-win
 | 2 | Shared native core and `vn-bench`; the app re-tested on a phone | done: same text, language, speech time and window as before on a phone (*Step 2* above) |
 | 3a | Scorer: normaliser, error rates, paired bootstrap, hallucination and repetition detectors (`benchmark/vnbench`, 28 tests) | done |
 | 3b | Corpus: voices with their licence check, the plan, the audio utilities and `benchmark/make_corpus.py` (downloads and verifies Piper and the voices, speaks the sentences, mixes the noise at exact ratios, writes the clips and a manifest); the 40-clip smoke subset was built and scored end to end | done |
-| 3c | Runner (`scripts/benchmark.sh`), report and the decision rule in code; first results for the installed models | not started |
+| 3c | Runner (`scripts/benchmark.sh`), report and the decision rule in code (`benchmark/vnbench/decision.py`, 11 tests with made-up results); first results on the smoke subset | done; the full corpus is run on request (hours per large model) |
 | 4 | Speed and memory on the Pixel 10 | not started |
 | 5 | Finding candidates automatically (new files on Hugging Face, whisper.cpp releases, leaderboards) | later |
 

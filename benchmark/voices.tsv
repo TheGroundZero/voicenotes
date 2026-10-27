@@ -4,7 +4,7 @@
 # licence column is the licence of each voice's training data, from its MODEL_CARD, read on 2026-10-27). Columns, separated by a tab:
 # id, language, path, quality, sample rate, speaker ids used (- for a single-speaker voice), licence, dataset, onnx bytes, onnx sha256 (the SHA-256 Hugging Face publishes for the file).
 en_US-joe-medium	en	en/en_US/joe/medium	medium	22050	-	CC0	https://github.com/OHF-Voice/voice-datasets	63201294	58afce0321b8d9c46d7cdf9c16500cc55a793b4220212dba6b70fb788b3baf06
-en_US-mike-medium	en	en/en_US/mike/medium	medium	22050	-	CC0	https://github.com/OHF-Voice/voice-datasets	63221984	3157e69e2c580cab297483f4b301ee975a4590c17d35a9757e33347d0e90fae2
+en_US-john-medium	en	en/en_US/john/medium	medium	22050	-	public domain	https://librivox.org	63531379	789c6c875726e627ddee93d51d8727859abe9c091c3d141591f4b83c2072e988
 en_GB-cori-medium	en	en/en_GB/cori/medium	medium	22050	-	public domain	https://librivox.org	63531379	1899f98e5fb8310154f3c2973f4b8a929ba7245e722b3d3a85680b833d95f10d
 en_GB-alba-medium	en	en/en_GB/alba/medium	medium	22050	-	CC BY 4.0	https://datashare.ed.ac.uk/handle/10283/3270	63201294	401369c4a81d09fdd86c32c5c864440811dbdcc66466cde2d64f7133a66ad03b
 nl_BE-nathalie-medium	nl	nl/nl_BE/nathalie/medium	medium	22050	-	CC0	https://github.com/rhasspy/dataset-voice-nathalie	63201294	49cf48023861f9fd42e13a8632f068fee67d1ce244a6ee38f29595afbf0a6be4

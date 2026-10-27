@@ -73,10 +73,10 @@ Three layers, each with its own licence story, so the repository stays clean:
    publishes no digest for it; it is downloaded into the ignored cache, never committed, and runs offline). **Each voice has
    its own licence, derived from its training data, so every voice used is checked and recorded** in
    [`benchmark/voices.tsv`](../benchmark/voices.tsv), read from each voice's model card on 2026-10-27, with the SHA-256 of the
-   model file. **Rule: CC0, public domain or CC BY 4.0 only.** Left out: non-commercial (`ryan`, `hfc_*`, `l2arctic`, `semaine`),
+   model file. **Rule: CC0, public domain or CC BY 4.0 only.** Left out: `mike` (CC0, but it needs a newer Piper than the pinned release can load), non-commercial (`ryan`, `hfc_*`, `l2arctic`, `semaine`),
    share-alike (`northern_english_male`, `southern_english_female`, `upmc`), AGPL (`tom`), the Blizzard-licensed `lessac`, and
    everything whose card says only "see URL" (`alan`, `amy`, `jenny_dioco`, `kusal`, `danny`, `arctic`). Chosen: English
-   `joe`, `mike` (CC0), `cori` (public domain), `alba` (CC BY 4.0); Dutch `nathalie` and `rdh` (**Belgian**, CC0), `pim`,
+   `joe` (CC0), `john` and `cori` (public domain), `alba` (CC BY 4.0); Dutch `nathalie` and `rdh` (**Belgian**, CC0), `pim`,
    `ronnie` (CC0); French `siwis` (CC BY 4.0), `gilles` (CC0, low quality, 16 kHz) and two speakers of `mls` (CC BY 4.0). Synthetic
    speech is cleaner than people: it ranks models but over-estimates real accuracy, so it is never the only layer.
 3. **Real human speech from public sources, downloaded by script into an ignored cache, never committed**
@@ -139,7 +139,7 @@ mid-sentence, two languages in one clip, and notes over 25 seconds (the full-win
 | 1 | This design and the sentences, reviewed | done |
 | 2 | Shared native core and `vn-bench`; the app re-tested on a phone | done: same text, language, speech time and window as before on a phone (*Step 2* above) |
 | 3a | Scorer: normaliser, error rates, paired bootstrap, hallucination and repetition detectors (`benchmark/vnbench`, 28 tests) | done |
-| 3b | Corpus: the voices with their licence check and the plan are done and tested; the audio utilities (resampling, noise, beep, mixing at an exact ratio) are done and tested; **making the audio waits for running the downloaded Piper program** | in progress |
+| 3b | Corpus: voices with their licence check, the plan, the audio utilities and `benchmark/make_corpus.py` (downloads and verifies Piper and the voices, speaks the sentences, mixes the noise at exact ratios, writes the clips and a manifest); the 40-clip smoke subset was built and scored end to end | done |
 | 3c | Runner (`scripts/benchmark.sh`), report and the decision rule in code; first results for the installed models | not started |
 | 4 | Speed and memory on the Pixel 10 | not started |
 | 5 | Finding candidates automatically (new files on Hugging Face, whisper.cpp releases, leaderboards) | later |

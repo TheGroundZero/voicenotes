@@ -139,6 +139,11 @@ def babble(clips, seconds, rng, rate=SAMPLE_RATE):
     return _normalise(out)
 
 
+def noise_scale(signal, noise, snr_db):
+    """The factor to multiply `noise` (already as long as `signal`) with so that rms(signal) / rms(noise) is snr_db."""
+    return rms(signal) / (rms(noise) * 10 ** (snr_db / 20)) if rms(noise) else 0.0
+
+
 def mix_at_snr(signal, noise, snr_db):
     """The signal plus noise scaled so that rms(signal) / rms(noise) is `snr_db` decibels. The noise is looped or cut to
     the length of the signal. The signal's level is measured over the whole signal passed in, so pass only the speech
@@ -146,5 +151,5 @@ def mix_at_snr(signal, noise, snr_db):
     if not noise:
         return list(signal)
     looped = (noise * (len(signal) // len(noise) + 1))[:len(signal)]
-    scale = rms(signal) / (rms(looped) * 10 ** (snr_db / 20)) if rms(looped) else 0.0
+    scale = noise_scale(signal, looped, snr_db)
     return [s + scale * x for s, x in zip(signal, looped)]

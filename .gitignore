@@ -6,6 +6,7 @@ build/
 build-whisper-cli/
 build-whisper-cli-i8mm/
 build-vn-bench/
+__pycache__/
 *.log
 
 # Machine-specific

@@ -17,12 +17,17 @@ audio window for short notes, the speech check (Silero VAD), and language detect
 languages (English, Dutch and French here). Each clip also carries the app's own start beep at the beginning, as every
 real note does.
 
-**Text normalisation** (applied to reference and transcript before comparing; written once, here): Unicode NFKC, lower
-case, `’` becomes `'`, every punctuation mark is removed except an apostrophe inside a word, hyphens become spaces,
-`œ` becomes `oe`, accents are kept (a missing accent is an error), filler words are dropped (`um uh er hmm`, `euh eh
-uhm hm`, `euh heu hum`), and digits are spelled out as words in the clip's language (whole numbers up to 9999; ordinals,
-times such as `9:15` and decimals are not converted and count as errors, which is conservative). Numbers are also scored as
-their own category so that the converter cannot hide a model's weakness.
+**Text normalisation** (applied to reference and transcript before comparing; written once, here, and implemented in
+`benchmark/vnbench/normalize.py`): Unicode NFKC, lower case, `’` becomes `'`, every punctuation mark and symbol is removed
+except an apostrophe inside a word, hyphens become spaces, `œ` becomes `oe`, accents are kept (a missing accent is an
+error), filler words are dropped per language (English `um uh er erm hmm mm`, Dutch `euh eh uhm hm hmm`, French `euh heu hum
+hm`), and **number words are turned into digits** so that "three hundred and forty", "driehonderdveertig", "trois cent
+quarante" and "340" compare equal (whole numbers up to 9999, including compounds, "tweehonderd en tien", "quatre-vingt-dix-sept",
+and spoken digit sequences: "four seven one nine" and "4 7 1 9" are both 4719). Punctuation ends a number, so "twenty two,
+fourteen" is 22 and 14. Not converted, so they count as errors, which is conservative: ordinals ("3rd" against "third"), decimals,
+thousands separators, and clock times ("9:15" becomes "9 15", which matches a reference spoken as two numbers). Numbers are also
+scored as their own category so that the converter cannot hide a model's weakness. (An earlier draft of this page turned digits
+into words; turning words into digits tolerates more spoken variants.)
 
 | Measure | Definition |
 |---|---|
@@ -117,7 +122,9 @@ mid-sentence, two languages in one clip, and notes over 25 seconds (the full-win
 |---|---|---|
 | 1 | This design and the sentences, reviewed | done |
 | 2 | Shared native core and `vn-bench`; the app re-tested on a phone | done: same text, language, speech time and window as before on a phone (*Step 2* above) |
-| 3 | Corpus generation (voices, noise), scorer, first results for the installed models | not started |
+| 3a | Scorer: normaliser, error rates, paired bootstrap, hallucination and repetition detectors (`benchmark/vnbench`, 28 tests) | done |
+| 3b | Corpus generation: voices with a licence check, generated noise, mixing at fixed levels, the start beep | not started |
+| 3c | Runner (`scripts/benchmark.sh`), report and the decision rule in code; first results for the installed models | not started |
 | 4 | Speed and memory on the Pixel 10 | not started |
 | 5 | Finding candidates automatically (new files on Hugging Face, whisper.cpp releases, leaderboards) | later |
 

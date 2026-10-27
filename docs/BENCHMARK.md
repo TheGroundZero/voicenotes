@@ -1,7 +1,9 @@
 # Speech-model benchmark
 
-Status: **design, for review** (nothing is built yet). This page is written before any result exists on purpose: the
-decision rule below is fixed first, so a number cannot be read in a convenient way afterwards.
+Status: the design is agreed (2026-10-26) and steps 1 and 2 are done: the shared native core and the command-line tool
+exist and are checked against the app (see *Step 2*). The corpus generator, the scorer and the first results are next.
+This page was written before any result existed on purpose: the decision rule below is fixed first, so a number cannot
+be read in a convenient way afterwards.
 
 Why: the model catalog ships inside the app, so adding a model costs an app release. We decide with data when a new
 model is worth that, by running every candidate through the same test set, in the same code path as the app, and
@@ -82,16 +84,15 @@ mid-sentence, two languages in one clip, and notes over 25 seconds (the full-win
 
 ## The harness
 
-- **One code path.** The transcription steps move out of `whisper_jni.cpp` and `WhisperTranscriber.kt` into a shared C++
-  core (`app/src/main/cpp/whisper_core`) that the app's JNI layer and a command-line tool, `vn-bench`, both use, so the
-  benchmark cannot drift from the app. The core keeps the engine and model swappable: the model, decoding settings and
-  engine are named in every result file. A unit test fixes the audio-window sizing against the table in
-  `AudioContextTest`.
-- **Two stages.** *Accuracy* runs on this machine (the same library built for x86; the weights and quantisation are
-  identical, and one subset is run on both to confirm). *Speed and memory* run on the Pixel 10 over adb, only for
+- **One code path.** The transcription steps live in a shared C++ core (`app/src/main/cpp/whisper_core.cpp`) that the
+  app's JNI layer and a command-line tool, `vn-bench`, both use, so the benchmark cannot drift from the app. The core
+  keeps the engine and model swappable: the model, decoding settings and engine are named in every result file. A unit
+  test (`benchmark/tests/core_test.cpp`) fixes the audio-window sizing against the table of the Kotlin test it replaced.
+- **Two stages.** *Accuracy* runs on this machine (the same code built for this machine's processor; the weights and
+  quantisation are identical, and one subset is run on both to confirm). *Speed and memory* run on the Pixel 10 over adb, only for
   candidates that pass stage 1.
-- **Reproducible.** Pinned versions, fixed seeds, checksummed inputs; one command (`scripts/benchmark.sh <model>`),
-  results in `benchmark/results/<date>-<model>.json` plus a Markdown report.
+- **Reproducible.** Pinned versions, fixed seeds, checksummed inputs; one command (planned: `scripts/benchmark.sh <model>`;
+  today `scripts/benchmark-build.sh` builds the tool), results in `benchmark/results/<date>-<model>.json` plus a Markdown report.
 - **Run size.** About 150 to 250 clips per language and condition set; a smoke subset of about 20 clips runs in minutes.
 - **No new dependencies in the app or the build.** The scoring and corpus scripts are plain Python 3 with the standard
   library only.
@@ -114,8 +115,8 @@ mid-sentence, two languages in one clip, and notes over 25 seconds (the full-win
 
 | Step | What | State |
 |---|---|---|
-| 1 | This design and the draft sentences, reviewed | in review |
-| 2 | Shared native core and `vn-bench`; the app re-tested on a phone | done: same text, language, speech time and window as before on a phone, see below |
+| 1 | This design and the sentences, reviewed | done |
+| 2 | Shared native core and `vn-bench`; the app re-tested on a phone | done: same text, language, speech time and window as before on a phone (*Step 2* above) |
 | 3 | Corpus generation (voices, noise), scorer, first results for the installed models | not started |
 | 4 | Speed and memory on the Pixel 10 | not started |
 | 5 | Finding candidates automatically (new files on Hugging Face, whisper.cpp releases, leaderboards) | later |

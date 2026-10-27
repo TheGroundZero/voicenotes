@@ -42,7 +42,7 @@ against. Build and release instructions are in [BUILDING.md](BUILDING.md) and [R
 1. **Publishing, remaining part.** Versions 0.1.0 to 0.5.0 are released (Tangled, GitHub mirror, Obtainium). Still to do: ask the F-Droid
    team the open questions ([fdroid/questions-to-fdroid.md](fdroid/questions-to-fdroid.md)) and, if they agree, submit
    the app.
-2. **Automated model benchmarking** (design: [BENCHMARK.md](BENCHMARK.md); the decision rule is written down before any result). A repeatable harness that compares new speech models (Whisper family first, engine
+2. **Automated model benchmarking** (design and progress: [BENCHMARK.md](BENCHMARK.md); the decision rule is written down before any result; steps 1 and 2 of 5 are done). A repeatable harness that compares new speech models (Whisper family first, engine
    and model kept swappable) on word error rate, hallucinations, language identification, speed and memory, using only
    generated or openly licensed speech. Recordings of the maintainers' own voices are never uploaded or published.
 3. **In-car validation** (moved back on 2026-10-26; it needs the real car). Headset button alongside a music app, Android Auto on a real head unit, car hands-free

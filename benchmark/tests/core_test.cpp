@@ -34,6 +34,15 @@ int main() {
     CHECK(vn::json_escape(std::string("x\x01y")) == "x\\u0001y");
     CHECK(vn::json_escape("café \xE2\x80\x99") == "café \xE2\x80\x99");
 
+    // Invalid UTF-8 (a character cut in two) becomes U+FFFD; valid sequences of every length survive.
+    CHECK(vn::sanitize_utf8("ok") == "ok");
+    CHECK(vn::sanitize_utf8("caf\xC3\xA9 \xE2\x82\xAC \xF0\x9F\x98\x80") == "caf\xC3\xA9 \xE2\x82\xAC \xF0\x9F\x98\x80");
+    CHECK(vn::sanitize_utf8("a\xC3") == "a\xEF\xBF\xBD");                            // cut in two at the end
+    CHECK(vn::sanitize_utf8("a\xA9z") == "a\xEF\xBF\xBDz");                          // a stray continuation byte
+    CHECK(vn::sanitize_utf8("\xC0\x80") == "\xEF\xBF\xBD\xEF\xBF\xBD");          // overlong
+    CHECK(vn::sanitize_utf8("\xED\xA0\x80") == "\xEF\xBF\xBD\xEF\xBF\xBD\xEF\xBF\xBD");  // a surrogate
+    CHECK(vn::json_escape("x\xE2\x82") == "x\xEF\xBF\xBD\xEF\xBF\xBD");
+
     vn::Result speech;
     speech.text = "Hello \"world\"";
     speech.language = "en";

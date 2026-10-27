@@ -34,7 +34,7 @@ def run_bench(args, files, with_vad):
                "--preferred", args.preferred, "--threads", str(args.threads), "--audio-ctx", args.audio_ctx]
     if with_vad:
         command += ["--vad", args.vad]
-    done = subprocess.run(command + files, capture_output=True, text=True)
+    done = subprocess.run(command + files, capture_output=True, text=True, encoding="utf-8", errors="replace")
     if done.returncode != 0:
         sys.exit("vn-bench failed:\n%s" % done.stderr[-2000:])
     model, clips, summary = None, {}, None

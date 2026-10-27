@@ -20,7 +20,30 @@ struct Result {
     std::vector<std::pair<std::string, float>> language_scores;  // only when the detection ran
 };
 
-inline std::string json_escape(const std::string &s) {
+// Whisper can cut a multi-byte character in two at a token boundary, so its text is not always valid UTF-8. Every invalid byte
+// becomes U+FFFD, which is what the app's own decoding showed before, and a JSON consumer never meets broken bytes.
+inline std::string sanitize_utf8(const std::string &s) {
+    std::string out;
+    out.reserve(s.size());
+    const std::size_t n = s.size();
+    for (std::size_t i = 0; i < n;) {
+        const unsigned char c = static_cast<unsigned char>(s[i]);
+        if (c < 0x80) { out += static_cast<char>(c); i++; continue; }
+        const std::size_t len = (c >= 0xC2 && c <= 0xDF) ? 2 : (c >= 0xE0 && c <= 0xEF) ? 3 : (c >= 0xF0 && c <= 0xF4) ? 4 : 0;
+        bool ok = len != 0 && i + len <= n;
+        for (std::size_t k = 1; ok && k < len; k++) ok = (static_cast<unsigned char>(s[i + k]) & 0xC0) == 0x80;
+        if (ok && len >= 3) {
+            const unsigned char c1 = static_cast<unsigned char>(s[i + 1]);
+            if ((c == 0xE0 && c1 < 0xA0) || (c == 0xED && c1 >= 0xA0) || (c == 0xF0 && c1 < 0x90) || (c == 0xF4 && c1 >= 0x90)) ok = false;
+        }
+        if (ok) { out.append(s, i, len); i += len; }
+        else { out += "\xEF\xBF\xBD"; i++; }
+    }
+    return out;
+}
+
+inline std::string json_escape(const std::string &raw) {
+    const std::string s = sanitize_utf8(raw);
     std::string out;
     out.reserve(s.size() + 2);
     for (unsigned char c : s) {

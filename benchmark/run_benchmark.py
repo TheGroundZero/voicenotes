@@ -31,7 +31,8 @@ def sha256_file(path):
 
 def run_bench(args, files, with_vad):
     command = [str(REPO / "build-vn-bench" / "vn-bench"), "--model", args.model, "--language", args.language,
-               "--preferred", args.preferred, "--threads", str(args.threads), "--audio-ctx", args.audio_ctx]
+               "--preferred", args.preferred, "--threads", str(args.threads), "--audio-ctx", args.audio_ctx,
+               "--detect-audio-ctx", args.detect_audio_ctx]
     if with_vad:
         command += ["--vad", args.vad]
     done = subprocess.run(command + files, capture_output=True, text=True, encoding="utf-8", errors="replace")
@@ -61,6 +62,7 @@ def main():
     p.add_argument("--preferred", default="en,nl,fr")
     p.add_argument("--threads", type=int, default=4)
     p.add_argument("--audio-ctx", default="auto")
+    p.add_argument("--detect-audio-ctx", default="same", help="window of the language detection alone (same as the transcription's, as in the app)")
     p.add_argument("--out", default=str(ROOT / "results"))
     p.add_argument("--limit", type=int)
     args = p.parse_args()
@@ -88,12 +90,12 @@ def main():
 
     model_id = args.id or pathlib.Path(args.model).name.removeprefix("ggml-").removesuffix(".bin")
     stamp = datetime.date.today().isoformat()
-    suffix = "" if args.audio_ctx == "auto" else "-ctx-" + args.audio_ctx
+    suffix = ("" if args.audio_ctx == "auto" else "-ctx-" + args.audio_ctx) + ("" if args.detect_audio_ctx == "same" else "-detect-" + args.detect_audio_ctx)
     out = {
         "schema": 1, "date": stamp,
         "model": {"id": model_id, "file": pathlib.Path(args.model).name, "bytes": pathlib.Path(args.model).stat().st_size, "sha256": sha256_file(args.model)},
         "engine": "whisper.cpp (vn-bench, the app's transcription core)",
-        "settings": {"language": args.language, "preferred": args.preferred, "threads": args.threads, "audioCtx": args.audio_ctx, "beamSize": 5},
+        "settings": {"language": args.language, "preferred": args.preferred, "threads": args.threads, "audioCtx": args.audio_ctx, "detectAudioCtx": args.detect_audio_ctx, "beamSize": 5},
         "host": {"machine": platform.machine(), "system": platform.platform(), "python": platform.python_version()},
         "corpus": json.loads((corpus / "corpus.json").read_text()) if (corpus / "corpus.json").exists() else {},
         "loadSeconds": model_line["loadSeconds"], "peakMemoryKb": summary["peakMemoryKb"],

@@ -73,6 +73,10 @@ int main(int argc, char **argv) {
         else if (arg == "--language") options.language = value();
         else if (arg == "--preferred") options.preferred = split(value(), ',');
         else if (arg == "--threads") options.threads = std::atoi(value().c_str());
+        else if (arg == "--detect-audio-ctx") {        // the window of the language detection alone: same (as the app), auto, full or N
+            const std::string v = value();
+            options.detect_audio_ctx = v == "same" ? -2 : v == "auto" ? -1 : v == "full" ? 0 : std::atoi(v.c_str());
+        }
         else if (arg == "--audio-ctx") {               // auto (as the app), full (the whole 30 s window) or a number of frames
             const std::string v = value();
             options.audio_ctx = v == "auto" ? -1 : v == "full" ? 0 : std::atoi(v.c_str());
@@ -81,7 +85,7 @@ int main(int argc, char **argv) {
         else clips.push_back(arg);
     }
     if (model.empty() || clips.empty()) {
-        std::fprintf(stderr, "usage: vn-bench --model ggml-X.bin [--vad silero.bin] [--language auto|en|nl|fr] [--preferred en,nl,fr] [--threads N] [--audio-ctx auto|full|N] clip.wav...\n");
+        std::fprintf(stderr, "usage: vn-bench --model ggml-X.bin [--vad silero.bin] [--language auto|en|nl|fr] [--preferred en,nl,fr] [--threads N] [--audio-ctx auto|full|N] [--detect-audio-ctx same|auto|full|N] clip.wav...\n");
         return 2;
     }
     options.vad_model_path = vad;

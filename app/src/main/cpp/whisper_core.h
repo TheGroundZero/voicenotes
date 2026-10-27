@@ -21,6 +21,7 @@ struct Options {
     float vad_threshold = 0.35f;             // more sensitive than the library default (0.5), so quiet speech is less likely missed
     float min_language_confidence = 0.15f;   // probability (out of ~99 languages) the best preferred language must reach
     int audio_ctx = -1;                      // encoder window in frames: -1 sizes it from the audio as the app does, 0 is the full 30 s, N is fixed (benchmark ablations only)
+    int detect_audio_ctx = -2;               // the same for the language detection; -2 (the app) uses the same window as the transcription
 };
 
 // The app's own start beep is recorded at the start of every note. The speech check ignores it (it sees the audio with

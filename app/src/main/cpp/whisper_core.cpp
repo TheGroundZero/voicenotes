@@ -106,7 +106,9 @@ Result run(whisper_context *ctx, const std::vector<float> &samples, const Option
     } else {
         // Whisper scores every language it knows; only the preferred ones are looked at, so a short or noisy clip cannot
         // come back as an unrelated language. If even the best preferred score is weak, the first preferred language is used.
-        const std::vector<float> scores = language_scores(ctx, samples.data(), samples.size(), options.preferred, options.threads, result.audio_ctx);
+        const int detect_ctx = options.detect_audio_ctx == -2 ? result.audio_ctx
+                             : options.detect_audio_ctx == -1 ? audio_context_for_samples(samples.size()) : options.detect_audio_ctx;
+        const std::vector<float> scores = language_scores(ctx, samples.data(), samples.size(), options.preferred, options.threads, detect_ctx);
         for (std::size_t i = 0; i < scores.size(); i++) result.language_scores.emplace_back(options.preferred[i], scores[i]);
         std::size_t best = 0;
         for (std::size_t i = 1; i < scores.size(); i++) if (scores[i] > scores[best]) best = i;

@@ -160,5 +160,26 @@ sentences are synthetic, so nothing private is in them). Result files that justi
 | 4 | Speed and memory on the Pixel 10 | not started |
 | 5 | Finding candidates automatically (new files on Hugging Face, whisper.cpp releases, leaderboards) | later |
 
+## First results (2026-10-28, smoke corpus)
+
+`large-v3-turbo-q8_0` on the 40-clip smoke subset (generated speech, English, Dutch and French, clean and 5 dB noise), a fresh
+engine context for every clip as in the app, on the development machine (`benchmark/results/2026-10-28-*.json`):
+
+| Audio window | Weighted WER | Real-time factor |
+|---|---|---|
+| auto (what the app does today) | 50.6 % | 0.9 |
+| full 30 s | 6.5 % | 3.5 |
+| 1000 frames | 7.2 % | 2.1 |
+| 750 frames | 14.2 % | 1.5 |
+| 500 frames | 18.6 % | 1.0 |
+
+Language identification was right for every clip in every run. `compare.py` passes rules 1 to 3 for the full window and for
+1000 frames against the app's window (rules 4 and 5, the phone measurements and the licence check, are open). Detecting the
+language with the full window and then transcribing with the automatic window gave 171 % WER and 11 repetition loops; the app
+uses one window for both, but the cause (probably state kept between two window sizes) is still to be found.
+
+These are synthetic clips with wide confidence intervals and timings from a shared machine. **Nothing changes in the app until
+the full corpus, real recordings and the Pixel 10 agree.**
+
 Open: which TTS voices pass the licence check, where a scheduled candidate search runs and how you are told, and whether
 engines other than Whisper (whisper.cpp also contains NVIDIA Parakeet support) are in scope after the first results.

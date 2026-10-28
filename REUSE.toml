@@ -33,9 +33,10 @@ precedence = "override"
 SPDX-FileCopyrightText = "Google LLC"
 SPDX-License-Identifier = "Apache-2.0"
 
-# Original test sentences for the speech-model benchmark, released as public domain (docs/BENCHMARK.md).
+# Original test sentences for the speech-model benchmark, released as public domain (docs/BENCHMARK.md), and the results of
+# running models over them (transcripts of generated speech, scores, timings).
 [[annotations]]
-path = ["benchmark/sentences/**"]
+path = ["benchmark/sentences/**", "benchmark/results/**"]
 SPDX-FileCopyrightText = "2026 The Voice Notes authors (sequr.be)"
 SPDX-License-Identifier = "CC0-1.0"
 

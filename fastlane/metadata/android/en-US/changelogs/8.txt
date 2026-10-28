@@ -1,0 +1,1 @@
+The small model that skips notes without speech is no longer built into the app. It is downloaded together with your first speech model (checksum verified, like the others), or imported from a file, and it has its own card on the Models screen. If you already used the app, you keep the copy you have. Nothing else changes, and nothing leaves your phone except that download.

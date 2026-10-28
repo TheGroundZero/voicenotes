@@ -5,6 +5,8 @@ versions follow [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [0.6.0] - 2026-10-28
+
 ### Changed
 
 - **The speech-check model is no longer inside the app.** The small model (885 KB) that skips notes without speech is now

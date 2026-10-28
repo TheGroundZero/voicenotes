@@ -26,7 +26,10 @@ object ModelStore {
     fun file(context: Context, id: String) = File(dir(context), "ggml-$id.bin")
 
     /** Where the speech check lives. Not in [dir]: it must never show up as a transcription model. (Versions up to 0.5.1 extracted their bundled copy here.) */
-    fun speechCheckFile(context: Context) = File(File(context.filesDir, "vad").apply { mkdirs() }, ModelCatalog.speechCheck.fileName)
+    fun speechCheckFile(context: Context) = speechCheckFile(context.filesDir).also { it.parentFile?.mkdirs() }
+
+    /** `files/vad/ggml-silero-v5.1.2.bin`: where versions up to 0.5.1 extracted their bundled copy, so those phones keep it. */
+    fun speechCheckFile(filesDir: File) = File(File(filesDir, "vad"), ModelCatalog.speechCheck.fileName)
 
     /** The file a download of [spec] ends up in. */
     fun targetFor(context: Context, spec: ModelSpec) = if (spec.id == ModelCatalog.speechCheck.id) speechCheckFile(context) else file(context, spec.id)

@@ -21,9 +21,11 @@ object SpeechGate {
     private const val TAG = "SpeechGate"
 
     /** The model file if it is on the phone and matches the pinned size and SHA-256, otherwise null (and the check is skipped). */
-    fun modelFile(context: Context): File? {
+    fun modelFile(context: Context): File? = verified(ModelStore.speechCheckFile(context))
+
+    /** [file] if it has the pinned size and SHA-256, otherwise null. */
+    fun verified(file: File): File? {
         val spec = ModelCatalog.speechCheck
-        val file = ModelStore.speechCheckFile(context)
         if (!file.exists() || file.length() != spec.sizeBytes) return null
         return if (sha256(file) == spec.sha256) file else { Log.e(TAG, "The speech check model does not match its checksum; it is ignored"); null }
     }

@@ -96,6 +96,7 @@ private fun NotesTopBar(
     onOpenExport: () -> Unit,
     onOpenBackup: () -> Unit,
     onOpenLabels: () -> Unit,
+    onOpenAppearance: () -> Unit,
     oldestFirst: Boolean,
     onOldestFirst: (Boolean) -> Unit,
     onOpenTriggers: () -> Unit,
@@ -124,6 +125,7 @@ private fun NotesTopBar(
                         onClick = { menu = false; onOldestFirst(!oldestFirst) },
                     )
                     DropdownMenuItem(text = { Text("Labels") }, onClick = { menu = false; onOpenLabels() })
+                    DropdownMenuItem(text = { Text("Appearance") }, onClick = { menu = false; onOpenAppearance() })
                     DropdownMenuItem(text = { Text("Triggers") }, onClick = { menu = false; onOpenTriggers() })
                     DropdownMenuItem(text = { Text("Export & sharing") }, onClick = { menu = false; onOpenExport() })
                     DropdownMenuItem(text = { Text("Backup & restore") }, onClick = { menu = false; onOpenBackup() })
@@ -179,6 +181,7 @@ fun NotesScreen(
     labels: List<LabelCount>,
     onQuery: (String) -> Unit,
     onOpenLabels: () -> Unit,
+    onOpenAppearance: () -> Unit,
     oldestFirst: Boolean,
     onOldestFirst: (Boolean) -> Unit,
     playingId: Long?,
@@ -209,7 +212,7 @@ fun NotesScreen(
     Scaffold(
         topBar = {
             Column {
-                NotesTopBar(searching, query, onQuery, { searching = it }, onOpenModels, onOpenExport, onOpenBackup, onOpenLabels, oldestFirst, onOldestFirst, onOpenTriggers, onOpenStorage, onOpenPrivacy, onOpenAbout)
+                NotesTopBar(searching, query, onQuery, { searching = it }, onOpenModels, onOpenExport, onOpenBackup, onOpenLabels, onOpenAppearance, oldestFirst, onOldestFirst, onOpenTriggers, onOpenStorage, onOpenPrivacy, onOpenAbout)
                 if (searching) LabelSuggestions(query, labels, onQuery)
             }
         },

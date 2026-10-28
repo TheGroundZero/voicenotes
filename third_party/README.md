@@ -10,6 +10,7 @@ Everything here is free software. The in-app *About* screen lists the same compo
 | AndroidX (Core, Activity, Lifecycle, Compose, Material 3, Room) | user interface, database | Maven dependencies in `app/build.gradle.kts` | Apache-2.0, (c) The Android Open Source Project |
 | Kotlin and kotlinx.coroutines | language and concurrency | pulled in by the above | Apache-2.0, (c) JetBrains |
 | [Material Design icons](https://github.com/google/material-design-icons) | the small microphone-source symbols, the search button and the microphone glyph (also the launcher icon and the store icon) | `app/src/main/res/drawable/ic_source_*.xml`, `ic_search.xml`, `ic_mic.xml`, `ic_launcher_foreground.xml`, `fastlane/.../images/icon.png` | Apache-2.0, (c) Google LLC |
+| [Dracula theme](https://github.com/dracula/dracula-theme) | the colours of the "Dracula" scheme (the open-source palette only, not Dracula PRO) | `ThemeSchemes.kt` | MIT, (c) Dracula Theme |
 | Gradle wrapper | building | `gradle/wrapper`, `gradlew` | Apache-2.0, (c) Gradle Inc. |
 
 The licence texts are in `LICENSES/`. File-level licences are stated in `REUSE.toml` and in the SPDX headers of the

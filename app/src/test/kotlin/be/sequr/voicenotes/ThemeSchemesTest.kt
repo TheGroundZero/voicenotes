@@ -108,6 +108,22 @@ class ThemeSchemesTest {
         assertEquals(AppTheme.entries.size, AppTheme.entries.map { it.id }.toSet().size)
     }
 
+    @Test fun theBarIconsFollowTheChosenThemeNotTheSystem() {
+        listOf(false, true).forEach { systemDark ->
+            assertEquals(systemDark, AppTheme.SYSTEM.isDark(systemDark))
+            assertEquals(systemDark, AppTheme.HIGH_CONTRAST.isDark(systemDark))
+            assertEquals(false, AppTheme.LIGHT.isDark(systemDark))
+            assertEquals(false, AppTheme.PAPER.isDark(systemDark))
+            assertEquals(true, AppTheme.DARK.isDark(systemDark))
+            assertEquals(true, AppTheme.MATRIX.isDark(systemDark))
+            assertEquals(true, AppTheme.DRACULA.isDark(systemDark))
+        }
+    }
+
+    @Test fun everyThemeHasALabelAndADescription() {
+        AppTheme.entries.forEach { assertTrue(it.name, it.label.isNotBlank() && it.description.length > 10) }
+    }
+
     @Test fun onlyTheFixedThemesHaveSeeds() {
         assertTrue(AppTheme.SYSTEM.seeds(false) == null && AppTheme.LIGHT.seeds(true) == null && AppTheme.DARK.seeds(false) == null)
         assertTrue(AppTheme.entries.filter { it !in listOf(AppTheme.SYSTEM, AppTheme.LIGHT, AppTheme.DARK) }.all { it.seeds(false) != null })

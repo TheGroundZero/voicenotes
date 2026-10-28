@@ -12,12 +12,11 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
+import androidx.activity.SystemBarStyle
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.dynamicDarkColorScheme
-import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -27,7 +26,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 
-private enum class Screen { ONBOARDING, NOTES, MODELS, EXPORT, BACKUP, LABELS, TRIGGERS, PRIVACY, ABOUT, STORAGE }
+// The navigation bar scrims enableEdgeToEdge() uses by default; only the icon colour has to follow the chosen theme.
+private val NAV_LIGHT_SCRIM = android.graphics.Color.argb(0xE6, 0xFF, 0xFF, 0xFF)
+private val NAV_DARK_SCRIM = android.graphics.Color.argb(0x80, 0x1B, 0x1B, 0x1B)
+
+private enum class Screen { ONBOARDING, NOTES, MODELS, EXPORT, BACKUP, LABELS, APPEARANCE, TRIGGERS, PRIVACY, ABOUT, STORAGE }
 
 class MainActivity : ComponentActivity() {
     private val viewModel: NotesViewModel by viewModels()
@@ -40,12 +43,19 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         VoiceNotesMediaService.restoreIfEnabled(this)
         setContent {
-            val dark = isSystemInDarkTheme()
+            val systemDark = isSystemInDarkTheme()
             val context = LocalContext.current
-            MaterialTheme(
-                // minSdk is 34, so the wallpaper-based colours are always available.
-                colorScheme = if (dark) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context),
-            ) {
+            var theme by remember { mutableStateOf(Settings.theme(context)) }
+            // The bars' icons follow the chosen theme, not the system: a dark theme on a light system needs light icons.
+            val dark = theme.isDark(systemDark)
+            DisposableEffect(dark) {
+                enableEdgeToEdge(
+                    statusBarStyle = SystemBarStyle.auto(android.graphics.Color.TRANSPARENT, android.graphics.Color.TRANSPARENT) { dark },
+                    navigationBarStyle = SystemBarStyle.auto(NAV_LIGHT_SCRIM, NAV_DARK_SCRIM) { dark },
+                )
+                onDispose {}
+            }
+            MaterialTheme(colorScheme = colorSchemeFor(theme, systemDark, context)) {
                 val notes by viewModel.visibleNotes.collectAsStateWithLifecycle()
                 val query by viewModel.query.collectAsStateWithLifecycle()
                 val oldestFirst by viewModel.oldestFirst.collectAsStateWithLifecycle()
@@ -105,6 +115,10 @@ class MainActivity : ComponentActivity() {
                         )
                         return@MaterialTheme
                     }
+                    Screen.APPEARANCE -> {
+                        AppearanceScreen(theme, onChoose = { theme = it; Settings.setTheme(context, it) }, onBack = { screen = Screen.NOTES })
+                        return@MaterialTheme
+                    }
                     Screen.TRIGGERS -> {
                         TriggersScreen(onBack = { screen = Screen.NOTES })
                         return@MaterialTheme
@@ -146,6 +160,7 @@ class MainActivity : ComponentActivity() {
                     labels = labels,
                     onQuery = viewModel::setQuery,
                     onOpenLabels = { screen = Screen.LABELS },
+                    onOpenAppearance = { screen = Screen.APPEARANCE },
                     oldestFirst = oldestFirst,
                     onOldestFirst = viewModel::setOldestFirst,
                     playingId = playingId,

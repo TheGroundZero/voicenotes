@@ -38,6 +38,7 @@ private val components = listOf(
         "Apache License 2.0",
         "Copyright The Android Open Source Project",
     ),
+    Component("Dracula theme", "The colours of the Dracula scheme on the Appearance screen (the open-source palette only).", "MIT License", "Copyright Dracula Theme"),
     Component("Material Design icons", "The small symbols for the microphone that recorded a note, and the search button.", "Apache License 2.0", "Copyright Google LLC"),
     Component("Kotlin and kotlinx.coroutines", "The programming language and its concurrency library.", "Apache License 2.0", "Copyright JetBrains s.r.o. and contributors"),
 )

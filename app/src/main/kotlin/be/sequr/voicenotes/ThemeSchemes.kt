@@ -27,6 +27,25 @@ enum class AppTheme(val id: String, val label: String) {
         SYSTEM, LIGHT, DARK -> null
     }
 
+    /** Whether the theme is dark, which also decides the colour of the status and navigation bar icons. */
+    fun isDark(systemDark: Boolean): Boolean = when (this) {
+        SYSTEM, HIGH_CONTRAST -> systemDark
+        LIGHT -> false
+        DARK -> true
+        else -> seeds(systemDark)!!.dark
+    }
+
+    /** A one-line description for the Appearance screen. */
+    val description: String get() = when (this) {
+        SYSTEM -> "Colours from your wallpaper, light or dark as your phone is set"
+        LIGHT -> "Colours from your wallpaper, always light"
+        DARK -> "Colours from your wallpaper, always dark"
+        PAPER -> "Warm off-white with ink-blue accents"
+        HIGH_CONTRAST -> "Black on white or white on black, following your phone; the easiest to read"
+        MATRIX -> "Green on black"
+        DRACULA -> "Purple and pink on blue-grey, after the Dracula palette"
+    }
+
     companion object {
         /** An unknown or missing id (an older or newer version's preference) means the default. */
         fun fromId(id: String?): AppTheme = entries.firstOrNull { it.id == id } ?: SYSTEM

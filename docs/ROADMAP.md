@@ -52,6 +52,7 @@ against. Build and release instructions are in [BUILDING.md](BUILDING.md) and [R
    microphone, speech-check tuning for road noise, a guard against repetition loops in transcripts.
 4. **Colour themes (for fun, last).** A few extra schemes next to the system light and dark theme and dynamic colour:
    high contrast, "Matrix" and "Dracula". Chosen in the app, with the default staying "follow the system".
+   Design and the measured contrast of each palette: [THEMES.md](THEMES.md).
 
 ## Known gaps
 

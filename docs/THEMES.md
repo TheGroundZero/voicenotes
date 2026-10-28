@@ -5,7 +5,7 @@ SPDX-License-Identifier: GPL-3.0-or-later
 
 # Colour themes: design
 
-Status: **design only** (written 2026-10-28, branch `feat/colour-themes`; the maintainer's decisions on the open questions are in, see the end); nothing is built yet. Roadmap item 4, "for fun,
+Status: step 1 built (the schemes, `Settings.theme` and the contrast tests; no screen yet); the maintainer's decisions on the open questions are at the end. Written 2026-10-28 on branch `feat/colour-themes`. Roadmap item 4, "for fun,
 last". The contrast numbers below were computed (WCAG 2.x, relative luminance), not estimated.
 
 ## What exists today
@@ -42,6 +42,18 @@ thirty-odd roles per scheme would be error-prone; deriving them also lets the te
 | High contrast dark | dark | `#000000` | `#FFFFFF` (21:1) | `#FFD60A` (14.9:1) | secondary text `#D0D0D0` (13.6:1), error `#FF6B6B` (7.6:1) |
 | Matrix | dark | `#000000` | `#7CFF9A` (14.9:1 on `#0A140C`) | `#00FF41` (15.4:1) | secondary `#00B82E` (7.9:1), error `#FF4D4D` (6.4:1), container `#003B0F` |
 | Dracula | dark | `#282A36` | `#F8F8F2` (13.4:1) | purple `#BD93F9` (5.9:1) | secondary pink `#FF79C6` (6.0:1), tertiary cyan `#8BE9FD` (10.3:1), error `#FF5555` (4.5:1), card `#44475A` |
+
+Adjusted accents (step 1, built): a palette's own colours are only the starting point. An accent is lightened (or darkened) just
+far enough to be readable on the background **and** on the palette's card colour, because the app shows primary, secondary,
+tertiary and error colours as text on cards (for example "default" labels and error messages). Colours that are readable already
+stay exactly as in the table; the others change as follows (code: `ThemeSchemes.kt`, `derive`):
+
+| Scheme | Changed accents (palette colour -> used) |
+|---|---|
+| Paper, Matrix | none |
+| High contrast light | tertiary `#006B2E` -> `#005C28`, error `#B00000` -> `#A20000` |
+| High contrast dark | error `#FF6B6B` -> `#FF8686` |
+| Dracula | primary `#BD93F9` -> `#C9A7F8`, secondary `#FF79C6` -> `#FD95D0`, error `#FF5555` -> `#FC9D9A` (no real red reaches 4.5:1 on Dracula's card colour `#44475A`; the pale salmon is the price of readable error text there), outline `#6272A4` -> `#8995B8` |
 
 Findings from the numbers:
 
@@ -86,7 +98,7 @@ descriptive way. **To confirm before release** (the maintainer's call): that the
 
 - **Contrast test** (plain JVM unit test, no device): for every scheme, every `onX` on its `X` and on the surfaces they are
   used on is at least 4.5:1 (7:1 in High contrast), and `primary`, `outline` and `error` on the background are at least 3:1.
-- A test that every scheme id round-trips through `Settings` and that unknown ids fall back to `system`.
+- A test that every scheme id round-trips and that unknown ids fall back to `system` (built, `ThemeSchemesTest`; I checked that the contrast test fails when the accent adjustment is switched off).
 - On a phone, once built: each scheme through the notes list, the Models, Backup, Labels and Privacy screens, the dialogs and
   the record button in both states, in landscape, and with large font size. This needs the phone.
 

@@ -42,6 +42,11 @@ object Settings {
 
     fun setAllowMobileData(context: Context, allow: Boolean) = prefs(context).edit().putBoolean("allow_mobile_data", allow).apply()
 
+    /** The colour theme chosen in the app (docs/THEMES.md); an unknown value means "follow the system". */
+    fun theme(context: Context): AppTheme = AppTheme.fromId(prefs(context).getString("theme", null))
+
+    fun setTheme(context: Context, theme: AppTheme) = prefs(context).edit().putString("theme", theme.id).apply()
+
     /** Record from a connected Bluetooth headset or car microphone instead of the phone's (see [MicrophoneRoute]). */
     fun bluetoothMic(context: Context): Boolean = prefs(context).getBoolean("bluetooth_mic", false)
 

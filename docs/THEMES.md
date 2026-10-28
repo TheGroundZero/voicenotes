@@ -5,7 +5,7 @@ SPDX-License-Identifier: GPL-3.0-or-later
 
 # Colour themes: design
 
-Status: **design only** (written 2026-10-28, branch `feat/colour-themes`); nothing is built yet. Roadmap item 4, "for fun,
+Status: **design only** (written 2026-10-28, branch `feat/colour-themes`; the maintainer's decisions on the open questions are in, see the end); nothing is built yet. Roadmap item 4, "for fun,
 last". The contrast numbers below were computed (WCAG 2.x, relative luminance), not estimated.
 
 ## What exists today
@@ -18,12 +18,13 @@ errorContainer, secondaryContainer, ...). That is what makes themes cheap: one p
 ## Goals and non-goals
 
 - Keep the default exactly as it is now ("Follow the system": wallpaper colours, light or dark).
-- Add a handful of fixed schemes the user picks in the app: **Light**, **Dark**, **High contrast** (light and dark),
-  **Matrix** and **Dracula**.
+- Add a handful of fixed schemes the user picks in the app: **Light**, **Dark**, **Paper** (a warm light scheme),
+  **High contrast** (one card, follows the system's light or dark), **Matrix** and **Dracula**.
 - Every text colour is readable: at least 4.5:1 for normal text and 3:1 for icons and outlines everywhere, 7:1 in High
   contrast. A unit test enforces it, so a later palette tweak cannot silently break readability.
 - No new permission, no network, no new library, no change to what is stored per note. The choice is one preference.
-- Not goals: user-defined colours, per-screen themes, changing fonts, or theming the system's Quick Settings tile.
+- Not goals: user-defined colours, per-screen themes, changing fonts, theming the system's Quick Settings tile, or (for now) making the
+  home-screen widget follow the in-app theme.
 
 ## The schemes
 
@@ -36,6 +37,7 @@ thirty-odd roles per scheme would be error-prone; deriving them also lets the te
 |---|---|---|---|---|---|
 | System (default) | follows system | wallpaper | wallpaper | wallpaper | today's behaviour, unchanged |
 | Light / Dark | fixed | wallpaper colours, but ignoring the system's light/dark switch | | | for people whose system setting flips with the schedule |
+| Paper | light | `#F6F1E4` (card `#EBE3D0`) | `#2B2620` (13.3:1; 11.7:1 on the card) | ink blue `#2F4B7C` (7.7:1) | secondary text `#5E5546` (6.5:1), secondary brown `#7A4B1E` (6.5:1), tertiary green `#4B6B3A` (5.4:1), error `#9B1C1C` (7.2:1), outline `#7D7360` (4.1:1; `#8C8270` gives 3.4:1, which is enough, but 4.1:1 reads better) |
 | High contrast light | light | `#FFFFFF` | `#000000` (21:1) | `#0033CC` (9.0:1) | secondary text `#3A3A3A` (11.4:1), error `#B00000` (7.4:1) |
 | High contrast dark | dark | `#000000` | `#FFFFFF` (21:1) | `#FFD60A` (14.9:1) | secondary text `#D0D0D0` (13.6:1), error `#FF6B6B` (7.6:1) |
 | Matrix | dark | `#000000` | `#7CFF9A` (14.9:1 on `#0A140C`) | `#00FF41` (15.4:1) | secondary `#00B82E` (7.9:1), error `#FF4D4D` (6.4:1), container `#003B0F` |
@@ -67,7 +69,7 @@ descriptive way. **To confirm before release** (the maintainer's call): that the
 - The selected scheme applies at once (state in `MainActivity`, like the other settings) and is stored in the existing
   `settings` preferences as a short id (`system`, `light`, `dark`, `hc-light`, `hc-dark`, `matrix`, `dracula`).
   An unknown id falls back to `system`.
-- High contrast offers a single card that follows the system's light or dark; Matrix and Dracula are dark in both modes.
+- High contrast is a single card that follows the system's light or dark (decided); Paper is light and Matrix and Dracula are dark, whatever the system says.
 
 ## System bars, widget and other surfaces
 
@@ -96,13 +98,13 @@ descriptive way. **To confirm before release** (the maintainer's call): that the
   default so nobody gets surprised.
 - More schemes mean more to keep readable when screens change: the contrast test is the safeguard.
 
-## Open questions for the maintainer
+## Decisions of the maintainer (2026-10-28)
 
-1. Is the set right (High contrast, Matrix, Dracula, plus fixed Light and Dark)? Anything to add, such as a Solarized or Nord
-   (both MIT) scheme, or a light "paper" scheme?
-2. Should High contrast be two schemes or one that follows the system? (The design assumes one card.)
-3. "Dracula" or "Dracula-style" in the menu?
-4. Should the home-screen widget follow the in-app theme, even though that needs the theme to be readable outside the activity?
+1. The set gets one more scheme: **Paper**, a light scheme (palette above). Solarized and Nord stay possible later, both MIT.
+2. **High contrast follows the system** (one card, light or dark).
+3. The menu says **"Dracula"**, with the credit to the Dracula theme (MIT) in About and `third_party/README.md`.
+4. The **widget does not follow the in-app theme**, at least not now: a low-priority item for later (it needs the theme to be readable
+   outside the activity). It stays in the roadmap's list of gaps.
 
 ## Steps (each its own pull request)
 

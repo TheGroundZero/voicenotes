@@ -52,10 +52,11 @@ against. Build and release instructions are in [BUILDING.md](BUILDING.md) and [R
    microphone, speech-check tuning for road noise, a guard against repetition loops in transcripts.
 4. **Colour themes (for fun, last).** A few extra schemes next to the system light and dark theme and dynamic colour:
    high contrast, "Matrix" and "Dracula". Chosen in the app, with the default staying "follow the system".
-   Design and the measured contrast of each palette: [THEMES.md](THEMES.md).
+   Design and the measured contrast of each palette: [THEMES.md](THEMES.md). The set: Light, Dark, Paper, High contrast (follows the system), Matrix, Dracula.
 
 ## Known gaps
 
+- The home-screen widget does not follow a colour theme chosen in the app (low priority; see [THEMES.md](THEMES.md)).
 - Sorting is by time only. Other orders (by recording length, to clean up storage; by state, probably better as a
   filter) were left out; sorting by label is covered by `label:` search.
 - No boot receiver: after a reboot, waiting notes and the headset-button service need the app opened once.

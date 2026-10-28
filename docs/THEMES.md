@@ -5,7 +5,7 @@ SPDX-License-Identifier: GPL-3.0-or-later
 
 # Colour themes: design
 
-Status: step 1 built (the schemes, `Settings.theme` and the contrast tests; no screen yet); the maintainer's decisions on the open questions are at the end. Written 2026-10-28 on branch `feat/colour-themes`. Roadmap item 4, "for fun,
+Status: built and tried on a phone (2026-10-28): the schemes, `Settings.theme`, the contrast tests, the Appearance screen and the wiring; the maintainer's decisions on the open questions are at the end. Written 2026-10-28 on branch `feat/colour-themes`. Roadmap item 4, "for fun,
 last". The contrast numbers below were computed (WCAG 2.x, relative luminance), not estimated.
 
 ## What exists today
@@ -99,8 +99,11 @@ descriptive way. **To confirm before release** (the maintainer's call): that the
 - **Contrast test** (plain JVM unit test, no device): for every scheme, every `onX` on its `X` and on the surfaces they are
   used on is at least 4.5:1 (7:1 in High contrast), and `primary`, `outline` and `error` on the background are at least 3:1.
 - A test that every scheme id round-trips and that unknown ids fall back to `system` (built, `ThemeSchemesTest`; I checked that the contrast test fails when the accent adjustment is switched off).
-- On a phone, once built: each scheme through the notes list, the Models, Backup, Labels and Privacy screens, the dialogs and
-  the record button in both states, in landscape, and with large font size. This needs the phone.
+- On a phone (done 2026-10-28): all seven themes through the notes list, Appearance, Models,
+  a confirmation dialog and Privacy; large font (1.3) in Dracula and High contrast; landscape in High contrast; the status bar
+  icons follow the theme (dark icons on Light and Paper on a phone in dark mode). **Not yet looked at:** the record button while
+  recording, the Backup and Labels screens, landscape in the other themes, and the window background during a cold start (it
+  may show the system colour for a moment before the first frame).
 
 ## Risks
 

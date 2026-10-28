@@ -50,8 +50,9 @@ against. Build and release instructions are in [BUILDING.md](BUILDING.md) and [R
    generated or openly licensed speech. Recordings of the maintainers' own voices are never uploaded or published.
 3. **In-car validation** (moved back on 2026-10-26; it needs the real car). Headset button alongside a music app, Android Auto on a real head unit, car hands-free
    microphone, speech-check tuning for road noise, a guard against repetition loops in transcripts.
-4. **Colour themes (for fun, last).** A few extra schemes next to the system light and dark theme and dynamic colour:
-   high contrast, "Matrix" and "Dracula". Chosen in the app, with the default staying "follow the system".
+4. **Colour themes (for fun, last): built, to be released.** Extra schemes next to the system light and dark theme and dynamic
+   colour: Paper, high contrast, "Matrix" and "Dracula". Chosen under *Appearance* in the menu, with the default staying
+   "follow the system". Tried on a phone on 2026-10-28 (all themes on the main screens, large font, one theme in landscape).
    Design and the measured contrast of each palette: [THEMES.md](THEMES.md). The set: Light, Dark, Paper, High contrast (follows the system), Matrix, Dracula.
 
 ## Known gaps

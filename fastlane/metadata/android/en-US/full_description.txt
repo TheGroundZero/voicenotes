@@ -5,6 +5,7 @@ It is built for use while driving: start a note from a Quick Settings tile, a ho
 <b>Features</b>
 • Offline speech recognition with Whisper (whisper.cpp); the language is detected automatically among the languages you prefer, such as English, Dutch and French
 • Newest or oldest first, with a header for each day
+• Colour themes: follow the system (as before), Light, Dark, Paper, High contrast, Matrix and Dracula, each tested for readable text
 • Your own labels on notes, and one search bar: words search the text, label:name searches only the labels
 • Backup and restore to a file you choose (optionally encrypted with a passphrase); nothing is sent by the app itself
 • Several versions of every transcript: re-transcribe with another model or language, edit by hand, go back

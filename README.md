@@ -18,6 +18,15 @@ button, or from Android Auto), speak, stop. The speech is turned into text **on 
   <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/6-backup-dark.png" width="23%" alt="The Backup and restore screen after an encrypted backup">
 </p>
 
+Colour themes (*Appearance* in the menu): the choice screen, and the notes list in two of the themes.
+
+<p>
+  <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/11-appearance-dark.png" width="23%" alt="The Appearance screen in dark mode: one card per theme, each with a small sample in its own colours">
+  <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/11-appearance-light.png" width="23%" alt="The Appearance screen in light mode">
+  <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/12-dracula-dark.png" width="23%" alt="The note list in the Dracula theme">
+  <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/12-paper-light.png" width="23%" alt="The note list in the Paper theme">
+</p>
+
 More, in light and dark, are in [fastlane/metadata/android/en-US/images/phoneScreenshots](fastlane/metadata/android/en-US/images/phoneScreenshots).
 They show invented demo notes, never real recordings.
 
@@ -43,7 +52,8 @@ Every release is signed with the same key, so updates install over the previous 
   The language is detected automatically among the languages you prefer (English, Dutch, French and others).
 - **Sorting and day headers:** newest or oldest first (menu), remembered, with a header for each day.
 - **Colour themes:** *Appearance* in the menu: follow the system (wallpaper colours, as before), Light, Dark, Paper, High
-  contrast, Matrix and Dracula, each with tested text contrast.
+  contrast (follows the phone's light or dark), Matrix and Dracula, each with tested text contrast. The home-screen widget
+  keeps following the system.
 - **Labels and search:** label notes yourself and find them again with one search bar: words search the text, `label:name`
   searches the labels only (never the text), and the search suggests your labels as you type `label:`.
 - **Several versions of every transcript:** re-transcribe with another model or language, edit by hand, switch back.

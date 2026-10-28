@@ -1,6 +1,6 @@
 # Releasing
 
-Status: used for v0.1.0 (2026-10-23), v0.2.0 to v0.4.0 (2026-10-25) and v0.5.0 and v0.5.1 (2026-10-26 and 27). Each signed APK built by GitHub Actions was byte-identical to a clean local build.
+Status: used for v0.1.0 (2026-10-23), v0.2.0 to v0.4.0 (2026-10-25), v0.5.0 and v0.5.1 (2026-10-26 and 27) and v0.6.0 (2026-10-28). Each signed APK built by GitHub Actions was byte-identical to a clean local build (for 0.6.0: every entry of the signed APK equals the one in the unsigned local build, and two local complete rebuilds in different directories gave the same SHA-256).
 
 ## Versions
 
@@ -49,6 +49,7 @@ Three more things made it so (keep them): `-ffile-prefix-map` and `--build-id=no
 ggml's build stamp (it would write the commit and a "-dirty" flag into the library), and `vcsInfo.include = false`
 for the APK. `scripts/verify-reproducible.sh` repeats the test (it sets `keystore.properties` aside while it runs, because it compares unsigned files); run it before a release and after every change of the toolchain (the move to Android Gradle Plugin 8.9.3 and Gradle 8.11.1 for API 36 was checked this way). What has **not** been tested:
 another operating system, a different NDK or JDK build than the pinned ones, and F-Droid's own build server. A signed APK is the unsigned one plus a signature, so compare *unsigned* files (or use `apksigcopier`).
+To compare a released APK with a local build without the tools, compare the zip entries (names, sizes, CRCs) of both: a signed APK has the same entries as the unsigned one, and its signature sits in the signing block outside them.
 
 ## Building a release
 

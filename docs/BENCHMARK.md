@@ -171,12 +171,23 @@ engine context for every clip as in the app, on the development machine (`benchm
 | full 30 s | 6.5 % | 3.5 |
 | 1000 frames | 7.2 % | 2.1 |
 | 750 frames | 14.2 % | 1.5 |
+| 768 frames | 13.6 % | 2.3 |
+| 512 frames | 26.2 % | 1.3 |
 | 500 frames | 18.6 % | 1.0 |
 
 Language identification was right for every clip in every run. `compare.py` passes rules 1 to 3 for the full window and for
-1000 frames against the app's window (rules 4 and 5, the phone measurements and the licence check, are open). Detecting the
-language with the full window and then transcribing with the automatic window gave 171 % WER and 11 repetition loops; the app
-uses one window for both, but the cause (probably state kept between two window sizes) is still to be found.
+1000 frames against the app's window (rules 4 and 5, the phone measurements and the licence check, are open).
+
+**A window that differs between language detection and transcription breaks the transcript.** Detecting with the full window
+and then transcribing with the automatic one gave 171 % WER and 11 repetition loops (`vn-bench --detect-audio-ctx full`). Cause
+(found 2026-10-28, reproduced on single clips): with flash attention, whisper.cpp reads the cross-attention cache in blocks of
+256 positions without a mask, so the positions between the window and the next multiple of 256 are used although the encoder
+did not write them in that call. They hold zeros on a fresh state, or the leftovers of an earlier, larger encode. A window that
+is a multiple of 256 (512, 768) was immune in the tests, 347 and 400 were not. The app uses one window for both steps, so it
+is not affected. I also expected the zero padding to hurt accuracy for windows far from a multiple of 256, and tested it: 512 was
+**not** better than 500 (26.2 % against 18.6 %, mostly one Dutch cell) and 768 was about the same as 750 (13.6 % against
+14.2 %). With 40 clips that is noise, and the hypothesis is not supported. What the numbers do show is that short windows lose
+accuracy, steeply below about 750 frames.
 
 These are synthetic clips with wide confidence intervals and timings from a shared machine. **Nothing changes in the app until
 the full corpus, real recordings and the Pixel 10 agree.**

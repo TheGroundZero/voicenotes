@@ -53,6 +53,7 @@ against. Build and release instructions are in [BUILDING.md](BUILDING.md) and [R
 4. **Colour themes (for fun, last): built, to be released.** Extra schemes next to the system light and dark theme and dynamic
    colour: Paper, high contrast, "Matrix" and "Dracula". Chosen under *Appearance* in the menu, with the default staying
    "follow the system". Tried on a phone on 2026-10-28 (all themes on the main screens, large font, one theme in landscape).
+   A later idea of **low priority**: a **Custom** theme where you enter your own HEX colours (see [THEMES.md](THEMES.md)).
    Design and the measured contrast of each palette: [THEMES.md](THEMES.md). The set: Light, Dark, Paper, High contrast (follows the system), Matrix, Dracula.
 
 ## Known gaps

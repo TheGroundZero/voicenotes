@@ -23,7 +23,7 @@ errorContainer, secondaryContainer, ...). That is what makes themes cheap: one p
 - Every text colour is readable: at least 4.5:1 for normal text and 3:1 for icons and outlines everywhere, 7:1 in High
   contrast. A unit test enforces it, so a later palette tweak cannot silently break readability.
 - No new permission, no network, no new library, no change to what is stored per note. The choice is one preference.
-- Not goals: user-defined colours, per-screen themes, changing fonts, theming the system's Quick Settings tile, or (for now) making the
+- Not goals (for now): user-defined colours (see *A later idea: a Custom theme*), per-screen themes, changing fonts, theming the system's Quick Settings tile, or (for now) making the
   home-screen widget follow the in-app theme.
 
 ## The schemes
@@ -112,6 +112,30 @@ descriptive way. **To confirm before release** (the maintainer's call): that the
 - Fixed schemes ignore the user's wallpaper colours and the system's dark-mode schedule, by design; "System" stays the
   default so nobody gets surprised.
 - More schemes mean more to keep readable when screens change: the contrast test is the safeguard.
+
+## A later idea: a Custom theme (low priority)
+
+Not planned for the next release; written down so the idea is not lost. The built-in themes are only a few seed colours each
+(`Seeds` in `ThemeSchemes.kt`: background, card, text, primary, secondary, tertiary, error, outline), and `derive()` makes every
+other Material role from them, so a user-defined theme fits the same machinery: the user enters HEX values for the seeds, the app
+stores them as one theme named **Custom**, and everything else works as for the other themes.
+
+What it would need, and what is already in place:
+
+- **Input:** a screen with the eight colours, each a HEX field (`#RRGGBB`, also `RGB`) and a swatch, a light/dark choice (or
+  decided from the background's brightness), and the live sample card from the Appearance screen. Parsing and validation are plain
+  Kotlin and unit-testable.
+- **Storage:** one preference string with the eight values next to the existing `theme` id (`custom`); not part of backups, like
+  the other settings. Unknown or damaged values fall back to the system theme, as an unknown id does today.
+- **Readability:** accents are already lightened or darkened until they are readable on the background and the card. What
+  `derive()` cannot fix is a text colour that is too close to the background, so the screen would show the contrast ratio of that
+  pair and either correct the text colour or refuse the save below the limit (4.5:1). The contrast test would run on a few
+  generated custom palettes, including bad ones.
+- **Sharing (even later):** a palette as one line of text that can be copied and pasted, so themes can be shared without a file format.
+
+Open questions for when it is taken up: whether one Custom theme is enough or a few can be saved, whether to ship a colour picker
+or only HEX fields (HEX fields keep the app free of extra UI code and extra dependencies), and how to protect people from
+locking themselves out with unreadable colours (a "Reset to the system theme" that always works, drawn in fixed colours).
 
 ## Decisions of the maintainer (2026-10-28)
 

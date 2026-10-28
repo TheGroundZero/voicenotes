@@ -60,3 +60,5 @@ against. Build and release instructions are in [BUILDING.md](BUILDING.md) and [R
 - Search covers the current text of a note, not its older versions or the Markdown file it was appended to.
 - Only tested on one phone model; CPU variants without i8mm/fp16/dotprod are verified to work but are slower.
 - The widget and tile "add" buttons, voice start in Android Auto and the daily cleanup job's schedule are untested.
+- The first recording from Android Auto in a real car (2026-10-28) ended after a fraction of a second: the car took the audio
+  focus away and the note stopped. The fix is on its way and has to be tried in the car again.

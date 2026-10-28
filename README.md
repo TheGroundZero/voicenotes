@@ -74,6 +74,10 @@ network use is downloading a speech model (and a small speech-check model) from 
 - Android Auto only lists apps from Google Play unless you switch on its developer option *Unknown sources*; there is
   no note-taking category, so Voice Notes presents itself as a media app. A plain "play" press never starts a note
   (Android Auto sends one by itself when it connects).
+- In the car, start a note with the *Record a note* button on the Android Auto screen. The car's voice button belongs to
+  Android Auto's assistant (Google Assistant or Gemini), not to Voice Notes. On a phone without one, for example GrapheneOS
+  without Google apps, Android Auto answers that button with "Voice commands are not available at the moment"; that message
+  is Android Auto's, and Voice Notes does not need an assistant.
 
 ## Building
 

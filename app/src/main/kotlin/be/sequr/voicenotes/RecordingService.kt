@@ -18,6 +18,7 @@ import android.media.AudioManager
 import android.os.Handler
 import android.os.IBinder
 import android.os.Looper
+import android.os.SystemClock
 import android.util.Log
 import androidx.core.app.ServiceCompat
 import java.io.File
@@ -49,6 +50,8 @@ class RecordingService : Service() {
     private var focusRequest: AudioFocusRequest? = null
     private val microphone by lazy { MicrophoneRoute(this, main) }
     private var starting = false // waiting for a Bluetooth microphone to connect
+    private var startedAt = 0L // uptime when the running note began
+    private var onBluetooth = false // the running note records from a Bluetooth microphone
     private val autoStop = Runnable {
         Log.i(TAG, "note reached the maximum length, stopping")
         stopRecording()
@@ -136,6 +139,8 @@ class RecordingService : Service() {
                 ),
             )
         }
+        startedAt = SystemClock.elapsedRealtime()
+        onBluetooth = used != null
         _recording.value = true
         RecordWidget.update(this)
         Tones.start(this)
@@ -192,16 +197,35 @@ class RecordingService : Service() {
     }
 
     private fun requestAudioFocus(): Boolean {
+        // Plain media focus, not an assistant's: Android Auto treats USAGE_ASSISTANT as a voice session and the car
+        // answers by pressing its own voice button, which ends in "Voice commands are not available" without an assistant.
         val request = AudioFocusRequest.Builder(AudioManager.AUDIOFOCUS_GAIN_TRANSIENT_EXCLUSIVE)
-            .setAudioAttributes(AudioAttributes.Builder().setUsage(AudioAttributes.USAGE_ASSISTANT).setContentType(AudioAttributes.CONTENT_TYPE_SPEECH).build())
-            .setOnAudioFocusChangeListener({ change ->
-                // Someone else needs the audio (a call, an alarm): keep what has been recorded so far.
-                if (change == AudioManager.AUDIOFOCUS_LOSS || change == AudioManager.AUDIOFOCUS_LOSS_TRANSIENT) stopRecording()
-            }, main)
+            .setAudioAttributes(AudioAttributes.Builder().setUsage(AudioAttributes.USAGE_MEDIA).setContentType(AudioAttributes.CONTENT_TYPE_UNKNOWN).build())
+            .setOnAudioFocusChangeListener(::onFocusChange, main)
             .build()
         val granted = audioManager.requestAudioFocus(request) == AudioManager.AUDIOFOCUS_REQUEST_GRANTED
         if (granted) focusRequest = request
         return granted
+    }
+
+    /**
+     * A car or another app taking the audio is no reason to lose a note, so only a phone call ends it. If the car
+     * reacts to the Bluetooth microphone within seconds of the start, the note carries on with the phone's own.
+     */
+    private fun onFocusChange(change: Int) {
+        if (change != AudioManager.AUDIOFOCUS_LOSS && change != AudioManager.AUDIOFOCUS_LOSS_TRANSIENT) return
+        if (recorder == null) return
+        val inCall = audioManager.mode == AudioManager.MODE_IN_CALL || audioManager.mode == AudioManager.MODE_RINGTONE
+        Log.i(TAG, "audio focus lost ($change), in call: $inCall, on bluetooth: $onBluetooth")
+        if (inCall) {
+            stopRecording() // keep what has been recorded so far
+        } else if (onBluetooth && SystemClock.elapsedRealtime() - startedAt < CAR_REACTION_MS) {
+            Log.w(TAG, "the Bluetooth link was disturbed right after the start, continuing with the phone's microphone")
+            onBluetooth = false
+            recorder?.useDefaultMicrophone()
+            microphone.release()
+            currentNote?.let { id -> Io.executor.execute { dao.setMicSource(id.get(), MIC_PHONE) } }
+        }
     }
 
     private fun abandonAudioFocus() {
@@ -255,6 +279,7 @@ class RecordingService : Service() {
         const val EXTRA_FORCE = "force"
         private const val TAG = "RecordingService"
         private const val MAX_NOTE_MS = 10 * 60 * 1000L
+        private const val CAR_REACTION_MS = 5_000L
         private const val CHANNEL_ID = "recording"
         private const val NOTIF_ID = 1
 

@@ -12,6 +12,13 @@ versions follow [Semantic Versioning](https://semver.org/).
   dark), Matrix and Dracula. Every text colour in every theme reaches a tested minimum contrast (4.5:1, 7:1 for High contrast).
   The home-screen widget does not follow the theme yet.
 
+### Fixed
+
+- Recording from Android Auto no longer ends after a fraction of a second when the car takes over the audio. A note now
+  stops on a phone call only, the app asks for plain media focus instead of an assistant's (so the car does not start a
+  voice session and press its own voice button), and if the car disturbs the Bluetooth microphone right after the start
+  the note carries on with the phone's own microphone.
+
 ## [0.6.0] - 2026-10-28
 
 ### Changed

@@ -16,6 +16,7 @@ import java.io.RandomAccessFile
 class WavRecorder(private val file: File, private val device: AudioDeviceInfo? = null) {
     @Volatile private var recording = false
     private var thread: Thread? = null
+    @Volatile private var record: AudioRecord? = null
 
     @SuppressLint("MissingPermission") // checked by the caller before starting
     fun start() {
@@ -25,6 +26,7 @@ class WavRecorder(private val file: File, private val device: AudioDeviceInfo? =
         val record = AudioRecord(source, SAMPLE_RATE, CHANNEL, ENCODING, minBuf * 4)
         device?.let { record.preferredDevice = it }
         check(record.state == AudioRecord.STATE_INITIALIZED) { "AudioRecord failed to initialise" }
+        this.record = record
         recording = true
         thread = Thread {
             RandomAccessFile(file, "rw").use { out ->
@@ -46,6 +48,11 @@ class WavRecorder(private val file: File, private val device: AudioDeviceInfo? =
                 out.write(wavHeader(bytes))
             }
         }.also { it.start() }
+    }
+
+    /** Moves a running recording to the phone's own microphone (the Bluetooth link is being given up). */
+    fun useDefaultMicrophone() {
+        record?.preferredDevice = null
     }
 
     /** Stops recording and blocks until the WAV header is finalised. */

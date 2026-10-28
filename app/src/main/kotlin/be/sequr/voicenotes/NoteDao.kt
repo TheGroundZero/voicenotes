@@ -76,6 +76,9 @@ abstract class NoteDao {
     @Query("UPDATE notes SET status = :status WHERE id = :id")
     abstract fun setStatus(id: Long, status: NoteStatus)
 
+    @Query("UPDATE notes SET micSource = :micSource WHERE id = :id")
+    abstract fun setMicSource(id: Long, micSource: String)
+
     @Query("UPDATE notes SET language = :language WHERE id = :id")
     abstract fun setLanguage(id: Long, language: String)
 

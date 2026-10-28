@@ -28,9 +28,6 @@ source env.sh                     # in every new shell
 scripts/check.sh                  # lint, unit tests and the privacy guards
 ```
 
-If Gradle cannot download its distribution with a certificate error, your Java does not trust the site's certificate
-authority; `env.sh` points Java at the Debian system store when it exists. Do not disable certificate checking.
-
 ## Speech models
 
 The APK contains no model at all. To transcribe you need one of the models in

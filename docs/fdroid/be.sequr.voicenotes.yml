@@ -1,6 +1,7 @@
+# Context, the team's answers and the open points: rfp-draft.md.
 # DRAFT of an F-Droid build recipe (the file that would be proposed to https://gitlab.com/fdroid/fdroiddata as
-# metadata/be.sequr.voicenotes.yml). Untested: F-Droid's tooling has not been run on it, and three questions are open
-# (below). Keep the version fields in step with the latest release. Field reference: https://f-droid.org/docs/Build_Metadata_Reference/
+# metadata/be.sequr.voicenotes.yml). Untested: F-Droid's tooling (`fdroid lint`, `fdroid build`) has not been run on it.
+# Keep the version fields in step with the release that is submitted. Field reference: https://f-droid.org/docs/Build_Metadata_Reference/
 Categories:
   - Writing
   - Multimedia
@@ -10,13 +11,11 @@ WebSite: https://tangled.org/sequr.be/voicenotes
 SourceCode: https://tangled.org/sequr.be/voicenotes
 IssueTracker: https://tangled.org/sequr.be/voicenotes/issues/
 Changelog: https://tangled.org/sequr.be/voicenotes/blob/main/CHANGELOG.md
+Donate: https://ko-fi.com/s4squatch  # also in .github/FUNDING.yml (branch chore/funding), which F-Droid uses to check it
 
-# Open question 1: the app can download speech models from huggingface.co (a service that is not free software) when the
-# user asks. Whether F-Droid wants an anti-feature for that (for example NonFreeNet) is for the F-Droid team to say;
-# ask before submitting. The models themselves are MIT licensed.
-# AntiFeatures:
-#   NonFreeNet:
-#     en-US: Downloads speech models from huggingface.co, only when the user asks for it.
+# Speech models are downloaded from huggingface.co only when the user asks, and every model can also be imported from storage
+# (Models screen, "Import a model from a file..."). The team said NonFreeNet may apply unless users can load from storage, so
+# none is declared here; confirm in the request.
 
 AutoName: Voice Notes
 
@@ -24,9 +23,9 @@ RepoType: git
 Repo: https://tangled.org/sequr.be/voicenotes.git  # TODO: confirm the clone URL form F-Droid's server can use (https, anonymous)
 
 Builds:
-  - versionName: 0.5.1
-    versionCode: 7
-    commit: v0.5.1
+  - versionName: 0.6.0  # TODO: the first release without the bundled model; set to the release that is submitted
+    versionCode: 8
+    commit: v0.6.0
     subdir: app
     submodules: true
     gradle:
@@ -41,7 +40,12 @@ Builds:
     # Silero voice-activity model, 885 KB): like the Whisper models it is downloaded on request and checked against a pinned
     # SHA-256, or imported from a file (scripts/fetch-vad-model.sh proves the pin is the upstream file). The APK has no model.
 
+# Reproducible build: the release APK is byte-identical between GitHub Actions and a clean local build
+# (scripts/verify-reproducible.sh). Reference: the signed APK of the GitHub release; the key is the one in README.md.
+Binaries: https://github.com/TheGroundZero/voicenotes/releases/download/v%v/voicenotes-%v.apk
+AllowedAPKSigningKeys: 2e17596e99b88f970fff56423db2864490fb2088cfecbbe804255b88c4f15e1e
+
 AutoUpdateMode: Version
 UpdateCheckMode: Tags
-CurrentVersion: 0.5.1
-CurrentVersionCode: 7
+CurrentVersion: 0.6.0
+CurrentVersionCode: 8

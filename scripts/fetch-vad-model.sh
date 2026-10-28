@@ -9,7 +9,13 @@
 set -euo pipefail
 cd "$(dirname "$0")/.."
 CATALOG=app/src/main/kotlin/be/sequr/voicenotes/ModelCatalog.kt
-block="$(sed -n '/val speechCheck = ModelSpec(/,/^    )/p' "$CATALOG")"
+# The speechCheck entry of the catalog, in plain bash: the CI image has no sed or awk.
+block=""; inside=0
+while IFS= read -r line; do
+  [[ "$line" == *"val speechCheck = ModelSpec("* ]] && inside=1
+  if (( inside )); then block+="$line"$'\n'; [[ "$line" == "    )" ]] && break; fi
+done < "$CATALOG"
+[ -n "$block" ] || { echo "FAILED: no speechCheck entry in $CATALOG"; exit 1; }
 URL="$(grep -o 'url = "[^"]*"' <<<"$block" | cut -d'"' -f2)"
 SHA256="$(grep -o 'sha256 = "[^"]*"' <<<"$block" | cut -d'"' -f2)"
 SIZE="$(grep -o 'sizeBytes = [0-9_]*' <<<"$block" | grep -o '[0-9_]*$' | tr -d _)"

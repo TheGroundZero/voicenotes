@@ -42,7 +42,9 @@ against. Build and release instructions are in [BUILDING.md](BUILDING.md) and [R
 1. **Publishing, remaining part.** Versions 0.1.0 to 0.5.1 are released (Tangled, GitHub mirror, Obtainium). F-Droid answered the
    questions ([fdroid/questions-to-fdroid.md](fdroid/questions-to-fdroid.md)): open a Request For Packaging, with everything built
    from source or downloaded by the user. The one bundled binary (the speech-check model) is now downloaded like the Whisper models.
-   Still to do: read the Inclusion Policy's quality criteria, fix what they ask, and open the request.
+   The policy asks for three months of active development, which the project reaches on 2027-01-23; until then the request waits
+   (readiness checklist and request text: [fdroid/rfp-draft.md](fdroid/rfp-draft.md)). Other things to settle first: validating
+   recording from Android Auto in the car, and trying the recipe with F-Droid's own tools.
 2. **Automated model benchmarking** (design and progress: [BENCHMARK.md](BENCHMARK.md); the decision rule is written down before any result; steps 1 and 2 of 5 are done). A repeatable harness that compares new speech models (Whisper family first, engine
    and model kept swappable) on word error rate, hallucinations, language identification, speed and memory, using only
    generated or openly licensed speech. Recordings of the maintainers' own voices are never uploaded or published.

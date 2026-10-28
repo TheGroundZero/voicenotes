@@ -40,8 +40,29 @@ meant. Until then the app is available through GitHub releases and Obtainium.
 1. Merge `feat/vad-download` and release it (0.6.0); then no binary data is left in the APK.
 2. Validate recording from Android Auto in the car (fix on `fix/car-focus-loss`), so the description is true.
 3. Push `chore/funding` so the donation link can be verified.
-4. Run F-Droid's tools on the recipe in a fork of fdroiddata (`fdroid lint`, `fdroid readmeta`, `fdroid build`), as the guide says.
+4. Run F-Droid's tools on the recipe, as the guide says. **Done on 2026-10-28:** `lint`, `readmeta` and `checkupdates` pass (see *Trying F-Droid's tools*); `fdroid build` is still to do.
 5. Wait for 2027-01-23 (or ask the team whether anything else counts as "proven users").
+
+## Trying F-Droid's tools (2026-10-28)
+
+Run with the official image `registry.gitlab.com/fdroid/docker-executable-fdroidserver:master` (digest
+`sha256:3dbc5a72cae3597d712b9bb02e44acf36ed88cd6cad76ee2f0853b1d4136fa1a`, built 2026-10-25) in a container without any mounts: the recipe,
+fdroiddata's `config/categories.yml` and empty stand-ins for the category icons it lists go in through stdin as a tar archive. The image's
+entrypoint sources `/etc/profile.d/bsenv.sh` and then runs `$fdroidserver/fdroid`; do the same when overriding the entrypoint.
+
+| Command | Result |
+|---|---|
+| `fdroid lint be.sequr.voicenotes` | passes, **with fdroiddata's real `config/categories.yml`**; the first run without it called valid categories invalid |
+| `fdroid readmeta` | passes |
+| `fdroid rewritemeta` | only strips comments and moves `Binaries` and `ndk` into the canonical order: the submitted file must be its output |
+| `fdroid checkupdates` | clones the GitHub mirror, finds the tags `v0.3.0` to `v0.6.0`, resolves `v0.6.0` to `7fa77b8`, leaves `CurrentVersion 0.6.0` / `8` unchanged |
+| `fdroid build` | **not run yet**: it needs the Android SDK and NDK inside the container and a few GB of memory |
+
+What the run changed in the recipe: the categories are now `Note`, `Recorder` and `Speech Recognizer` (the current list is much more
+detailed than `Writing` and `Multimedia`, which are still valid), and `Repo` is the GitHub mirror.
+
+Still to do: `fdroid build` itself. It needs the Android SDK and NDK inside the container (the image has none), network access for the
+dependencies and the whisper.cpp submodule, and a few GB of memory.
 
 ## The request (text to post in the fdroiddata submission queue)
 

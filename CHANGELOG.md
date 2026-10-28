@@ -11,7 +11,8 @@ versions follow [Semantic Versioning](https://semver.org/).
   downloaded from huggingface.co together with your first speech model (checksum verified, like the others), or imported from
   a file; the Models screen shows it as "Speech check" with Download and Delete. Phones that already ran an earlier version keep
   the copy they have. Without it, notes are transcribed as before but silence and noise can get invented text, so it is on by
-  default after the first download. This also lets F-Droid build the app without a binary file inside it.
+  default after the first download. This also lets F-Droid build the app without a binary file inside it. Because it is
+  small, it downloads over mobile data without asking; the large models still wait for Wi-Fi unless you allow mobile data.
 
 ## [0.5.1] - 2026-10-27
 

@@ -59,7 +59,7 @@ class ModelDownloadService : Service() {
             if (worker?.isAlive != true) shutDown()
             return
         }
-        refusal()?.let {
+        refusal(spec)?.let {
             ModelDownloads.set(spec.id, it)
             shutDown()
             return
@@ -106,8 +106,8 @@ class ModelDownloadService : Service() {
         return result
     }
 
-    /** A reason not to download right now, or null. Large files stay off mobile data unless the user allows it. */
-    private fun refusal(): DownloadState.Failed? {
+    /** A reason not to download right now, or null. Large files (10 MB and up) stay off mobile data unless the user allows it. */
+    private fun refusal(spec: ModelSpec): DownloadState.Failed? {
         val cm = getSystemService(ConnectivityManager::class.java)
         // With the network permission switched off per app (GrapheneOS), the app sees no network at
         // all, and checkSelfPermission() still says granted, so "offline" and "blocked" look the same.
@@ -117,7 +117,7 @@ class ModelDownloadService : Service() {
                 openSettings = true,
             )
         }
-        if (cm.isActiveNetworkMetered && !Settings.allowMobileData(this)) {
+        if (cm.isActiveNetworkMetered && spec.sizeBytes >= SMALL_DOWNLOAD_BYTES && !Settings.allowMobileData(this)) {
             return DownloadState.Failed("Not on Wi-Fi. Connect to Wi-Fi, or allow downloads over mobile data on this screen")
         }
         return null
@@ -149,6 +149,7 @@ class ModelDownloadService : Service() {
         private const val EXTRA_MODEL = "model"
         private const val CHANNEL_ID = "downloads"
         private const val NOTIF_ID = 2
+        private const val SMALL_DOWNLOAD_BYTES = 10_000_000L // below this (the speech check) mobile data is fine
 
         fun start(context: Context, modelId: String) {
             ModelDownloads.set(modelId, DownloadState.Downloading(0, ModelCatalog.downloadable(modelId)?.sizeBytes ?: 0))

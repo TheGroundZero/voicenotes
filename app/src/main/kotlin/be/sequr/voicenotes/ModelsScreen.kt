@@ -35,7 +35,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 
-private fun megabytes(bytes: Long) = "%d MB".format(bytes / 1_000_000)
+// Small files (the speech check is under 1 MB) would read "0 MB" as a whole number.
+private fun megabytes(bytes: Long) = if (bytes < 10_000_000) "%.1f MB".format(bytes / 1_000_000.0) else "%d MB".format(bytes / 1_000_000)
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

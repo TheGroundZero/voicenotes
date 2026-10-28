@@ -63,6 +63,11 @@ against. Build and release instructions are in [BUILDING.md](BUILDING.md) and [R
   language halfway (for example the second half in Dutch) gets that part translated or dropped. Per-segment language
   detection is an idea of **low priority**; the benchmark's mixed-language clips ([BENCHMARK.md](BENCHMARK.md)) will show how
   much it matters. Until then: one note per language.
+- The app itself is in English only. Translating it is a **much later** item: today only 17 strings live in resource files, while
+  roughly 160 texts are written directly into the screens, so it needs (1) a list of every string and moving them all into
+  string resources, (2) a way to collect translations and keep them up to date, (3) a test that every language has every string
+  (and that placeholders match), and (4) the store texts per language. It does not touch transcription, which already works
+  in the language you speak.
 - Search covers the current text of a note, not its older versions or the Markdown file it was appended to.
 - Only tested on one phone model; CPU variants without i8mm/fp16/dotprod are verified to work but are slower.
 - The widget and tile "add" buttons, voice start in Android Auto and the daily cleanup job's schedule are untested.

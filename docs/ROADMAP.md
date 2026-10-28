@@ -59,6 +59,10 @@ against. Build and release instructions are in [BUILDING.md](BUILDING.md) and [R
   filter) were left out; sorting by label is covered by `label:` search.
 - No boot receiver: after a reboot, waiting notes and the headset-button service need the app opened once.
 - Some transcripts start with "..."; the repetition guard does not exist yet.
+- A note has one language. It is detected once, at the start, and the whole note is transcribed in it, so a note that switches
+  language halfway (for example the second half in Dutch) gets that part translated or dropped. Per-segment language
+  detection is an idea of **low priority**; the benchmark's mixed-language clips ([BENCHMARK.md](BENCHMARK.md)) will show how
+  much it matters. Until then: one note per language.
 - Search covers the current text of a note, not its older versions or the Markdown file it was appended to.
 - Only tested on one phone model; CPU variants without i8mm/fp16/dotprod are verified to work but are slower.
 - The widget and tile "add" buttons, voice start in Android Auto and the daily cleanup job's schedule are untested.

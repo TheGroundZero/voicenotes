@@ -31,7 +31,7 @@ meant. Until then the app is available through GitHub releases and Obtainium.
 | Donation link | `.github/FUNDING.yml` (branch `chore/funding`, not pushed yet); the recipe has `Donate:`. |
 | Own application ID | `be.sequr.voicenotes`, from the domain sequr.be. |
 | Fastlane metadata | Title, descriptions, 20 screenshots and `changelogs/<versionCode>.txt` (2 to 7). The release script must add `8.txt` for 0.6.0. Tags are `vX.Y.Z`. |
-| Reproducible build | Recipe has `Binaries` and `AllowedAPKSigningKeys` (the key in `README.md`); never run through F-Droid's tooling. |
+| Reproducible build | Recipe has `Binaries` and `AllowedAPKSigningKeys` (the key in `README.md`). **F-Droid's own build of 0.6.0 matches the signed release** (2026-10-29). |
 | Maintained, works as described | Maintained. **Not yet true for the car:** the description says "for the car", and recording from Android Auto is not validated (a fix is on `fix/car-focus-loss`, waiting for a test in the car). Validate before submitting. |
 | Active for three months | **No, until 2027-01-23.** |
 
@@ -40,7 +40,7 @@ meant. Until then the app is available through GitHub releases and Obtainium.
 1. Merge `feat/vad-download` and release it (0.6.0); then no binary data is left in the APK.
 2. Validate recording from Android Auto in the car (fix on `fix/car-focus-loss`), so the description is true.
 3. Push `chore/funding` so the donation link can be verified.
-4. Run F-Droid's tools on the recipe, as the guide says. **Done on 2026-10-28:** `lint`, `readmeta` and `checkupdates` pass (see *Trying F-Droid's tools*); `fdroid build` is still to do.
+4. Run F-Droid's tools on the recipe, as the guide says. **Done on 2026-10-28 and 29:** `lint`, `readmeta`, `checkupdates` and `build` pass (see *Trying F-Droid's tools*).
 5. Wait for 2027-01-23 (or ask the team whether anything else counts as "proven users").
 
 ## Trying F-Droid's tools (2026-10-28)
@@ -56,13 +56,27 @@ entrypoint sources `/etc/profile.d/bsenv.sh` and then runs `$fdroidserver/fdroid
 | `fdroid readmeta` | passes |
 | `fdroid rewritemeta` | only strips comments and moves `Binaries` and `ndk` into the canonical order: the submitted file must be its output |
 | `fdroid checkupdates` | clones the GitHub mirror, finds the tags `v0.3.0` to `v0.6.0`, resolves `v0.6.0` to `7fa77b8`, leaves `CurrentVersion 0.6.0` / `8` unchanged |
-| `fdroid build` | **not run yet**: it needs the Android SDK and NDK inside the container and a few GB of memory |
+| `fdroid build` | **passes** after adding `scandelete` for three unused whisper.cpp folders; matches the signed release byte for byte (below) |
 
 What the run changed in the recipe: the categories are now `Note`, `Recorder` and `Speech Recognizer` (the current list is much more
 detailed than `Writing` and `Multimedia`, which are still valid), and `Repo` is the GitHub mirror.
 
-Still to do: `fdroid build` itself. It needs the Android SDK and NDK inside the container (the image has none), network access for the
-dependencies and the whisper.cpp submodule, and a few GB of memory.
+### `fdroid build` (2026-10-29): passes, and matches our release byte for byte
+
+`fdroid build be.sequr.voicenotes:8` ran in the same image with these extras: the exact SDK components our own builds use (platform 36,
+build-tools 35.0.0, NDK 27.2.12479018, CMake 3.22.1, no mounts of host folders) and network access for Gradle and the whisper.cpp
+submodule. The build uses OpenJDK 21 and Gradle 8.11.1 (F-Droid removes every checked-in `gradle-wrapper.jar`, ours included, and the build still used Gradle 8.11.1).
+
+- **First run: the source scanner failed with 15 errors**, all inside the whisper.cpp submodule: 12 test model files
+  (`models/for-tests-*.bin`), a Java binding and an example app that name other Maven repositories, and a demo's `package.json`
+  without a lock file. None of it is built by the app, so the recipe lists the three folders under `scandelete`.
+- **Second run: success.** Gradle took 4 min 51 s. F-Droid then compared its APK with the signed release it downloaded from the
+  `Binaries` URL, printed "compared built binary to supplied reference binary successfully" and "supplied reference binary has allowed
+  signer 2e17596e…" (the key in `README.md`).
+- **The built APK is byte-identical to our own unsigned 0.6.0 build:** both have SHA-256 `40d95a437ff5e251436e939093a38df9982b1adb287a379d6627eb3b99603da5`
+  (6,121,837 bytes), which `scripts/verify-reproducible.sh` also produced twice on a development machine.
+- **Warnings seen:** F-Droid's note that it passes the NDK location the deprecated way (their tooling, 19 times), and Gradle's note that
+  our `releaseCheck` build type is both debuggable and minified (intended, it is only for trying a release on a phone).
 
 ## The request (text to post in the fdroiddata submission queue)
 

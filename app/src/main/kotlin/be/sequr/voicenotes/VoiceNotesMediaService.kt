@@ -45,6 +45,8 @@ import kotlinx.coroutines.launch
 class VoiceNotesMediaService : MediaBrowserService() {
     private var session: MediaSession? = null
     private var lastBrowseAt = 0L // when a car (or other media UI) last connected to browse us
+    private var recordingSince = 0L // when the running note started (elapsed realtime)
+    private var wasRecording = false
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
 
     override fun onCreate() {
@@ -79,7 +81,14 @@ class VoiceNotesMediaService : MediaBrowserService() {
                     if (event != null && event.keyCode in TOGGLE_KEYS) {
                         // One press, one toggle: act on the key-down only, and ignore auto-repeat.
                         if (event.action == KeyEvent.ACTION_DOWN && event.repeatCount == 0) {
-                            RecordingService.toggle(this@VoiceNotesMediaService, Transcriber.AUTO)
+                            val fromCar = session?.currentControllerInfo?.packageName == ANDROID_AUTO
+                            val sinceStart = SystemClock.elapsedRealtime() - recordingSince
+                            if (ignoreCarKey(fromCar, RecordingService.isRecording, sinceStart)) {
+                                // Seen in a car: the head unit sent a pause key 0.13 s after a note started (reversing) and ended it.
+                                Log.i(TAG, "ignored: ${KeyEvent.keyCodeToString(event.keyCode)} from the car, ${sinceStart} ms after the note started")
+                            } else {
+                                RecordingService.toggle(this@VoiceNotesMediaService, Transcriber.AUTO)
+                            }
                         }
                         return true
                     }
@@ -169,6 +178,8 @@ class VoiceNotesMediaService : MediaBrowserService() {
     }
 
     private fun render(s: MediaSession, recording: Boolean) {
+        if (recording && !wasRecording) recordingSince = SystemClock.elapsedRealtime()
+        wasRecording = recording
         s.setMetadata(
             MediaMetadata.Builder()
                 .putString(MediaMetadata.METADATA_KEY_TITLE, if (recording) "Recording a note" else "Voice note")
@@ -227,6 +238,8 @@ class VoiceNotesMediaService : MediaBrowserService() {
         private const val RECORD_ID = "record"
         private const val SAMPLE_RATE = 8_000
         private const val SILENCE_MS = 400
+        /** A key the car forwards this soon after a note started is the car's own doing, not a person stopping the note. */
+        private const val CAR_KEY_GRACE_MS = 3_000L
         private val TOGGLE_KEYS = setOf(
             KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE, KeyEvent.KEYCODE_MEDIA_PLAY, KeyEvent.KEYCODE_MEDIA_PAUSE, KeyEvent.KEYCODE_HEADSETHOOK,
         )
@@ -235,6 +248,10 @@ class VoiceNotesMediaService : MediaBrowserService() {
             "com.google.android.projection.gearhead", "com.google.android.gms", "com.google.android.googlequicksearchbox",
             "com.android.systemui", "android",
         )
+
+        /** Whether a toggle key is to be ignored: sent by Android Auto while a note that started less than [CAR_KEY_GRACE_MS] ago is running. */
+        internal fun ignoreCarKey(fromAndroidAuto: Boolean, recording: Boolean, sinceStartMs: Long): Boolean =
+            fromAndroidAuto && recording && sinceStartMs in 0 until CAR_KEY_GRACE_MS
 
         fun turnOn(context: Context) {
             Settings.setHeadsetButton(context, true)

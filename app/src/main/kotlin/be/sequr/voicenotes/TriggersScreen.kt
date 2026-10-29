@@ -130,8 +130,10 @@ fun TriggersScreen(onBack: () -> Unit) {
                     "By default notes are recorded with the phone's own microphone. With this on, a connected Bluetooth headset " +
                         "or car hands-free system is used instead, which may give clearer speech than a phone in a pocket or " +
                         "cup holder. While recording, the car or headset may treat it like a call (music pauses, and the sound " +
-                        "quality is that of a phone call). If the Bluetooth microphone does not connect within a few seconds, " +
-                        "the phone's microphone is used.",
+                        "quality is that of a phone call). Some car head units give the audio back about a second after the link " +
+                        "opens (the radio starts again): the note then carries on with the phone's microphone and is marked as " +
+                        "recorded with it. The same happens if the Bluetooth microphone does not connect within a few seconds. " +
+                        "If your car does this, leave this off: the phone's microphone is then used from the start.",
                 ) {
                     Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween) {
                         Text("Use a Bluetooth microphone", style = MaterialTheme.typography.bodyLarge, modifier = Modifier.weight(1f))

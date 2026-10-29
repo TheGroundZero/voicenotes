@@ -63,7 +63,8 @@ Every release is signed with the same key, so updates install over the previous 
   Obsidian vault or a Nextcloud folder), or export everything.
 - **Backup and restore** to a file you choose (for example in Nextcloud): notes, every transcript version, labels and,
   if you want, the recordings; optionally encrypted with a passphrase ([docs/BACKUP.md](docs/BACKUP.md)).
-- **Bluetooth microphone** (optional) to record through a headset or a car's hands-free system.
+- **Bluetooth microphone** (optional) to record through a headset or a car's hands-free system. Some car head units take the
+  audio back a second after the link opens; the note then carries on with the phone's microphone.
 
 ## Privacy
 

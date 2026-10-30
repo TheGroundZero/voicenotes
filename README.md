@@ -1,7 +1,6 @@
 # Voice Notes
 
-A private voice-note recorder for Android, made for use while driving. Start a note with one tap (or a headset
-button, or from Android Auto), speak, stop. The speech is turned into text **on the phone**; nothing is uploaded.
+A private voice-note recorder for Android, made to capture your thoughts on the go. Speech is turned into text **on the phone**; nothing is uploaded.
 
 > **Status: early development (versions 0.x).** It works well on the developer's own phone, but it has not been
 > tested on a wide range of devices, and the limits below matter.

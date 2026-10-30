@@ -21,6 +21,9 @@ versions follow [Semantic Versioning](https://semver.org/).
   (seen when reversing) no longer ends it, a key that Android Auto forwards never starts a note (a car sends some of its own, for
   instance a pause key when it disconnects), a pause key never starts one from any source, and the Bluetooth microphone option
   now says what some head units do.
+- Model downloads: the "Verifying checksum…" step is shown again (the last progress update was sometimes dropped, which also left the
+  small speech check at "0.0 MB"), a download asked for while another one finishes can no longer leave a card stuck on "Downloading",
+  and a model or the speech check that is imported or downloaded replaces the old file in one step, so a failure keeps the old one.
 
 ## [0.6.0] - 2026-10-28
 

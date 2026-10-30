@@ -40,6 +40,7 @@ object ModelDownloads {
 class ModelDownloadService : Service() {
     @Volatile private var cancelled = false
     private var worker: Thread? = null
+    @Volatile private var active: Set<String> = emptySet() // the ids of the downloads this service is working on or chains next
 
     override fun onBind(intent: Intent?): IBinder? = null
 
@@ -56,6 +57,8 @@ class ModelDownloadService : Service() {
         // startForegroundService() obliges us to call startForeground() even when we refuse the job.
         ServiceCompat.startForeground(this, NOTIF_ID, notification(spec?.title ?: "model", 0, 0), ServiceInfo.FOREGROUND_SERVICE_TYPE_DATA_SYNC)
         if (spec == null || worker?.isAlive == true) {
+            // start() in the companion marks the card as downloading before the service can decline; take that back.
+            DownloadPolicy.staleStart(modelId, active)?.let { ModelDownloads.set(it, null) }
             if (worker?.isAlive != true) shutDown()
             return
         }
@@ -66,25 +69,24 @@ class ModelDownloadService : Service() {
         }
         cancelled = false
         ModelDownloads.set(spec.id, DownloadState.Downloading(0, spec.sizeBytes))
+        val isSpeechCheck = spec.id == ModelCatalog.speechCheck.id
+        active = if (isSpeechCheck) setOf(spec.id) else setOf(spec.id, ModelCatalog.speechCheck.id)
         worker = Thread {
-            val result = downloadOne(spec)
             // The speech check is small and every model needs it: fetch it right after a model, unless it is there already.
-            if (result == ModelDownloader.Result.Done && spec.id != ModelCatalog.speechCheck.id && !SpeechGate.isInstalled(this)) {
-                ModelDownloads.set(ModelCatalog.speechCheck.id, DownloadState.Downloading(0, ModelCatalog.speechCheck.sizeBytes))
-                downloadOne(ModelCatalog.speechCheck)
-            }
+            if (downloadOne(spec, thenSpeechCheck = !isSpeechCheck)) downloadOne(ModelCatalog.speechCheck, thenSpeechCheck = false)
+            active = emptySet()
             shutDown()
         }.also { it.start() }
     }
 
-    /** Downloads [spec] and reports its progress under its own id. */
-    private fun downloadOne(spec: ModelSpec): ModelDownloader.Result {
+    /** Downloads [spec] and reports its progress under its own id. Returns whether the speech check has to be downloaded next. */
+    private fun downloadOne(spec: ModelSpec, thenSpeechCheck: Boolean): Boolean {
         var lastUpdate = 0L
         val result = ModelDownloader(this).download(
             spec,
             onProgress = { done, total ->
                 val now = System.currentTimeMillis()
-                if (now - lastUpdate > 500) {
+                if (DownloadPolicy.reportProgress(done, total, now, lastUpdate)) {
                     lastUpdate = now
                     if (done < total) {
                         ModelDownloads.set(spec.id, DownloadState.Downloading(done, total))
@@ -96,6 +98,9 @@ class ModelDownloadService : Service() {
             },
             isCancelled = { cancelled },
         )
+        // Mark the speech check as downloading before the model's own state is cleared, so that the screen is never idle in between.
+        val chain = thenSpeechCheck && result == ModelDownloader.Result.Done && !SpeechGate.isInstalled(this)
+        if (chain) ModelDownloads.set(ModelCatalog.speechCheck.id, DownloadState.Downloading(0, ModelCatalog.speechCheck.sizeBytes))
         ModelDownloads.set(
             spec.id,
             when (result) {
@@ -103,7 +108,7 @@ class ModelDownloadService : Service() {
                 is ModelDownloader.Result.Failed -> DownloadState.Failed(result.message)
             },
         )
-        return result
+        return chain
     }
 
     /** A reason not to download right now, or null. Large files (10 MB and up) stay off mobile data unless the user allows it. */

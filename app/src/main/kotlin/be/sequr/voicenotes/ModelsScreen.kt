@@ -31,6 +31,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -83,7 +84,7 @@ fun ModelsScreen(viewModel: ModelsViewModel, onBack: () -> Unit) {
                 val spec = ModelCatalog.models[index]
                 CatalogCard(
                     spec = spec,
-                    installed = installed.firstOrNull { it.id == spec.id },
+                    installed = installed.any { it.id == spec.id },
                     isDefault = defaultId == spec.id,
                     state = downloads[spec.id],
                     anotherBusy = busy && downloads[spec.id] == null,
@@ -97,14 +98,13 @@ fun ModelsScreen(viewModel: ModelsViewModel, onBack: () -> Unit) {
                 val check = ModelCatalog.speechCheck
                 CatalogCard(
                     spec = check,
-                    installed = if (speechCheckInstalled) InstalledModel(check.id, check.sizeBytes, check) else null,
+                    installed = speechCheckInstalled,
                     isDefault = false,
-                    defaultable = false,
                     state = downloads[check.id],
                     anotherBusy = busy && downloads[check.id] == null,
                     onDownload = { viewModel.download(check) },
                     onCancel = viewModel::cancelDownload,
-                    onMakeDefault = {},
+                    onMakeDefault = null, // not a transcription model, so it is never the default
                     onDelete = { deletingSpeechCheck = true },
                 )
             }
@@ -178,14 +178,13 @@ fun ModelsScreen(viewModel: ModelsViewModel, onBack: () -> Unit) {
 @Composable
 private fun CatalogCard(
     spec: ModelSpec,
-    installed: InstalledModel?,
+    installed: Boolean,
     isDefault: Boolean,
-    defaultable: Boolean = true,
     state: DownloadState?,
     anotherBusy: Boolean,
     onDownload: () -> Unit,
     onCancel: () -> Unit,
-    onMakeDefault: () -> Unit,
+    onMakeDefault: (() -> Unit)?,
     onDelete: () -> Unit,
 ) {
     Card(Modifier.fillMaxWidth()) {
@@ -207,13 +206,14 @@ private fun CatalogCard(
                     LinearProgressIndicator(Modifier.fillMaxWidth())
                     Text("Verifying checksum…", style = MaterialTheme.typography.bodySmall)
                 }
-                installed != null -> Row(verticalAlignment = Alignment.CenterVertically) {
-                    if (!defaultable) Text("✓ Installed", modifier = Modifier.padding(horizontal = 12.dp))
-                    else if (isDefault) Text("✓ Installed · default", color = MaterialTheme.colorScheme.primary, modifier = Modifier.padding(horizontal = 12.dp))
-                    else {
-                        Text("✓ Installed", modifier = Modifier.padding(horizontal = 12.dp))
-                        TextButton(onClick = onMakeDefault) { Text("Make default") }
-                    }
+                installed -> Row(verticalAlignment = Alignment.CenterVertically) {
+                    val isTheDefault = isDefault && onMakeDefault != null
+                    Text(
+                        if (isTheDefault) "✓ Installed · default" else "✓ Installed",
+                        color = if (isTheDefault) MaterialTheme.colorScheme.primary else Color.Unspecified,
+                        modifier = Modifier.padding(horizontal = 12.dp),
+                    )
+                    if (onMakeDefault != null && !isDefault) TextButton(onClick = onMakeDefault) { Text("Make default") }
                     TextButton(onClick = onDelete) { Text("Delete") }
                 }
                 else -> {

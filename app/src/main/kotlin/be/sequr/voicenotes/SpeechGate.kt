@@ -23,12 +23,24 @@ object SpeechGate {
     /** The model file if it is on the phone and matches the pinned size and SHA-256, otherwise null (and the check is skipped). */
     fun modelFile(context: Context): File? = verified(ModelStore.speechCheckFile(context))
 
+    /** The last file that passed the checksum, by path, size and modification time: hashing it again on every call is not needed. */
+    @Volatile private var lastGood: Triple<String, Long, Long>? = null
+
     /** [file] if it has the pinned size and SHA-256, otherwise null. */
     fun verified(file: File): File? {
         val spec = ModelCatalog.speechCheck
         if (!file.exists() || file.length() != spec.sizeBytes) return null
-        return if (sha256(file) == spec.sha256) file else { Log.e(TAG, "The speech check model does not match its checksum; it is ignored"); null }
+        val key = Triple(file.path, file.length(), file.lastModified())
+        if (key == lastGood) return file
+        if (sha256(file) != spec.sha256) { Log.e(TAG, "The speech check model does not match its checksum; it is ignored"); return null }
+        lastGood = key
+        return file
     }
+
+    /** A quick look, without the checksum, for the first picture of the Models screen; [isInstalled] has the final word. */
+    fun looksInstalled(file: File): Boolean = file.exists() && file.length() == ModelCatalog.speechCheck.sizeBytes
+
+    fun looksInstalled(context: Context): Boolean = looksInstalled(ModelStore.speechCheckFile(context.filesDir))
 
     fun isInstalled(context: Context) = modelFile(context) != null
 

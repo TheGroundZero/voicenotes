@@ -21,7 +21,7 @@ class ModelsViewModel(app: Application) : AndroidViewModel(app) {
     val defaultId: StateFlow<String?> = _defaultId.asStateFlow()
 
     /** Whether the speech check (see [SpeechGate]) is on the phone. */
-    private val _speechCheck = MutableStateFlow(SpeechGate.isInstalled(app))
+    private val _speechCheck = MutableStateFlow(SpeechGate.looksInstalled(app))
     val speechCheckInstalled: StateFlow<Boolean> = _speechCheck.asStateFlow()
 
     val downloads = ModelDownloads.states

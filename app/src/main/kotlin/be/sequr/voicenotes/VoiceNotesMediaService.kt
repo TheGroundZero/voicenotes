@@ -83,9 +83,11 @@ class VoiceNotesMediaService : MediaBrowserService() {
                         if (event.action == KeyEvent.ACTION_DOWN && event.repeatCount == 0) {
                             val fromCar = session?.currentControllerInfo?.packageName == ANDROID_AUTO
                             val sinceStart = SystemClock.elapsedRealtime() - recordingSince
-                            if (ignoreCarKey(fromCar, RecordingService.isRecording, sinceStart)) {
-                                // Seen in a car: the head unit sent a pause key 0.13 s after a note started (reversing) and ended it.
-                                Log.i(TAG, "ignored: ${KeyEvent.keyCodeToString(event.keyCode)} from the car, ${sinceStart} ms after the note started")
+                            val recording = RecordingService.isRecording
+                            if (ignoreKey(event.keyCode, fromCar, recording, sinceStart)) {
+                                // Seen in a car: the head unit sent a pause key 0.13 s after a note started (reversing) and ended it,
+                                // and another one while Android Auto disconnected, when a toggle would have started a note.
+                                Log.i(TAG, "ignored: ${KeyEvent.keyCodeToString(event.keyCode)} (from the car: $fromCar, recording: $recording, $sinceStart ms after the note started)")
                             } else {
                                 RecordingService.toggle(this@VoiceNotesMediaService, Transcriber.AUTO)
                             }
@@ -249,9 +251,15 @@ class VoiceNotesMediaService : MediaBrowserService() {
             "com.android.systemui", "android",
         )
 
-        /** Whether a toggle key is to be ignored: sent by Android Auto while a note that started less than [CAR_KEY_GRACE_MS] ago is running. */
-        internal fun ignoreCarKey(fromAndroidAuto: Boolean, recording: Boolean, sinceStartMs: Long): Boolean =
-            fromAndroidAuto && recording && sinceStartMs in 0 until CAR_KEY_GRACE_MS
+        /**
+         * Whether a toggle key is to be ignored. A note must never start by itself, so a key that Android Auto forwards never starts one
+         * (the car sends keys of its own, for instance a pause key while it disconnects), and a pause key never starts one from any
+         * source. While a note runs, a key from Android Auto is also ignored for [CAR_KEY_GRACE_MS] after the start (a car sent a pause key
+         * 0.13 s after a note began, when reversing). Keys from headsets and other apps otherwise toggle as usual.
+         */
+        internal fun ignoreKey(keyCode: Int, fromAndroidAuto: Boolean, recording: Boolean, sinceStartMs: Long): Boolean =
+            if (recording) fromAndroidAuto && sinceStartMs in 0 until CAR_KEY_GRACE_MS
+            else fromAndroidAuto || keyCode == KeyEvent.KEYCODE_MEDIA_PAUSE
 
         fun turnOn(context: Context) {
             Settings.setHeadsetButton(context, true)

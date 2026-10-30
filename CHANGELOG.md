@@ -18,7 +18,9 @@ versions follow [Semantic Versioning](https://semver.org/).
   stops on a phone call only, the app asks for plain media focus instead of an assistant's (so the car does not start a
   voice session and press its own voice button), and if the car disturbs the Bluetooth microphone right after the start
   the note carries on with the phone's own microphone. A pause key that the car itself sends in the first three seconds of a note
-  (seen when reversing) no longer ends it, and the Bluetooth microphone option now says what some head units do.
+  (seen when reversing) no longer ends it, a key that Android Auto forwards never starts a note (a car sends some of its own, for
+  instance a pause key when it disconnects), a pause key never starts one from any source, and the Bluetooth microphone option
+  now says what some head units do.
 
 ## [0.6.0] - 2026-10-28
 

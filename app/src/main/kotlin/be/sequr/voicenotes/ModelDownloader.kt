@@ -59,8 +59,7 @@ class ModelDownloader(private val context: Context) {
                 part.delete()
                 return Result.Failed("The downloaded file did not match its checksum and was discarded")
             }
-            target.delete()
-            return if (part.renameTo(target)) Result.Done else Result.Failed("Could not store the model")
+            return if (ModelStore.replaceFile(part, target)) Result.Done else Result.Failed("Could not store the model")
         } catch (e: IOException) {
             return Result.Failed(e.message ?: "Network error; tap Download to resume") // the partial file is kept
         }

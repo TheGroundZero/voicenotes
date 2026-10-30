@@ -6,6 +6,8 @@ import android.net.Uri
 import android.provider.OpenableColumns
 import java.io.File
 import java.io.IOException
+import java.nio.file.Files
+import java.nio.file.StandardCopyOption
 import java.security.MessageDigest
 
 data class InstalledModel(val id: String, val sizeBytes: Long, val spec: ModelSpec?)
@@ -29,6 +31,14 @@ object ModelStore {
     fun speechCheckFile(context: Context) = speechCheckFile(context.filesDir).also { it.parentFile?.mkdirs() }
 
     /** `files/vad/ggml-silero-v5.1.2.bin`: where versions up to 0.5.1 extracted their bundled copy, so those phones keep it. */
+    /** Moves [tmp] over [target] in one step: if it fails, the old file is still there (deleting it first would lose it). */
+    fun replaceFile(tmp: File, target: File): Boolean = try {
+        Files.move(tmp.toPath(), target.toPath(), StandardCopyOption.ATOMIC_MOVE, StandardCopyOption.REPLACE_EXISTING)
+        true
+    } catch (e: IOException) {
+        false
+    }
+
     fun speechCheckFile(filesDir: File) = File(File(filesDir, "vad"), ModelCatalog.speechCheck.fileName)
 
     /** The file a download of [spec] ends up in. */
@@ -93,14 +103,11 @@ object ModelStore {
             }
             val hash = digest.digest().joinToString("") { "%02x".format(it) }
             if (hash == ModelCatalog.speechCheck.sha256) {          // the speech check, not a transcription model
-                val target = speechCheckFile(context)
-                target.delete()
-                return if (tmp.renameTo(target)) ImportResult.Imported(ModelCatalog.speechCheck.title, verified = true) else ImportResult.Failed("Could not store the speech check")
+                return if (replaceFile(tmp, speechCheckFile(context))) ImportResult.Imported(ModelCatalog.speechCheck.title, verified = true) else ImportResult.Failed("Could not store the speech check")
             }
             val spec = ModelCatalog.models.firstOrNull { it.sha256 == hash }
             val id = spec?.id ?: customId(displayName)
-            file(context, id).delete()
-            if (!tmp.renameTo(file(context, id))) return ImportResult.Failed("Could not store the model")
+            if (!replaceFile(tmp, file(context, id))) return ImportResult.Failed("Could not store the model")
             ImportResult.Imported(id, verified = spec != null)
         } catch (e: IOException) {
             ImportResult.Failed(e.message ?: "Import failed")

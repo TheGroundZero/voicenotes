@@ -51,6 +51,18 @@ breaking change with `!` after the type or a `BREAKING CHANGE:` footer. Suggeste
 `models`, `export`, `auto` (Android Auto), `ui`, `build`, `fdroid`. User-visible `feat` and `fix` commits also get a line
 under "Unreleased" in `CHANGELOG.md`. The initial commit predates this rule and is the only exception.
 
+## AI-assisted contributions
+
+Using a coding assistant (local or hosted) is welcome. When it wrote or substantially shaped part of a change (code,
+tests, docs or the commit text), say so:
+
+- Add a trailer to the commit naming the tool and model: `Co-Authored-By: <tool/model> <noreply address or tool URL>`.
+  Autocomplete of a few tokens or a spell check does not count.
+- Mention it in the pull request description as well.
+- You remain the author. You have read and understood every line, run `scripts/check.sh`, and have the right to submit
+  the change under GPL-3.0-or-later.
+- Never put recordings, transcripts, `keystore.properties` or other private material in a prompt to a hosted service.
+
 ## Reporting problems
 
 Say which phone and Android version, what you did, and what you expected. **Do not attach recordings or transcripts

@@ -69,6 +69,8 @@ only be tried on a real phone (or the Desktop Head Unit, `scripts/dhu.sh`): say 
   error output of `git add`: a path that does not exist makes it add nothing.
 - Read the output of `scripts/check.sh` to the end; a green exit code with an empty log is not a result.
 - If a command needs a decision about secrets, the network or somebody's phone, stop and ask.
+- If you wrote or substantially shaped a commit, end its message with a `Co-Authored-By: <tool/model> <noreply address or tool URL>`
+  trailer, and say so in the PR description ([CONTRIBUTING.md](CONTRIBUTING.md#ai-assisted-contributions)). A person stays responsible.
 
 ## Files an assistant does not need to read
 

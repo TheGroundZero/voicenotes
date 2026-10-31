@@ -7,6 +7,11 @@ versions follow [Semantic Versioning](https://semver.org/).
 
 ### Added
 
+- **The phone learns which Bluetooth microphones do not hold.** Some car head units take the audio back about a second after the
+  hands-free link opens, so that a note has to carry on with the phone's microphone. After that has happened twice in a row with
+  the same device, the app stops trying it: a note starts at once with the phone's microphone instead of waiting for the link first.
+  The device is listed under *Triggers*, with *Try again*. The memory stays on the phone and is not shipped with the app.
+
 - **Colour themes.** The new *Appearance* entry in the menu lets you choose the colours of the app: Follow the system (as before,
   with the colours of your wallpaper), fixed Light or Dark, Paper (warm off-white), High contrast (follows your phone's light or
   dark), Matrix and Dracula. Every text colour in every theme reaches a tested minimum contrast (4.5:1, 7:1 for High contrast).

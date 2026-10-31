@@ -71,9 +71,15 @@ class MicrophoneRoute(private val context: Context, private val handler: Handler
 
     /** Calls [onReady] on the main thread with the device to record from, or null for the phone's microphone. */
     fun acquire(onReady: (AudioDeviceInfo?) -> Unit) {
-        val device = if (Settings.bluetoothMic(context)) BluetoothMic.available(context).firstOrNull() else null
+        val available = if (Settings.bluetoothMic(context)) BluetoothMic.available(context) else emptyList()
+        val device = BluetoothMemory.firstUsable(available, Settings.bluetoothMemory(context)) { it.address }
         if (device == null) {
-            Log.i(TAG, "recording with the phone's microphone (bluetooth option ${if (Settings.bluetoothMic(context)) "on, no device" else "off"})")
+            val why = when {
+                !Settings.bluetoothMic(context) -> "bluetooth option off"
+                available.isEmpty() -> "bluetooth option on, no device"
+                else -> "bluetooth option on, but the device took the audio back ${BluetoothMemory.LIMIT} times in a row"
+            }
+            Log.i(TAG, "recording with the phone's microphone ($why)")
             onReady(null)
             return
         }

@@ -52,6 +52,13 @@ object Settings {
 
     fun setBluetoothMic(context: Context, enabled: Boolean) = prefs(context).edit().putBoolean("bluetooth_mic", enabled).apply()
 
+    /** The Bluetooth microphones that took the audio back, per device (see [BluetoothMemory]); kept on this phone only. */
+    fun bluetoothMemory(context: Context): Map<String, BluetoothMemory.Entry> =
+        BluetoothMemory.decode(prefs(context).getString("bluetooth_memory", null))
+
+    fun setBluetoothMemory(context: Context, memory: Map<String, BluetoothMemory.Entry>) =
+        prefs(context).edit().putString("bluetooth_memory", BluetoothMemory.encode(memory.values)).apply()
+
     /** Remove a recording this many days after its note was transcribed; 0 = never (the default). See [AudioCleanup]. */
     fun autoRemovalDays(context: Context): Int = prefs(context).getInt("auto_removal_days", 0)
 

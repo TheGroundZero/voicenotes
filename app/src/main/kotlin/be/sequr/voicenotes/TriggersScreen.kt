@@ -46,6 +46,7 @@ fun TriggersScreen(onBack: () -> Unit) {
     var headset by remember { mutableStateOf(Settings.headsetButton(context)) }
     var message by remember { mutableStateOf<String?>(null) }
     var bluetoothMic by remember { mutableStateOf(Settings.bluetoothMic(context)) }
+    var remembered by remember { mutableStateOf(Settings.bluetoothMemory(context)) }
     var bluetoothDevices by remember { mutableStateOf(BluetoothMic.available(context).map { it.productName.toString() }) }
     var hasBluetoothPermission by remember { mutableStateOf(BluetoothMic.hasPermission(context)) }
     val askBluetooth = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
@@ -133,7 +134,8 @@ fun TriggersScreen(onBack: () -> Unit) {
                         "quality is that of a phone call). Some car head units give the audio back about a second after the link " +
                         "opens (the radio starts again): the note then carries on with the phone's microphone and is marked as " +
                         "recorded with it. The same happens if the Bluetooth microphone does not connect within a few seconds. " +
-                        "If your car does this, leave this off: the phone's microphone is then used from the start.",
+                        "After a car has done this twice in a row, the app stops trying it and uses the phone's microphone from " +
+                        "the start; it is listed here, where you can let it try again.",
                 ) {
                     Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween) {
                         Text("Use a Bluetooth microphone", style = MaterialTheme.typography.bodyLarge, modifier = Modifier.weight(1f))
@@ -155,9 +157,19 @@ fun TriggersScreen(onBack: () -> Unit) {
                         else "Available now: " + bluetoothDevices.joinToString(", "),
                         style = MaterialTheme.typography.bodySmall,
                     )
+                    BluetoothMemory.skippedEntries(remembered).forEach { entry ->
+                        Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween) {
+                            Text("Not used with ${entry.name}: it took the audio back right after the start, ${entry.drops} times in a row.", style = MaterialTheme.typography.bodySmall, modifier = Modifier.weight(1f))
+                            TextButton(onClick = {
+                                remembered = BluetoothMemory.forget(remembered, entry.id)
+                                Settings.setBluetoothMemory(context, remembered)
+                            }) { Text("Try again") }
+                        }
+                    }
                     TextButton(onClick = {
                         hasBluetoothPermission = BluetoothMic.hasPermission(context)
                         bluetoothDevices = BluetoothMic.available(context).map { it.productName.toString() }
+                        remembered = Settings.bluetoothMemory(context)
                     }) { Text("Refresh") }
                 }
             }

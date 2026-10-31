@@ -52,6 +52,7 @@ class RecordingService : Service() {
     private var starting = false // waiting for a Bluetooth microphone to connect
     private var startedAt = 0L // uptime when the running note began
     private var onBluetooth = false // the running note records from a Bluetooth microphone
+    private var bluetoothDevice: AudioDeviceInfo? = null // which one, to remember whether its link holds
     private val autoStop = Runnable {
         Log.i(TAG, "note reached the maximum length, stopping")
         stopRecording()
@@ -141,6 +142,7 @@ class RecordingService : Service() {
         }
         startedAt = SystemClock.elapsedRealtime()
         onBluetooth = used != null
+        bluetoothDevice = used
         _recording.value = true
         RecordWidget.update(this)
         Tones.start(this)
@@ -159,6 +161,10 @@ class RecordingService : Service() {
         val rec = recorder ?: return
         rec.stop()
         recorder = null
+        // A note that ran on over the Bluetooth microphone, past the seconds in which a car takes the audio back, shows that its link holds.
+        if (onBluetooth && SystemClock.elapsedRealtime() - startedAt >= CAR_REACTION_MS) bluetoothDevice?.let { remember(it, held = true) }
+        onBluetooth = false
+        bluetoothDevice = null
         microphone.release()
         abandonAudioFocus() // other apps resume
         _recording.value = false
@@ -212,6 +218,16 @@ class RecordingService : Service() {
      * A car or another app taking the audio is no reason to lose a note, so only a phone call ends it. If the car
      * reacts to the Bluetooth microphone within seconds of the start, the note carries on with the phone's own.
      */
+    /** Keeps what a note showed about a Bluetooth microphone: [held] clears the count of drops in a row, otherwise it grows. */
+    private fun remember(device: AudioDeviceInfo, held: Boolean) {
+        val memory = Settings.bluetoothMemory(this)
+        val name = device.productName.toString()
+        val updated = if (held) BluetoothMemory.forget(memory, device.address) else BluetoothMemory.dropped(memory, device.address, name)
+        if (updated == memory) return
+        Settings.setBluetoothMemory(this, updated)
+        if (!held) Log.i(TAG, "remembered: '$name' took the audio back ${updated[device.address]?.drops} time(s) in a row (given up on after ${BluetoothMemory.LIMIT})")
+    }
+
     private fun onFocusChange(change: Int) {
         if (change != AudioManager.AUDIOFOCUS_LOSS && change != AudioManager.AUDIOFOCUS_LOSS_TRANSIENT) return
         if (recorder == null) return
@@ -221,6 +237,7 @@ class RecordingService : Service() {
             stopRecording() // keep what has been recorded so far
         } else if (onBluetooth && SystemClock.elapsedRealtime() - startedAt < CAR_REACTION_MS) {
             Log.w(TAG, "the Bluetooth link was disturbed right after the start, continuing with the phone's microphone")
+            bluetoothDevice?.let { remember(it, held = false) }
             onBluetooth = false
             recorder?.useDefaultMicrophone()
             microphone.release()

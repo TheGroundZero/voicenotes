@@ -49,6 +49,11 @@ When used with Android Auto or a car's Bluetooth, the car or head unit can see t
 exists and whether it is recording. Audio from a car microphone, if you choose to use one, goes through the phone's
 normal Bluetooth hands-free link and is handled like any other recording.
 
+If a car or headset takes the audio back right after a note has started, the phone remembers that for that device, so that
+it stops using that device's microphone after the second time. This is a counter next to the device's address and name in the
+app's settings, stored only on the phone, never sent anywhere and not part of a backup; *Try again* on the *Triggers* screen
+clears it, and so does clearing the app's data.
+
 ## Changes
 
 If this changes, the change is listed in [CHANGELOG.md](CHANGELOG.md) and the in-app *Privacy & permissions* screen

@@ -8,6 +8,7 @@ welcome.
 - Report bugs and discuss anything bigger than a small fix in the [issue tracker](https://tangled.org/sequr.be/voicenotes/issues/).
 - User-visible changes go under "Unreleased" in [CHANGELOG.md](CHANGELOG.md); `scripts/release.sh` turns that into the dated release section.
 - Read [docs/BUILDING.md](docs/BUILDING.md) to set up the tools, and [docs/ROADMAP.md](docs/ROADMAP.md) for the design rules and the open work.
+- Working with a coding assistant? [AGENTS.md](AGENTS.md) is the short brief for it, and [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) is the code map.
 
 ## Rules that protect the privacy promise
 

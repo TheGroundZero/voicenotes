@@ -194,3 +194,66 @@ the full corpus, real recordings and the Pixel 10 agree.**
 
 Open: which TTS voices pass the licence check, where a scheduled candidate search runs and how you are told, and whether
 engines other than Whisper (whisper.cpp also contains NVIDIA Parakeet support) are in scope after the first results.
+
+## Full-corpus results (2026-10-28 and 29, 886 clips)
+
+`large-v3-turbo-q8_0`, the whole corpus (870 speech clips, 1.91 hours of audio, and 16 non-speech clips), a fresh engine context for every
+clip, on the development machine (`benchmark/results-full/`). The three audio windows:
+
+| | App today (automatic) | 1000 frames | Full 30 s window |
+|---|---|---|---|
+| Weighted word error rate | 57.6 % | 28.6 % | **13.3 %** |
+| Character error rate | 49.0 % | 19.4 % | **7.1 %** |
+| Language identification | 96.2 % | 96.3 % | 96.2 % |
+| Repetition loops | 66 | 17 | **3** |
+| Real-time factor on this machine | 1.14 | 2.16 | 4.15 |
+
+`compare.py` passes rules 1 to 3 of the decision rule for the full window (77 % relative improvement, no cell significantly worse, fewer
+loops) and for 1000 frames (50 %). Rules 4 and 5, the measurements on the Pixel 10 and the licence check, are still open.
+
+Word error rate by clip category (the reference text is what the voice was given):
+
+| Category | Automatic | 1000 frames | Full |
+|---|---|---|---|
+| reminder | 47.5 % | 5.1 % | 5.1 % |
+| shopping | 54.9 % | 6.2 % | 6.0 % |
+| numbers | 55.3 % | 6.5 % | 5.3 % |
+| amount | 244.1 % | 12.2 % | 9.5 % |
+| address | 75.9 % | 11.0 % | 7.7 % |
+| datetime | 76.0 % | 14.3 % | 13.0 % |
+| hesitation | 45.5 % | 10.7 % | 9.3 % |
+| name | 32.2 % | 25.8 % | 23.4 % |
+| mixed (two languages in one clip) | 75.9 % | 21.2 % | 20.0 % |
+| twolang | 52.9 % | 34.6 % | 31.6 % |
+| runon | 12.0 % | 4.4 % | 4.5 % |
+| long | 11.7 % | **60.0 %** | 11.8 % |
+| verylong | 10.7 % | **49.9 %** | 10.7 % |
+| short | 576.0 % | 67.9 % | 53.4 % |
+| oneword | 1685.4 % | 218.8 % | 112.5 % |
+| oneword-padded | 200.0 % | 283.3 % | 200.0 % |
+
+What it shows:
+
+- **The app's automatic window costs a lot of accuracy on short and medium notes**, here by a factor of four or more in most categories.
+- **A fixed 1000-frame window (20 s) breaks long notes** (long 11.7 % to 60.0 %, very long 10.7 % to 49.9 %), because the window cannot cover them.
+  The decision rule does not see this: it looks at cells (language and noise level), not at note length.
+- **The one-word and very short clips stay bad in every setting** (an insertion of a single word is more than 100 % of a one-word reference).
+- **About 19 % of the non-speech clips still produce text with the speech check on**, in all three runs; that is a separate question.
+
+A combined policy, computed from the per-clip results of the three runs (no new run; per clip, take the 1000-frame result when the audio is up
+to the limit and the full-window result above it):
+
+| Policy (870 speech clips) | WER | Compute (real-time factor per clip) |
+|---|---|---|
+| Automatic (the app today) | 57.1 % | 1.16 |
+| Fixed 1000 frames | 28.6 % | 2.20 |
+| 1000 frames up to 10, 15, 18 or 20 s, full window above | 14.8 % | 2.35 to 2.50 |
+| 1000 frames up to 25 s, full window above | 15.7 % | 2.35 |
+| Full window always | 13.3 % | 4.25 |
+
+Most clips are short (median 5.7 s, 90th percentile 12.3 s; 6 % are longer than 20 s), so the combined policy keeps almost all of the gain
+for about 55 % of the full window's compute. It does not exist in `vn-bench` yet, so this is an estimate, not a measurement.
+
+Caveats: the clips are generated speech with synthetic noise, the timings are from a shared development machine, and the real question for
+the app is the speed and memory on the phone (rule 4). **Nothing changes in the app until a policy has been run for real, checked on
+real recordings, and measured on the Pixel 10.**

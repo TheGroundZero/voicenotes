@@ -106,7 +106,8 @@ class RecordingService : Service() {
     }
 
     private fun beginRecording(lang: String, device: AudioDeviceInfo?) {
-        val stamp = SimpleDateFormat("yyyyMMdd-HHmmss", Locale.US).format(Date())
+        // Use timestamp up until microseconds to ensure no overlapping recordings overwriting each other
+        val stamp = SimpleDateFormat("yyyyMMdd-HHmmssSSS", Locale.US).format(Date())
         val file = File(NoteFiles.dir(this), "$stamp.wav")
         var used = device // the microphone that actually records, which is the phone's after a fallback
         try {
